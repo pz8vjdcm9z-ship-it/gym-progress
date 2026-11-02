@@ -1,10 +1,11 @@
+
 <!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v18">
+<meta name="application-version" content="home-v19-test">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -423,51 +424,6 @@ body:not(.spotify-visible) #spotifyMini,
 body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
 
 
-/* Calendario de rachas · Glass Premium */
-.app-main-nav{grid-template-columns:repeat(3,minmax(0,1fr))}
-.app-main-nav button.active{border-color:rgba(85,223,189,.62);background:linear-gradient(135deg,rgba(85,223,189,.18),rgba(45,198,162,.08));color:#baffed}
-.streak-panel{padding:2px 0 24px}
-.streak-hero,.streak-week-card,.streak-calendar-card,.streak-history-card{border:1px solid rgba(176,211,224,.15);border-radius:22px;background:linear-gradient(145deg,rgba(24,43,62,.78),rgba(10,22,37,.84));box-shadow:0 16px 38px rgba(0,0,0,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.streak-hero{position:relative;overflow:hidden;padding:21px;margin:8px 0 12px;background:radial-gradient(circle at 100% 0,rgba(85,223,189,.19),transparent 45%),linear-gradient(145deg,rgba(25,61,68,.9),rgba(12,27,44,.96))}
-.streak-kicker,.streak-overline{color:#8cebd4;font-size:9px;font-weight:950;letter-spacing:1.5px}
-.streak-hero h2{max-width:390px;margin:9px 0 6px;font-size:clamp(22px,6vw,29px);line-height:1.12;letter-spacing:-.6px}
-.streak-hero p{margin:0;color:#b9cad8;font-size:11px;line-height:1.5}
-.streak-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:19px}
-.streak-stats>div{padding:11px 8px;border:1px solid rgba(255,255,255,.09);border-radius:13px;background:rgba(3,13,24,.3)}
-.streak-stats strong{display:block;color:#8cebd4;font-size:23px;font-weight:950;font-variant-numeric:tabular-nums}
-.streak-stats span{display:block;margin-top:4px;color:#aebdca;font-size:8px;line-height:1.3}
-.streak-week-card{padding:16px;margin-bottom:12px}
-.streak-week-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.streak-week-head h3,.streak-history-card h3{margin:5px 0 0;font-size:16px}
-.streak-week-head>strong{color:#8cebd4;font-size:25px;font-weight:950}
-.streak-progress{height:8px;margin:14px 0 9px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
-.streak-progress span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#35c9a5,#8cebd4);transition:width .25s ease}
-.streak-week-card p{margin:0;color:#aebdca;font-size:10px;line-height:1.45}
-.streak-calendar-card{padding:15px;margin-bottom:12px}
-.streak-calendar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
-.streak-calendar-head h3{margin:0;font-size:16px;text-transform:capitalize}
-.streak-calendar-head button{width:34px;height:34px;border:1px solid rgba(176,211,224,.17);border-radius:10px;background:rgba(255,255,255,.05);color:#eaf4f8;font-size:23px;line-height:1}
-.streak-weekdays,.streak-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.streak-weekdays{margin-bottom:7px}
-.streak-weekdays span{text-align:center;color:#8fa1b7;font-size:9px;font-weight:850}
-.streak-day{position:relative;min-width:0;aspect-ratio:1;border:1px solid rgba(176,198,222,.11);border-radius:11px;background:rgba(255,255,255,.025);color:#dbe5ee;font-size:11px;font-weight:800}
-.streak-day.empty{border:0;background:transparent;pointer-events:none}
-.streak-day.done{border-color:rgba(85,223,189,.65);background:linear-gradient(145deg,rgba(85,223,189,.25),rgba(45,198,162,.12));color:#aaffea}
-.streak-day.missed{border-color:rgba(255,153,153,.35);background:rgba(255,120,120,.09);color:#ffc0c0}
-.streak-day.rest{color:#91a2b5;background:rgba(255,255,255,.035)}
-.streak-day.today{outline:2px solid rgba(246,199,121,.85);outline-offset:1px}
-.streak-day.selected{box-shadow:0 0 0 2px #f6c779 inset}
-.streak-day small{position:absolute;bottom:4px;left:0;right:0;font-size:7px;line-height:1}
-.streak-legend{display:flex;flex-wrap:wrap;gap:9px 13px;margin-top:14px}
-.streak-legend span{display:flex;align-items:center;gap:5px;color:#aebdca;font-size:8px}
-.streak-legend i{width:8px;height:8px;border-radius:50%;background:#43546a}
-.streak-legend i.done{background:#55dfbd}.streak-legend i.missed{background:#ff9999}.streak-legend i.rest{background:#64748b}.streak-legend i.future{background:#f6c779}
-.streak-history-card{padding:16px}
-.streak-history-card h3{margin:0 0 9px}
-#streakDayDetail{color:#b9c8d6;font-size:11px;line-height:1.6}
-#streakDayDetail strong{color:#f3f7fc}
-@media(max-width:360px){.streak-hero{padding:17px}.streak-calendar-card{padding:11px}.streak-weekdays,.streak-calendar-grid{gap:4px}.streak-day{border-radius:8px}}
-
 </style>
 </head>
 <body>
@@ -504,7 +460,6 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
     <div class="library-nav app-main-nav">
       <button type="button" id="workoutNav" class="active">MI RUTINA</button>
       <button type="button" id="libraryNav">BIBLIOTECA</button>
-      <button type="button" id="streakNav">RACHA</button>
     </div>
     <div id="workoutSection">
     <section class="home-dashboard" id="homeDashboard" aria-label="Panel de inicio">
@@ -621,34 +576,6 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
         <div class="library-exercises" id="libraryExerciseGrid"></div>
       </div>
     </section>
-    <section id="streakSection" class="streak-panel hidden">
-      <div class="streak-hero">
-        <div class="streak-kicker">CONSTANCIA · GYM PROGRESS</div>
-        <h2>Tu progreso también se mide en constancia.</h2>
-        <p>Completa tus cuatro sesiones semanales y construye tu racha.</p>
-        <div class="streak-stats">
-          <div><strong id="streakCurrent">0</strong><span>Semanas seguidas</span></div>
-          <div><strong id="streakBest">0</strong><span>Récord personal</span></div>
-          <div><strong id="streakTotal">0</strong><span>Semanas completas</span></div>
-        </div>
-      </div>
-      <div class="streak-week-card">
-        <div class="streak-week-head"><div><span class="streak-overline">RESUMEN SEMANAL</span><h3 id="streakWeekLabel">Esta semana</h3></div><strong id="streakWeekCount">0/4</strong></div>
-        <div class="streak-progress"><span id="streakProgressBar"></span></div>
-        <p id="streakWeekMessage">Tus entrenamientos aparecerán aquí cuando los guardes.</p>
-      </div>
-      <div class="streak-calendar-card">
-        <div class="streak-calendar-head">
-          <button type="button" id="streakPrev" aria-label="Mes anterior">‹</button>
-          <h3 id="streakMonthLabel"></h3>
-          <button type="button" id="streakNext" aria-label="Mes siguiente">›</button>
-        </div>
-        <div class="streak-weekdays"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
-        <div class="streak-calendar-grid" id="streakCalendarGrid"></div>
-        <div class="streak-legend"><span><i class="done"></i>Completado</span><span><i class="missed"></i>No completado</span><span><i class="rest"></i>Descanso</span><span><i class="future"></i>Pendiente</span></div>
-      </div>
-      <div class="streak-history-card"><h3>Detalle del día</h3><div id="streakDayDetail">Selecciona un día del calendario para consultar su estado.</div></div>
-    </section>
   </section>
 </main>
 
@@ -761,104 +688,6 @@ let activeRoutine = [];
 let completedIds = new Set();
 let exerciseView = "pending";
 const latestCacheKey = userId => `gym_progress_latest_${userId}`;
-const streakQueueKey = userId => `gym_progress_streak_queue_${userId}`;
-let streakRecords = [];
-let streakMonth = new Date(new Date().getFullYear(),new Date().getMonth(),1);
-let selectedStreakDate = localDate();
-const STREAK_TABLE = "workout_streak_days";
-function dateKeyLocal(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;}
-function parseLocalDate(value){const [y,m,d]=String(value).split("-").map(Number);return new Date(y,m-1,d);}
-function mondayOf(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());d.setDate(d.getDate()-(d.getDay()+6)%7);return d;}
-function streakRecordMap(){return new Map(streakRecords.map(row=>[row.workout_date,row]));}
-function isTrainingDate(date){const day=date.getDay();return day>=1&&day<=4;}
-function weekDates(date){const start=mondayOf(date);return Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d;});}
-async function loadStreakRecords(){
-  if(!currentUser)return;
-  if(!navigator.onLine){
-    streakRecords=JSON.parse(localStorage.getItem(streakQueueKey(currentUser.id))||"[]");
-    renderStreakCalendar();return;
-  }
-  const {data,error}=await supabase.from(STREAK_TABLE).select("workout_date,routine_day,exercises,created_at").eq("user_id",currentUser.id).order("workout_date",{ascending:true});
-  if(error)throw error;
-  streakRecords=data||[];
-  localStorage.setItem(`gym_progress_streak_cache_${currentUser.id}`,JSON.stringify(streakRecords));
-  await syncStreakQueue();
-  renderStreakCalendar();
-}
-async function syncStreakQueue(){
-  if(!currentUser||!navigator.onLine)return;
-  const key=streakQueueKey(currentUser.id);
-  const queued=JSON.parse(localStorage.getItem(key)||"[]");
-  if(!queued.length)return;
-  const {error}=await supabase.from(STREAK_TABLE).upsert(queued,{onConflict:"user_id,workout_date"});
-  if(error)throw error;
-  localStorage.removeItem(key);
-  const {data}=await supabase.from(STREAK_TABLE).select("workout_date,routine_day,exercises,created_at").eq("user_id",currentUser.id).order("workout_date",{ascending:true});
-  streakRecords=data||[];
-  localStorage.setItem(`gym_progress_streak_cache_${currentUser.id}`,JSON.stringify(streakRecords));
-}
-async function recordCompletedTraining(){
-  const today=localDate();
-  const row={user_id:currentUser.id,workout_date:today,routine_day:selectedDay,exercises:activeRoutine.map(x=>({id:x.id,name:x.name}))};
-  if(!navigator.onLine){
-    const key=streakQueueKey(currentUser.id),queue=JSON.parse(localStorage.getItem(key)||"[]");
-    const next=[...queue.filter(x=>x.workout_date!==today),row];
-    localStorage.setItem(key,JSON.stringify(next));
-    streakRecords=[...streakRecords.filter(x=>x.workout_date!==today),row];
-    renderStreakCalendar();return "offline";
-  }
-  const {error}=await supabase.from(STREAK_TABLE).upsert(row,{onConflict:"user_id,workout_date"});
-  if(error)throw error;
-  streakRecords=[...streakRecords.filter(x=>x.workout_date!==today),row];
-  localStorage.setItem(`gym_progress_streak_cache_${currentUser.id}`,JSON.stringify(streakRecords));
-  renderStreakCalendar();return "online";
-}
-function renderStreakCalendar(){
-  const grid=$("streakCalendarGrid");if(!grid)return;
-  const records=streakRecordMap(),today=localDate(),first=new Date(streakMonth.getFullYear(),streakMonth.getMonth(),1);
-  $("streakMonthLabel").textContent=new Intl.DateTimeFormat("es-ES",{month:"long",year:"numeric"}).format(first);
-  const offset=(first.getDay()+6)%7,daysInMonth=new Date(first.getFullYear(),first.getMonth()+1,0).getDate();
-  const cells=Array(offset).fill('<div class="streak-day empty"></div>');
-  for(let day=1;day<=daysInMonth;day++){
-    const date=new Date(first.getFullYear(),first.getMonth(),day),key=dateKeyLocal(date),record=records.get(key),past=key<today;
-    let state=record?"done":isTrainingDate(date)&&past?"missed":isTrainingDate(date)?"future":"rest";
-    cells.push(`<button type="button" class="streak-day ${state} ${key===today?"today":""} ${key===selectedStreakDate?"selected":""}" data-streak-date="${key}" aria-label="${key}: ${state}">${day}${record?'<small>✓</small>':state==="missed"?'<small>·</small>':""}</button>`);
-  }
-  grid.innerHTML=cells.join("");
-  const now=new Date(),thisWeek=weekDates(now),thisWeekRecords=thisWeek.filter(d=>isTrainingDate(d)&&records.has(dateKeyLocal(d))).length;
-  $("streakWeekLabel").textContent=`Semana del ${thisWeek[0].getDate()} ${new Intl.DateTimeFormat("es-ES",{month:"short"}).format(thisWeek[0])}`;
-  $("streakWeekCount").textContent=`${thisWeekRecords}/4`;
-  $("streakProgressBar").style.width=`${thisWeekRecords/4*100}%`;
-  $("streakWeekMessage").textContent=thisWeekRecords===4?"¡Semana completada! Has cumplido tus cuatro entrenamientos.":`${thisWeekRecords} de 4 sesiones guardadas. ${4-thisWeekRecords} pendientes de completar.`;
-  const weeks=new Map();
-  for(const row of streakRecords){const start=dateKeyLocal(mondayOf(parseLocalDate(row.workout_date)));weeks.set(start,(weeks.get(start)||0)+1);}
-  const fullWeekKeys=[...weeks.entries()].filter(([,count])=>count>=4).map(([key])=>key).sort();
-  const completeWeeks=fullWeekKeys.length;
-  let streak=0,weekStart=mondayOf(now);
-  if(thisWeekRecords<4)weekStart.setDate(weekStart.getDate()-7);
-  while((weeks.get(dateKeyLocal(weekStart))||0)>=4){streak++;weekStart.setDate(weekStart.getDate()-7);}
-  let bestStreak=0,run=0,previousWeek=null;
-  for(const key of fullWeekKeys){
-    const current=parseLocalDate(key);
-    if(previousWeek){const expected=new Date(previousWeek);expected.setDate(expected.getDate()+7);if(dateKeyLocal(expected)===key)run++;else run=1;}
-    else run=1;
-    bestStreak=Math.max(bestStreak,run);previousWeek=current;
-  }
-  $("streakCurrent").textContent=streak;
-  $("streakBest").textContent=bestStreak;
-  $("streakTotal").textContent=completeWeeks;
-  const chosen=records.get(selectedStreakDate),chosenDate=parseLocalDate(selectedStreakDate);
-  const label=new Intl.DateTimeFormat("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(chosenDate);
-  if(chosen){const names=(chosen.exercises||[]).map(x=>x.name).join(", ");$("streakDayDetail").innerHTML=`<strong>${label}</strong><br>✓ Entrenamiento completado y guardado.<br>Rutina: ${DAYS[chosen.routine_day]?.title||"Entrenamiento"}<br>${escapeHTML(names)}`;}
-  else if(!isTrainingDate(chosenDate))$("streakDayDetail").innerHTML=`<strong>${label}</strong><br>Día de descanso. No cuenta como entrenamiento ni interrumpe la racha.`;
-  else if(selectedStreakDate>today)$("streakDayDetail").innerHTML=`<strong>${label}</strong><br>Entrenamiento pendiente.`;
-  else $("streakDayDetail").innerHTML=`<strong>${label}</strong><br>No consta un entrenamiento completo guardado.`;
-}
-$("streakCalendarGrid").addEventListener("click",event=>{const btn=event.target.closest("[data-streak-date]");if(!btn)return;selectedStreakDate=btn.dataset.streakDate;renderStreakCalendar();});
-$("streakPrev").addEventListener("click",()=>{streakMonth.setMonth(streakMonth.getMonth()-1);renderStreakCalendar();});
-$("streakNext").addEventListener("click",()=>{streakMonth.setMonth(streakMonth.getMonth()+1);renderStreakCalendar();});
-
-
 const weightDraftKey = (userId,day) => `gym_progress_weight_drafts_${userId||"guest"}_${day}`;
 function readWeightDrafts(day=selectedDay){
   try{return JSON.parse(localStorage.getItem(weightDraftKey(currentUser?.id,day))||"{}");}
@@ -1323,57 +1152,42 @@ function backToLibraryGroups(){
 function setMainTab(tab){
   $("workoutSection").classList.toggle("hidden",tab!=="workout");
   $("librarySection").classList.toggle("hidden",tab!=="library");
-  $("streakSection").classList.toggle("hidden",tab!=="streak");
   $("workoutNav").classList.toggle("active",tab==="workout");
   $("libraryNav").classList.toggle("active",tab==="library");
-  $("streakNav").classList.toggle("active",tab==="streak");
 }
 function showLibrary(){
   setMainTab("library");
   renderMuscleHome();if(libraryGroup){$("muscleHome").classList.add("hidden");$("muscleDetail").classList.remove("hidden");renderLibraryGroup();}
 }
 function showWorkout(){setMainTab("workout");}
-async function showStreak(){
-  setMainTab("streak");
-  try{await loadStreakRecords();}
-  catch(error){
-    const cached=JSON.parse(localStorage.getItem(`gym_progress_streak_cache_${currentUser?.id}`)||"[]");
-    streakRecords=cached;renderStreakCalendar();
-    $("streakDayDetail").textContent="No se pudo actualizar el calendario desde Supabase. Se muestran los datos guardados en este dispositivo.";
-  }
-}
 $("workoutNav").addEventListener("click",showWorkout);
 $("libraryNav").addEventListener("click",showLibrary);
-$("streakNav").addEventListener("click",showStreak);
 $("dashboardLibraryBtn").addEventListener("click",showLibrary);
 
-// Navegación por deslizamiento entre las tres pestañas principales.
-// Izquierda: MI RUTINA → BIBLIOTECA → RACHA. Derecha: RACHA → BIBLIOTECA → MI RUTINA.
-// Se activa únicamente dentro de la aplicación y con gestos claramente horizontales.
+// Navegación por deslizamiento entre MI RUTINA y BIBLIOTECA.
 let mainTabTouchStart=null;
 function currentMainTab(){
   if(!$("appView").classList.contains("hidden")){
-    if(!$("streakSection").classList.contains("hidden"))return "streak";
     if(!$("librarySection").classList.contains("hidden"))return "library";
     if(!$("workoutSection").classList.contains("hidden"))return "workout";
   }
   return null;
 }
 function navigateMainTabBySwipe(direction){
-  const order=["workout","library","streak"];
   const current=currentMainTab();
   if(!current)return;
-  const index=order.indexOf(current);
-  const next=index+(direction<0?1:-1);
-  if(next<0||next>=order.length)return;
-  if(order[next]==="workout")showWorkout();
-  else if(order[next]==="library")showLibrary();
-  else showStreak();
+  if(direction<0&&current==="workout")showLibrary();
+  else if(direction>0&&current==="library")showWorkout();
 }
 document.addEventListener("touchstart",event=>{
   if(!event.touches||event.touches.length!==1||!currentMainTab())return;
-  const t=event.touches[0];
-  mainTabTouchStart={x:t.clientX,y:t.clientY};
+  const touch=event.touches[0];mainTabTouchStart={x:touch.clientX,y:touch.clientY};
+},{passive:true});
+document.addEventListener("touchend",event=>{
+  if(!mainTabTouchStart||!event.changedTouches||!event.changedTouches.length)return;
+  const start=mainTabTouchStart;mainTabTouchStart=null;
+  const touch=event.changedTouches[0],dx=touch.clientX-start.x,dy=touch.clientY-start.y;
+  if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.25)navigateMainTabBySwipe(dx);
 },{passive:true});
 document.addEventListener("touchend",event=>{
   if(!mainTabTouchStart||!event.changedTouches||!event.changedTouches.length)return;
@@ -1650,17 +1464,7 @@ async function saveWeights(){
       await loadLatestRecords(); renderWorkout();
       showStatus($("saveStatus"),`Guardado correctamente: ${rows.length} ${rows.length===1?"ejercicio":"ejercicios"}.`);
     }
-    if(completedIds.size===exercises.length && exercises.every(ex=>completedIds.has(ex.id))){
-      try{
-        const result=await recordCompletedTraining();
-        showStatus($("saveStatus"),result==="offline"?"Pesos guardados y entrenamiento completo anotado en este dispositivo. Se sincronizará cuando vuelva internet.":"Pesos guardados y entrenamiento completo añadido al calendario de rachas.");
-      }catch(streakError){
-        console.error("No se pudo guardar el día de racha:",streakError);
-        showStatus($("saveStatus"),"Los pesos se han guardado, pero no se pudo registrar la racha. Comprueba la tabla workout_streak_days en Supabase.",true);
-      }
-    }else{
-      showStatus($("saveStatus"),`Pesos guardados. Para sumar el día a la racha, completa los ${exercises.length} ejercicios y vuelve a pulsar GUARDAR PESOS.`);
-    }
+    showStatus($("saveStatus"),`Guardado correctamente: ${rows.length} ${rows.length===1?"ejercicio":"ejercicios"}.`);
   }catch(error){
     console.error(error);
     showStatus($("saveStatus"),`No se han podido sincronizar los pesos: ${error.message||"comprueba la conexión y los permisos"}`,true);
@@ -1690,8 +1494,6 @@ async function enterApp(user){
     try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
     if(navigator.onLine) await migrateOldLocalRecords();
     await loadLatestRecords();
-    streakRecords=JSON.parse(localStorage.getItem(`gym_progress_streak_cache_${currentUser.id}`)||"[]");
-    renderStreakCalendar();
     renderWorkout();
   }catch(error){
     console.error(error);
@@ -1703,38 +1505,22 @@ $("loginForm").addEventListener("submit",async event=>{
   event.preventDefault();
   const email=$("email").value.trim();
   const password=$("password").value;
-  const button=$("loginBtn");
-  const status=$("loginStatus");
-  button.disabled=true;
-  button.textContent="CONECTANDO…";
-  hideStatus(status);
-  try{
-    if(!navigator.onLine){
-      throw new Error("No hay conexión a Internet. Conéctate y vuelve a intentarlo.");
-    }
-    const {data,error}=await supabase.auth.signInWithPassword({email,password});
-    if(error){
-      console.error("Supabase signInWithPassword:",error);
-      throw new Error(error.message||error.msg||"Supabase ha rechazado el inicio de sesión.");
-    }
-    if(!data?.user){
-      throw new Error("Supabase no devolvió un usuario. Comprueba la configuración de autenticación.");
-    }
-    await enterApp(data.user);
-  }catch(error){
-    console.error("Error de inicio de sesión:",error);
-    const detail=error?.message||error?.msg||String(error)||"Error desconocido";
-    showStatus(status,`No se ha podido iniciar sesión: ${detail}`,true);
-  }finally{
-    button.disabled=false;
-    button.textContent="INICIAR SESIÓN";
+  $("loginBtn").disabled=true;
+  $("loginBtn").textContent="CONECTANDO…";
+  hideStatus($("loginStatus"));
+  const {data,error}=await supabase.auth.signInWithPassword({email,password});
+  $("loginBtn").disabled=false;
+  $("loginBtn").textContent="INICIAR SESIÓN";
+  if(error){
+    showStatus($("loginStatus"),"No se ha podido iniciar sesión. Comprueba el correo y la contraseña que registraste en Supabase.",true);
+    return;
   }
+  await enterApp(data.user);
 });
 
 $("logoutBtn").addEventListener("click",async()=>{
   await supabase.auth.signOut();
   currentUser=null;
-  streakRecords=[];
   document.body.classList.remove("spotify-visible");
   $("appView").classList.add("hidden");
   $("loginView").classList.remove("hidden");
