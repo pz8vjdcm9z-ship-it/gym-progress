@@ -209,6 +209,8 @@ let currentUser = null;
 let selectedDay = new Date().getDay();
 if(selectedDay < 1 || selectedDay > 4) selectedDay = 1;
 let repdbExercises = new Map();
+let exerciseCatalog = [];
+let recentlyRejected = new Set();
 let latestRecords = new Map();
 let saving = false;
 const completionKey = day => `gym_progress_completed_${day}_${localDate()}`;
@@ -256,6 +258,8 @@ async function loadRepDB(){
     if(!response.ok)throw new Error("RepDB no disponible");
     const data=await response.json();
     repdbExercises=new Map((data.exercises||[]).map(item=>[item.id,item]));
+    exerciseCatalog=(data.exercises||[]).filter(item=>item && item.id && item.name_es);
+    console.info(`Catálogo RepDB cargado: ${exerciseCatalog.length} ejercicios`);
   }catch(error){
     console.warn("No se pudo cargar el catálogo RepDB:",error);
     repdbExercises=new Map();
@@ -345,19 +349,72 @@ function toggleComplete(id){
   localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
   renderWorkout();
 }
+function forbiddenExercise(ex){
+  const text=[ex.name_es,ex.name_en,ex.id].join(" ").toLowerCase();
+  return /(pull.?up|chin.?up|dominada|dip|fondos|deadlift|peso muerto|trunk rotation|torso rotation|rotaci[oó]n de tronco)/i.test(text);
+}
+function exerciseEquipmentLabel(value){
+  const v=String(value||"").toLowerCase();
+  if(v.includes("cable"))return "Polea";
+  if(v.includes("dumbbell"))return "Mancuernas";
+  if(v.includes("barbell"))return "Barra";
+  if(v.includes("machine"))return "Máquina";
+  if(v.includes("kettlebell"))return "Kettlebell";
+  if(v.includes("band"))return "Bandas";
+  if(v.includes("body")||!v)return "Peso corporal";
+  return value;
+}
+function getTargetMuscles(exercise){
+  const record=repdbExercises.get(exercise.repdb);
+  const muscles=[...(record?.primary_muscles?.length?record.primary_muscles:(record?.secondary_muscles||[]))].map(x=>String(x).toLowerCase());
+  if(muscles.length)return new Set(muscles);
+  const m=(exercise.muscle||"").toLowerCase();
+  const map={pecho:["chest"],tríceps:["triceps"],bíceps:["biceps"],braquial:["biceps","forearms"],cuádriceps:["quadriceps"],glúteos:["glutes"],isquiotibiales:["hamstrings"],gemelos:["calves"],espalda:["lats","middle-back","lower-back"],hombros:["shoulders"],deltoides:["shoulders"],core:["abdominals"],abdominales:["abdominals"]};
+  const out=new Set();for(const [k,vals] of Object.entries(map))if(m.includes(k))vals.forEach(v=>out.add(v));return out;
+}
+function catalogAlternatives(current,index){
+  const source=repdbExercises.get(current.repdb);
+  const target=getTargetMuscles(current);
+  if(!target.size)return [];
+  const used=new Set(activeRoutine.filter((_,i)=>i!==index).map(x=>x.repdb));
+  const matches=exerciseCatalog.filter(item=>{
+    if(!item.images?.flat || forbiddenExercise(item) || item.id===current.repdb || used.has(item.id))return false;
+    if(item.category && !["strength","stretching"].includes(item.category))return false;
+    const primary=(item.primary_muscles||[]).map(x=>String(x).toLowerCase());
+    const secondary=(item.secondary_muscles||[]).map(x=>String(x).toLowerCase());
+    return primary.some(m=>target.has(m)) || (primary.length===0 && secondary.some(m=>target.has(m)));
+  });
+  // Prioriza coincidencia de músculo principal y equipamiento parecido al original.
+  const originalEquipment=String(source?.equipment||"").toLowerCase();
+  return matches.sort((a,b)=>{
+    const score=x=>((x.primary_muscles||[]).some(m=>target.has(String(m).toLowerCase()))?10:0)+(String(x.equipment||"").toLowerCase()===originalEquipment?3:0)-(recentlyRejected.has(x.id)?20:0);
+    return score(b)-score(a);
+  });
+}
 function changeExercise(id){
   const index=activeRoutine.findIndex(x=>x.id===id);
   if(index<0)return;
   const current=activeRoutine[index];
-  const baseId=current.originalId||current.id;
-  const choices=ALTERNATIVES[baseId]||[];
-  const candidate=choices.find(x=>x.id!==current.id && !activeRoutine.some((a,i)=>i!==index && a.id===x.id));
-  if(!candidate){showStatus($("saveStatus"),`No hay otra alternativa distinta preparada para «${current.name}».`,true);return;}
-  activeRoutine[index]={...candidate,originalId:baseId,reps:current.reps||12};
+  const choices=catalogAlternatives(current,index);
+  const candidate=choices.find(x=>!recentlyRejected.has(x.id));
+  if(!candidate){showStatus($("saveStatus"),`No se encuentra otra alternativa compatible en el catálogo cargado para «${current.name}».`,true);return;}
+  recentlyRejected.add(current.repdb);
+  const flat=candidate.images.flat;
+  const equipment=exerciseEquipmentLabel(candidate.equipment);
+  const muscles=[...(candidate.primary_muscles||[])].join(", ")||current.muscle;
+  const next={
+    id:`repdb_${candidate.id}`,repdb:candidate.id,
+    name:candidate.name_es||candidate.name_en,
+    muscle:muscles.replaceAll("-"," "),equipment,
+    instruction:(candidate.instructions_es||candidate.description_es||[]).join?((candidate.instructions_es||[]).slice(0,2).join(" ")||candidate.description_es||"Realiza el movimiento de forma controlada."):(candidate.description_es||"Realiza el movimiento de forma controlada."),
+    reps:current.reps||12,unit:current.unit,bodyweight:!candidate.equipment
+  };
+  activeRoutine[index]={...next,originalId:current.originalId||current.id};
   completedIds.delete(id);
   localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
   persistRoutine();
   renderWorkout();
+  showStatus($("saveStatus"),`Ejercicio actualizado: ${next.name}.`);
 }
 $("exerciseList").addEventListener("click",event=>{
   const complete=event.target.closest("[data-complete]");
