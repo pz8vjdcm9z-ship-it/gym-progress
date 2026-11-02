@@ -396,7 +396,7 @@ main{padding-bottom:28px}
 .spotify-mini-controls button:disabled{opacity:.32}
 .spotify-mini-connect{border:1px solid rgba(85,223,189,.38)!important;background:rgba(85,223,189,.12)!important;color:#9af0da!important;font-size:9px!important;font-weight:900;letter-spacing:.2px;width:auto!important;padding:0 9px}
 .spotify-mini-note{grid-column:1/-1;display:none;padding:0 3px 2px;color:#aab8c8;font-size:10px;line-height:1.35}
-.spotify-mini-note.visible{display:block}
+.spotify-mini-note.visible{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.spotify-mini-note #spotifyMiniMessage{flex:1 1 150px}
 @media(max-width:360px){.spotify-mini{left:9px;right:9px;grid-template-columns:40px minmax(0,1fr) auto;gap:7px;padding:8px}.spotify-mini-cover{width:40px;height:40px}.spotify-mini-controls button{width:30px}}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 
@@ -585,7 +585,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
     <button type="button" id="spotifyMiniPlay" aria-label="Pausar o reproducir" disabled>▶</button>
     <button type="button" id="spotifyMiniNext" aria-label="Canción siguiente" disabled>⏭</button>
   </div>
-  <div class="spotify-mini-note" id="spotifyMiniNote">La conexión y los controles se activarán cuando configuremos la autorización de Spotify.</div>
+  <div class="spotify-mini-note visible" id="spotifyMiniNote"><span id="spotifyMiniMessage">Conecta tu cuenta Premium para activar la música.</span> <button type="button" id="spotifyMiniConnect" class="spotify-mini-connect">CONECTAR SPOTIFY</button></div>
 </div>
 <button type="button" class="spotify-mini-handle" id="spotifyMiniHandle" aria-label="Mostrar panel de música" aria-expanded="true"><span></span></button>
 
@@ -1518,28 +1518,222 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
 }
 
 
-// Panel Spotify: fijo al viewport y ocultable/recuperable mediante gestos verticales.
+// Spotify: OAuth 2.0 Authorization Code con PKCE + Web Playback SDK.
+const SPOTIFY_CLIENT_ID = "f4f7a2fe159e46949e6630d332f4fcd0";
+const SPOTIFY_REDIRECT_URI = "https://pz8vjdcm9z-ship-it.github.io/gym-progress/";
+const SPOTIFY_SCOPES = "streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state";
+const spotifyEls = {
+  panel:$("spotifyMini"), cover:$("spotifyMiniCover"), fallback:$("spotifyMiniCoverFallback"),
+  title:$("spotifyMiniTitle"), artist:$("spotifyMiniArtist"), state:$("spotifyMiniState"),
+  note:$("spotifyMiniNote"), message:$("spotifyMiniMessage"), connect:$("spotifyMiniConnect"),
+  previous:$("spotifyMiniPrevious"), play:$("spotifyMiniPlay"), next:$("spotifyMiniNext")
+};
+let spotifyAccessToken = null;
+let spotifyRefreshToken = null;
+let spotifyTokenExpiresAt = 0;
+let spotifyPlayer = null;
+let spotifyDeviceId = null;
+let spotifySdkReady = false;
+
+function spotifyMessage(message, isError=false){
+  if(spotifyEls.message) spotifyEls.message.textContent=message;
+  if(spotifyEls.note) spotifyEls.note.classList.add("visible");
+  if(spotifyEls.state) spotifyEls.state.textContent=isError?"REVISAR CONEXIÓN":"SPOTIFY";
+}
+function spotifySetConnected(connected){
+  [spotifyEls.previous,spotifyEls.play,spotifyEls.next].forEach(button=>{if(button)button.disabled=!connected;});
+  if(spotifyEls.connect) spotifyEls.connect.textContent=connected?"CONECTADO":"CONECTAR SPOTIFY";
+}
+function spotifySaveTokens(data){
+  spotifyAccessToken=data.access_token;
+  spotifyRefreshToken=data.refresh_token||spotifyRefreshToken;
+  spotifyTokenExpiresAt=Date.now()+(Number(data.expires_in||3600)*1000)-60000;
+  localStorage.setItem("gym_spotify_tokens",JSON.stringify({
+    access_token:spotifyAccessToken,refresh_token:spotifyRefreshToken,expires_at:spotifyTokenExpiresAt
+  }));
+}
+function spotifyLoadTokens(){
+  try{
+    const saved=JSON.parse(localStorage.getItem("gym_spotify_tokens")||"null");
+    if(saved){spotifyAccessToken=saved.access_token;spotifyRefreshToken=saved.refresh_token;spotifyTokenExpiresAt=Number(saved.expires_at)||0;}
+  }catch(e){localStorage.removeItem("gym_spotify_tokens");}
+}
+async function spotifyGetToken(){
+  if(spotifyAccessToken && Date.now()<spotifyTokenExpiresAt) return spotifyAccessToken;
+  if(!spotifyRefreshToken) throw new Error("Vuelve a conectar tu cuenta de Spotify.");
+  const response=await fetch("https://accounts.spotify.com/api/token",{
+    method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
+    body:new URLSearchParams({client_id:SPOTIFY_CLIENT_ID,grant_type:"refresh_token",refresh_token:spotifyRefreshToken})
+  });
+  const data=await response.json();
+  if(!response.ok) throw new Error(data.error_description||data.error||"No se ha podido renovar la sesión.");
+  spotifySaveTokens(data);
+  return spotifyAccessToken;
+}
+async function spotifyApi(path,method="GET",body){
+  const token=await spotifyGetToken();
+  const response=await fetch("https://api.spotify.com/v1"+path,{
+    method,headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},
+    ...(body!==undefined?{body:JSON.stringify(body)}:{})
+  });
+  if(response.status===204)return null;
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error?.message||"Spotify ha rechazado la operación ("+response.status+").");
+  return data;
+}
+function spotifyBase64Url(bytes){
+  let binary="";bytes.forEach(byte=>binary+=String.fromCharCode(byte));
+  return btoa(binary).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+async function spotifySha256(value){
+  return spotifyBase64Url(new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(value))));
+}
+function spotifyRandomString(length=64){
+  const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+  const bytes=crypto.getRandomValues(new Uint8Array(length));
+  return Array.from(bytes,byte=>chars[byte%chars.length]).join("");
+}
+async function spotifyAuthorize(){
+  try{
+    const verifier=spotifyRandomString(64);
+    const challenge=await spotifySha256(verifier);
+    const state=spotifyRandomString(32);
+    sessionStorage.setItem("gym_spotify_verifier",verifier);
+    sessionStorage.setItem("gym_spotify_state",state);
+    const params=new URLSearchParams({
+      client_id:SPOTIFY_CLIENT_ID,response_type:"code",redirect_uri:SPOTIFY_REDIRECT_URI,
+      code_challenge_method:"S256",code_challenge:challenge,state,scope:SPOTIFY_SCOPES
+    });
+    location.href="https://accounts.spotify.com/authorize?"+params.toString();
+  }catch(error){spotifyMessage(error.message||"No se pudo iniciar la conexión.",true);}
+}
+async function spotifyHandleCallback(){
+  const params=new URLSearchParams(location.search);
+  const code=params.get("code"),state=params.get("state"),error=params.get("error");
+  if(error){history.replaceState({},document.title,location.pathname);spotifyMessage("Spotify ha cancelado o rechazado la autorización.",true);return;}
+  if(!code)return;
+  const expectedState=sessionStorage.getItem("gym_spotify_state");
+  const verifier=sessionStorage.getItem("gym_spotify_verifier");
+  if(!verifier||!state||state!==expectedState){spotifyMessage("No se ha podido validar la autorización. Vuelve a conectar Spotify.",true);history.replaceState({},document.title,location.pathname);return;}
+  try{
+    const response=await fetch("https://accounts.spotify.com/api/token",{
+      method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:new URLSearchParams({client_id:SPOTIFY_CLIENT_ID,grant_type:"authorization_code",code,redirect_uri:SPOTIFY_REDIRECT_URI,code_verifier:verifier})
+    });
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.error_description||data.error||"No se pudo completar la autorización.");
+    spotifySaveTokens(data);
+    sessionStorage.removeItem("gym_spotify_verifier");sessionStorage.removeItem("gym_spotify_state");
+    history.replaceState({},document.title,location.pathname);
+    spotifyMessage("Cuenta autorizada. Preparando el reproductor…");
+    await spotifyLoadSdk();
+  }catch(err){history.replaceState({},document.title,location.pathname);spotifyMessage(err.message,true);}
+}
+function spotifyLoadSdk(){
+  return new Promise((resolve,reject)=>{
+    if(window.Spotify?.Player){spotifySdkReady=true;resolve();return;}
+    window.onSpotifyWebPlaybackSDKReady=()=>{spotifySdkReady=true;resolve();};
+    if(!document.querySelector('script[data-spotify-sdk]')){
+      const script=document.createElement("script");script.src="https://sdk.scdn.co/spotify-player.js";script.async=true;script.dataset.spotifySdk="true";
+      script.onerror=()=>reject(new Error("No se ha podido cargar el reproductor de Spotify."));
+      document.head.appendChild(script);
+    }
+    setTimeout(()=>{if(!spotifySdkReady)reject(new Error("Spotify está tardando en cargar. Recarga la página y vuelve a intentarlo."));},15000);
+  });
+}
+async function spotifyConnectPlayer(){
+  try{
+    await spotifyLoadSdk();
+    if(spotifyPlayer){await spotifyPlayer.connect();return;}
+    spotifyPlayer=new Spotify.Player({
+      name:"GYM PROGRESS",
+      getOAuthToken:callback=>spotifyGetToken().then(callback).catch(error=>spotifyMessage(error.message,true)),
+      volume:0.75
+    });
+    spotifyPlayer.addListener("ready",async({device_id})=>{
+      spotifyDeviceId=device_id;
+      spotifySetConnected(true);
+      spotifyMessage("Reproductor listo. Pulsa ▶ para empezar o continuar.");
+      try{await spotifyApi("/me/player","PUT",{device_ids:[device_id],play:false});}catch(e){spotifyMessage("Reproductor conectado. Selecciónalo en Spotify si no aparece activo.");}
+      await spotifyRefreshState();
+    });
+    spotifyPlayer.addListener("not_ready",()=>{spotifyDeviceId=null;spotifySetConnected(false);spotifyMessage("El reproductor no está disponible. Comprueba la conexión.",true);});
+    spotifyPlayer.addListener("player_state_changed",state=>{
+      if(!state)return;
+      const track=state.track_window?.current_track;
+      if(track){
+        spotifyEls.title.textContent=track.name||"Reproduciendo";
+        spotifyEls.artist.textContent=(track.artists||[]).map(a=>a.name).join(", ");
+        const image=track.album?.images?.[0]?.url;
+        if(image){spotifyEls.cover.src=image;spotifyEls.cover.style.display="block";spotifyEls.fallback.style.display="none";}
+      }
+      spotifyEls.play.textContent=state.paused?"▶":"Ⅱ";
+      spotifyEls.play.setAttribute("aria-label",state.paused?"Reproducir":"Pausar");
+      spotifyEls.state.textContent=state.paused?"EN PAUSA":"REPRODUCIENDO";
+    });
+    spotifyPlayer.addListener("initialization_error",({message})=>spotifyMessage(message,true));
+    spotifyPlayer.addListener("authentication_error",({message})=>spotifyMessage(message,true));
+    spotifyPlayer.addListener("account_error",({message})=>spotifyMessage(message+" Comprueba que tu cuenta tenga Premium.",true));
+    spotifyPlayer.addListener("playback_error",({message})=>spotifyMessage(message,true));
+    const connected=await spotifyPlayer.connect();
+    if(!connected)throw new Error("No se pudo conectar el reproductor. Inténtalo de nuevo.");
+    spotifyMessage("Conectando con Spotify…");
+  }catch(error){spotifyMessage(error.message||"No se pudo iniciar Spotify.",true);}
+}
+async function spotifyRefreshState(){
+  try{
+    const state=await spotifyApi("/me/player");
+    if(!state?.item)return;
+    spotifyEls.title.textContent=state.item.name||"Reproduciendo";
+    spotifyEls.artist.textContent=(state.item.artists||[]).map(a=>a.name).join(", ");
+    const image=state.item.album?.images?.[0]?.url;
+    if(image){spotifyEls.cover.src=image;spotifyEls.cover.style.display="block";spotifyEls.fallback.style.display="none";}
+    spotifyEls.play.textContent=state.is_playing?"Ⅱ":"▶";
+    spotifyEls.state.textContent=state.is_playing?"REPRODUCIENDO":"EN PAUSA";
+  }catch(e){/* El SDK notificará el estado cuando el dispositivo esté activo. */}
+}
+async function spotifyControl(action){
+  try{
+    if(!spotifyPlayer)throw new Error("Primero conecta Spotify.");
+    await spotifyPlayer.activateElement();
+    if(action==="toggle"){
+      const state=await spotifyPlayer.getCurrentState();
+      if(!state){if(!spotifyDeviceId)throw new Error("El reproductor todavía se está conectando.");await spotifyApi("/me/player/play?device_id="+encodeURIComponent(spotifyDeviceId),"PUT",{});}
+      else if(state.paused)await spotifyPlayer.resume();else await spotifyPlayer.pause();
+    }else if(action==="next")await spotifyPlayer.nextTrack();
+    else if(action==="previous")await spotifyPlayer.previousTrack();
+  }catch(error){spotifyMessage(error.message||"No se ha podido controlar la reproducción.",true);}
+}
+spotifyEls.connect?.addEventListener("click",()=>{
+  if(spotifyAccessToken)spotifyConnectPlayer();
+  else spotifyAuthorize();
+});
+spotifyEls.play?.addEventListener("click",()=>spotifyControl("toggle"));
+spotifyEls.next?.addEventListener("click",()=>spotifyControl("next"));
+spotifyEls.previous?.addEventListener("click",()=>spotifyControl("previous"));
+spotifyLoadTokens();
+spotifySetConnected(false);
+spotifyHandleCallback().then(()=>{
+  if(spotifyAccessToken&&!spotifyPlayer)spotifyLoadSdk().then(spotifyConnectPlayer).catch(e=>spotifyMessage(e.message,true));
+});
+
+// Panel fijo al viewport y ocultable/recuperable mediante gestos verticales.
 (()=>{
-  const panel=document.getElementById('spotifyMini');
-  const handle=document.getElementById('spotifyMiniHandle');
+  const panel=document.getElementById("spotifyMini");
+  const handle=document.getElementById("spotifyMiniHandle");
   if(!panel||!handle)return;
   let startY=null;
-  const hide=()=>{panel.classList.add('is-hidden');handle.classList.add('is-visible');handle.setAttribute('aria-expanded','false');};
-  const show=()=>{panel.classList.remove('is-hidden');handle.classList.remove('is-visible');handle.setAttribute('aria-expanded','true');};
-  panel.addEventListener('touchstart',e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
-  panel.addEventListener('touchend',e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta>45)hide();startY=null;},{passive:true});
-  handle.addEventListener('touchstart',e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
-  handle.addEventListener('touchend',e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta < -20)show();startY=null;},{passive:true});
-  handle.addEventListener('click',show);
-  // También permite mostrarlo con gesto ascendente desde la franja inferior.
+  const hide=()=>{panel.classList.add("is-hidden");handle.classList.add("is-visible");handle.setAttribute("aria-expanded","false");};
+  const show=()=>{panel.classList.remove("is-hidden");handle.classList.remove("is-visible");handle.setAttribute("aria-expanded","true");};
+  panel.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
+  panel.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta>45)hide();startY=null;},{passive:true});
+  handle.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
+  handle.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta < -20)show();startY=null;},{passive:true});
+  handle.addEventListener("click",show);
   let edgeStart=null;
-  document.addEventListener('touchstart',e=>{if(!panel.classList.contains('is-hidden')||e.touches.length!==1)return;const y=e.touches[0].clientY;if(y>window.innerHeight-70)edgeStart=y;},{passive:true});
-  document.addEventListener('touchend',e=>{if(edgeStart===null)return;const delta=e.changedTouches[0].clientY-edgeStart;if(delta < -35)show();edgeStart=null;},{passive:true});
-  const note=document.getElementById('spotifyMiniNote');
-  const title=document.getElementById('spotifyMiniTitle');
-  panel.addEventListener('dblclick',()=>{note.classList.toggle('visible');title.textContent='Conecta Spotify';});
+  document.addEventListener("touchstart",e=>{if(!panel.classList.contains("is-hidden")||e.touches.length!==1)return;const y=e.touches[0].clientY;if(y>window.innerHeight-70)edgeStart=y;},{passive:true});
+  document.addEventListener("touchend",e=>{if(edgeStart===null)return;const delta=e.changedTouches[0].clientY-edgeStart;if(delta < -35)show();edgeStart=null;},{passive:true});
 })();
-
 (async function init(){
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
   const {data:{session}}=await supabase.auth.getSession();
