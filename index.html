@@ -474,10 +474,12 @@ if(selectedDay < 1 || selectedDay > 4) selectedDay = 1;
 let repdbExercises = new Map();
 let exerciseCatalog = [];
 let recentlyRejected = new Set();
+let exerciseSwapHistory = {};
 let latestRecords = new Map();
 let saving = false;
 const completionKey = day => `gym_progress_completed_${day}_${localDate()}`;
 const routineKey = day => `gym_progress_routine_${day}`;
+const swapHistoryKey = day => `gym_progress_swap_history_${day}`;
 let activeRoutine = [];
 let completedIds = new Set();
 let exerciseView = "pending";
@@ -590,6 +592,7 @@ function renderDays(){
     button.addEventListener("click",()=>{
       selectedDay=Number(button.dataset.day);
       activeRoutine=loadActiveRoutine(selectedDay);
+    try{exerciseSwapHistory=JSON.parse(localStorage.getItem(swapHistoryKey(selectedDay))||"{}");}catch(e){exerciseSwapHistory={};}
       try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
       renderWorkout();
     });
@@ -650,6 +653,7 @@ function renderWorkout(){
           </div>
           <div class="exercise-actions">
             <button type="button" class="exercise-action complete" data-complete="${escapeHTML(exercise.id)}">${completedIds.has(exercise.id)?"✓ COMPLETADO":"MARCAR COMO COMPLETADO"}</button>
+            <button type="button" class="exercise-action" data-previous="${escapeHTML(exercise.id)}">↶ ANTERIOR</button>
             <button type="button" class="exercise-action" data-change="${escapeHTML(exercise.id)}">↻ CAMBIAR EJERCICIO</button>
           </div>
         </div>
@@ -951,15 +955,45 @@ function catalogAlternatives(current,index){
     return score(b)-score(a);
   });
 }
+function saveSwapHistory(){
+  localStorage.setItem(swapHistoryKey(selectedDay),JSON.stringify(exerciseSwapHistory));
+}
+function applyExerciseVersion(index,version){
+  const previous=activeRoutine[index];
+  activeRoutine[index]={...version};
+  completedIds.delete(previous.id);
+  localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
+  persistRoutine();
+  saveSwapHistory();
+  renderWorkout();
+  showStatus($("saveStatus"),`Ejercicio actualizado: ${version.name}.`);
+}
 function changeExercise(id){
   const index=activeRoutine.findIndex(x=>x.id===id);
   if(index<0)return;
   const current=activeRoutine[index];
+  const slot=current.originalId||current.id;
+  let history=exerciseSwapHistory[slot];
+  if(!history||!Array.isArray(history.items)||!history.items.length){
+    history={items:[{...current}],position:0};
+    exerciseSwapHistory[slot]=history;
+  }
+  // Si se había retrocedido, primero vuelve a avanzar por las alternativas ya vistas.
+  if(history.position<history.items.length-1){
+    history.position++;
+    applyExerciseVersion(index,history.items[history.position]);
+    return;
+  }
   const choices=catalogAlternatives(current,index);
-  const candidate=choices.find(x=>!recentlyRejected.has(x.id));
-  if(!candidate){showStatus($("saveStatus"),`No se encuentra otra alternativa compatible en el catálogo cargado para «${current.name}».`,true);return;}
-  recentlyRejected.add(current.repdb);
-  const flat=candidate.images.flat;
+  const seen=new Set(history.items.slice(0,history.position+1).map(item=>item.repdb));
+  let candidate=choices.find(item=>!seen.has(item.id));
+  // Al llegar al final, reinicia el ciclo y vuelve a ofrecer la primera alternativa.
+  if(!candidate){
+    history.items=[{...current}];
+    history.position=0;
+    candidate=choices[0];
+  }
+  if(!candidate){showStatus($("saveStatus"),`No se encuentran alternativas compatibles para «${current.name}» en el catálogo cargado.`,true);return;}
   const equipment=exerciseEquipmentLabel(candidate.equipment);
   const muscles=[...(candidate.primary_muscles||[])].join(", ")||current.muscle;
   const next={
@@ -967,14 +1001,26 @@ function changeExercise(id){
     name:candidate.name_es||candidate.name_en,
     muscle:muscles.replaceAll("-"," "),equipment,
     instruction:(candidate.instructions_es||candidate.description_es||[]).join?((candidate.instructions_es||[]).slice(0,2).join(" ")||candidate.description_es||"Realiza el movimiento de forma controlada."):(candidate.description_es||"Realiza el movimiento de forma controlada."),
-    reps:current.reps||12,unit:current.unit,bodyweight:!candidate.equipment
+    reps:current.reps||12,unit:current.unit,bodyweight:!candidate.equipment,
+    originalId:slot
   };
-  activeRoutine[index]={...next,originalId:current.originalId||current.id};
-  completedIds.delete(id);
-  localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
-  persistRoutine();
-  renderWorkout();
-  showStatus($("saveStatus"),`Ejercicio actualizado: ${next.name}.`);
+  history.items=history.items.slice(0,history.position+1);
+  history.items.push({...next});
+  history.position=history.items.length-1;
+  applyExerciseVersion(index,next);
+}
+function previousExercise(id){
+  const index=activeRoutine.findIndex(x=>x.id===id);
+  if(index<0)return;
+  const current=activeRoutine[index];
+  const slot=current.originalId||current.id;
+  const history=exerciseSwapHistory[slot];
+  if(!history||history.position<=0){
+    showStatus($("saveStatus"),"Este ya es el primer ejercicio de esta secuencia.");
+    return;
+  }
+  history.position--;
+  applyExerciseVersion(index,history.items[history.position]);
 }
 $("pendingTab").addEventListener("click",()=>{exerciseView="pending";renderWorkout();});
 $("completedTab").addEventListener("click",()=>{exerciseView="completed";renderWorkout();});
@@ -991,8 +1037,10 @@ $("exerciseList").addEventListener("change",event=>{
 $("exerciseList").addEventListener("click",event=>{
   const complete=event.target.closest("[data-complete]");
   const change=event.target.closest("[data-change]");
+  const previous=event.target.closest("[data-previous]");
   if(complete)toggleComplete(complete.dataset.complete);
   if(change)changeExercise(change.dataset.change);
+  if(previous)previousExercise(previous.dataset.previous);
 });
 
 async function loadLatestRecords(){
@@ -1119,6 +1167,7 @@ async function enterApp(user){
     loadExerciseRatings();
     renderMuscleHome();
     activeRoutine=loadActiveRoutine(selectedDay);
+    try{exerciseSwapHistory=JSON.parse(localStorage.getItem(swapHistoryKey(selectedDay))||"{}");}catch(e){exerciseSwapHistory={};}
     try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
     if(navigator.onLine) await migrateOldLocalRecords();
     await loadLatestRecords();
