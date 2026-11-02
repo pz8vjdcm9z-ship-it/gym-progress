@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v16">
+<meta name="application-version" content="home-v18">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1347,10 +1347,31 @@ $("libraryNav").addEventListener("click",showLibrary);
 $("streakNav").addEventListener("click",showStreak);
 $("dashboardLibraryBtn").addEventListener("click",showLibrary);
 
-// Gestos globales: funcionan desde cualquier zona de la pantalla, también sobre tarjetas.
+// Navegación por deslizamiento entre las tres pestañas principales.
+// Izquierda: MI RUTINA → BIBLIOTECA → RACHA. Derecha: RACHA → BIBLIOTECA → MI RUTINA.
+// Se activa únicamente dentro de la aplicación y con gestos claramente horizontales.
 let mainTabTouchStart=null;
+function currentMainTab(){
+  if(!$("appView").classList.contains("hidden")){
+    if(!$("streakSection").classList.contains("hidden"))return "streak";
+    if(!$("librarySection").classList.contains("hidden"))return "library";
+    if(!$("workoutSection").classList.contains("hidden"))return "workout";
+  }
+  return null;
+}
+function navigateMainTabBySwipe(direction){
+  const order=["workout","library","streak"];
+  const current=currentMainTab();
+  if(!current)return;
+  const index=order.indexOf(current);
+  const next=index+(direction<0?1:-1);
+  if(next<0||next>=order.length)return;
+  if(order[next]==="workout")showWorkout();
+  else if(order[next]==="library")showLibrary();
+  else showStreak();
+}
 document.addEventListener("touchstart",event=>{
-  if(!event.touches||event.touches.length!==1)return;
+  if(!event.touches||event.touches.length!==1||!currentMainTab())return;
   const t=event.touches[0];
   mainTabTouchStart={x:t.clientX,y:t.clientY};
 },{passive:true});
@@ -1358,16 +1379,8 @@ document.addEventListener("touchend",event=>{
   if(!mainTabTouchStart||!event.changedTouches||!event.changedTouches.length)return;
   const start=mainTabTouchStart;mainTabTouchStart=null;
   const t=event.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
-  // Solo gestos claramente horizontales; el scroll vertical sigue siendo normal.
-  if(Math.abs(dx)<90||Math.abs(dy)>70||Math.abs(dx)<Math.abs(dy)*1.35)return;
-  const libraryOpen=!$("librarySection").classList.contains("hidden");
-  const routineOpen=!$("workoutSection").classList.contains("hidden");
-  if(routineOpen&&dx<0)showLibrary();
-  else if(libraryOpen&&dx>0){
-    // Si estamos dentro de un músculo, primero se conserva la navegación interna.
-    if(libraryGroup)return;
-    showWorkout();
-  }
+  if(Math.abs(dx)<75||Math.abs(dy)>65||Math.abs(dx)<Math.abs(dy)*1.3)return;
+  navigateMainTabBySwipe(dx);
 },{passive:true});
 document.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:true});
 
