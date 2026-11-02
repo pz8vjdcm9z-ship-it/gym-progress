@@ -1,11 +1,10 @@
-
 <!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="library-v2">
+<meta name="application-version" content="library-v3">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -161,6 +160,37 @@ main{padding-bottom:28px}
 .rating-btn[aria-pressed="true"][data-rating="dislike"]{border-color:#94a3b8;background:rgba(148,163,184,.15);color:#e2e8f0}
 @media(min-width:700px){.muscle-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:390px){.library-guide{grid-template-columns:1fr}.muscle-tile-copy strong{font-size:12px}}
+
+/* Biblioteca: acabado fiel al diseño de referencia */
+.library-title{font-size:clamp(22px,4vw,28px);letter-spacing:-.5px;color:#f5f7fb}
+.library-intro{font-size:13px;color:#c4d2e1;max-width:720px}
+.library-topline{display:flex;justify-content:flex-end;margin:10px 0 12px}
+.library-legend-card{display:grid;grid-template-columns:1fr;gap:5px;min-width:260px;padding:10px 14px;border:1px solid #43cfc6;border-radius:15px;background:rgba(4,20,30,.72)}
+.library-legend-card strong{font-size:11px;margin-bottom:2px}
+.library-legend-card span{font-size:10px;color:#e4eaf0}
+.muscle-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.muscle-tile{min-height:0;border:1.5px solid #f07824;border-radius:17px;background:linear-gradient(150deg,#07121c,#02080e);padding:0}
+.muscle-art.actual-reference{aspect-ratio:1.5;height:auto;border:0;border-bottom:1px solid rgba(240,120,36,.25);background:#050b12}
+.muscle-art.actual-reference img{object-fit:cover}
+.muscle-tile-copy{min-height:0;padding:9px 11px 11px;gap:4px}
+.muscle-tile-copy small{display:none}
+.muscle-tile-copy strong{font-size:15px;color:#f5f7fb}
+.muscle-tile-copy span{display:none}
+.muscle-tile-copy em{font-size:11px;color:#d5dce5;font-weight:500}
+.library-howto{grid-column:1/-1;padding:15px;border:1px solid #4aaeb3;border-radius:18px;background:linear-gradient(145deg,#0d1b2b,#08121e);}
+.howto-heading{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.howto-info{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border:2px solid #55dfdb;border-radius:50%;color:#72f3ed;font-size:23px;font-weight:800}
+.howto-heading h3{margin:0 0 3px;font-size:19px}
+.howto-heading p{margin:0;color:#c3d0df;font-size:11px;line-height:1.4}
+.howto-ratings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.howto-ratings>div{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:91px;padding:8px 4px;border:1px solid;border-radius:14px;text-align:center;background:rgba(0,0,0,.18)}
+.howto-ratings strong{font-size:30px;line-height:1}
+.howto-ratings b{font-size:10px}.howto-ratings small{font-size:9px;color:#d3dbe5}
+.howto-like{border-color:#28c8a9!important;color:#3ce5c0}.howto-maybe{border-color:#d5a53b!important;color:#f5c64c}.howto-no{border-color:#d94b4b!important;color:#ff5b5b}
+.rating-btn{min-height:43px}
+@media(min-width:700px){.muscle-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.library-howto{grid-column:span 2;align-self:stretch;display:flex;flex-direction:column;justify-content:center}.library-topline{margin-top:-58px;min-height:48px}.library-intro{max-width:70%}}
+@media(max-width:390px){.library-legend-card{min-width:0;width:100%}.howto-heading h3{font-size:17px}.howto-ratings b{font-size:9px}.howto-ratings small{font-size:8px}}
+
 </style>
 </head>
 <body>
@@ -224,14 +254,12 @@ main{padding-bottom:28px}
     <section id="librarySection" class="library-panel hidden">
       <h2 class="library-title">Biblioteca de ejercicios</h2>
       <p class="library-intro">Explora los grupos musculares y valora cada ejercicio. Tus preferencias se utilizarán para ordenar las alternativas de tu rutina.</p>
-      <div class="library-legend">
-        <span><i class="legend-dot" style="background:#e52424"></i>Principal</span>
-        <span><i class="legend-dot" style="background:#f07824"></i>Secundario</span>
-        <span><i class="legend-dot" style="background:#f3c83d"></i>Participación ligera</span>
-      </div>
-      <div class="library-guide">
-        <div><b>ACTIVACIÓN MUSCULAR</b><span><i class="guide-dot primary-dot"></i> Principal</span><span><i class="guide-dot secondary-dot"></i> Secundario</span><span><i class="guide-dot light-dot"></i> Participación ligera</span></div>
-        <div><b>TU VALORACIÓN</b><span>♥ Me gusta</span><span>◎ Intermedio</span><span>× No me gusta</span></div>
+      <div class="library-topline">
+        <div class="library-legend-card"><strong>Nivel de activación muscular</strong>
+          <span><i class="legend-dot" style="background:#ef343b"></i>Principal (muy trabajado)</span>
+          <span><i class="legend-dot" style="background:#ff922e"></i>Secundario (trabajado)</span>
+          <span><i class="legend-dot" style="background:#f5cf35"></i>Participación ligera</span>
+        </div>
       </div>
       <div id="muscleHome">
         <div class="muscle-grid" id="muscleGrid"></div>
@@ -574,6 +602,14 @@ function renderMuscleHome(){
       <div class="muscle-tile-copy"><small>${group.day}</small><strong>${group.name}</strong><span>${group.desc}</span><em>${count} ejercicios disponibles</em></div>
     </button>`;
   }).join("");
+  $("muscleGrid").insertAdjacentHTML("beforeend", `<aside class="library-howto">
+    <div class="howto-heading"><span class="howto-info">i</span><div><h3>¿Cómo funciona?</h3><p>El color indica el nivel de trabajo de cada músculo en los ejercicios.</p></div></div>
+    <div class="howto-ratings">
+      <div class="howto-like"><strong>♡</strong><b>Me gusta</b><small>Prioridad alta</small></div>
+      <div class="howto-maybe"><strong>◎</strong><b>Me sirve</b><small>Prioridad media</small></div>
+      <div class="howto-no"><strong>×</strong><b>No me gusta</b><small>Prioridad baja</small></div>
+    </div>
+  </aside>`);
 }
 function ratingButtons(id){
   const value=exerciseRatings[id]||"";
