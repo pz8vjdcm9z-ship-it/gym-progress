@@ -1,1291 +1,460 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b1422">
-  <meta name="description" content="GYM PROGRESS: rutinas, registro de cargas y evolución del entrenamiento.">
-  <title>GYM PROGRESS</title>
-  <style>
-    /* =========================================================
-       GYM PROGRESS — Design system
-       ========================================================= */
-    :root {
-      color-scheme: dark;
-      --bg: #0b1422;
-      --bg-soft: #0f1b2b;
-      --surface: #142236;
-      --surface-raised: #192b42;
-      --surface-inset: #0d1929;
-      --border: rgba(176, 198, 222, .13);
-      --border-strong: rgba(176, 198, 222, .22);
-      --text: #f3f7fc;
-      --text-soft: #c1ccda;
-      --muted: #8fa1b7;
-      --accent: #55dfbd;
-      --accent-strong: #2dc6a2;
-      --accent-ink: #06251e;
-      --blue: #8dbdff;
-      --gold: #f6c779;
-      --danger: #ff9999;
-      --radius-sm: 10px;
-      --radius-md: 15px;
-      --radius-lg: 21px;
-      --shadow-card: 0 12px 32px rgba(0, 0, 0, .16);
-      --content-width: 900px;
-    }
-
-    * { box-sizing: border-box; }
-    html { min-height: 100%; background: var(--bg); scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(ellipse at 85% -15%, rgba(48, 117, 130, .18), transparent 42%),
-        linear-gradient(180deg, #0b1422 0%, #0d1929 58%, #0b1422 100%);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
-    button, input { font: inherit; }
-    button { -webkit-tap-highlight-color: transparent; }
-    button:focus-visible, input:focus-visible {
-      outline: 3px solid rgba(85, 223, 189, .55);
-      outline-offset: 2px;
-    }
-    button:disabled { opacity: .48; cursor: not-allowed; }
-    .app-shell { min-height: 100vh; padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
-    .container { width: min(100%, var(--content-width)); margin: 0 auto; padding: 0 16px; }
-
-    /* =========================================================
-       Header and navigation
-       ========================================================= */
-    .app-header { padding: 20px 0 8px; }
-    .header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .brand-lockup { display: flex; align-items: center; gap: 10px; min-width: 0; }
-    .brand-mark {
-      width: 37px; height: 37px; display: grid; place-items: center;
-      border: 1px solid rgba(85, 223, 189, .25); border-radius: 12px;
-      background: linear-gradient(145deg, rgba(85, 223, 189, .17), rgba(85, 223, 189, .04));
-      color: var(--accent); font-size: 18px; font-weight: 900;
-    }
-    .brand-name { font-size: 12px; font-weight: 900; letter-spacing: 2.1px; white-space: nowrap; }
-    .brand-caption { margin-top: 2px; color: var(--muted); font-size: 9px; letter-spacing: 1.1px; }
-    .header-date { color: var(--muted); font-size: 11px; text-align: right; white-space: nowrap; }
-    .page-heading { margin: 22px 0 3px; font-size: clamp(25px, 6vw, 32px); line-height: 1.08; letter-spacing: -.8px; }
-    .page-subtitle { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
-
-    .bottom-nav {
-      position: fixed; z-index: 20; right: 0; bottom: 0; left: 0;
-      display: flex; justify-content: center; gap: 6px;
-      padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-      border-top: 1px solid var(--border);
-      background: rgba(11, 20, 34, .94);
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-    }
-    .nav-button {
-      flex: 1; max-width: 220px; border: 0; border-radius: 12px;
-      padding: 7px 5px; color: var(--muted); background: transparent;
-      font-size: 10px; font-weight: 750; cursor: pointer;
-    }
-    .nav-icon { display: block; margin-bottom: 3px; font-size: 19px; line-height: 1; }
-    .nav-button.active { color: var(--accent); background: rgba(85, 223, 189, .09); }
-
-    /* =========================================================
-       Workout overview
-       ========================================================= */
-    .page { display: none; }
-    .page.active { display: block; }
-    .day-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin: 17px 0 12px; }
-    .day-button {
-      min-width: 0; border: 1px solid var(--border); border-radius: 12px;
-      padding: 10px 4px; color: var(--text-soft); background: rgba(20, 34, 54, .82);
-      font-size: 11px; font-weight: 800; cursor: pointer; transition: .18s ease;
-    }
-    .day-button small { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; font-weight: 600; }
-    .day-button.active {
-      border-color: rgba(85, 223, 189, .6); color: #baffed;
-      background: linear-gradient(145deg, rgba(42, 137, 119, .28), rgba(25, 65, 65, .5));
-      box-shadow: inset 0 0 0 1px rgba(85, 223, 189, .08);
-    }
-
-    .session-hero {
-      position: relative; overflow: hidden; padding: 17px;
-      border: 1px solid rgba(105, 185, 190, .22); border-radius: var(--radius-lg);
-      background:
-        radial-gradient(circle at 100% 0%, rgba(85, 223, 189, .18), transparent 42%),
-        linear-gradient(125deg, #153746 0%, #172d45 65%, #17283c 100%);
-      box-shadow: var(--shadow-card);
-    }
-    .hero-eyebrow { color: #9cebd9; font-size: 9px; font-weight: 850; letter-spacing: 1.5px; text-transform: uppercase; }
-    .hero-title { margin: 6px 0 4px; font-size: 19px; font-weight: 850; letter-spacing: -.35px; }
-    .hero-description { max-width: 600px; margin: 0; color: #c4d5e2; font-size: 11px; line-height: 1.55; }
-    .hero-progress-row { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; color: #d7e8f0; font-size: 10px; font-weight: 700; }
-    .progress-track { height: 6px; margin-top: 7px; overflow: hidden; border-radius: 20px; background: rgba(5, 18, 30, .5); }
-    .progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #43cba9, #8df0d7); transition: width .25s ease; }
-
-    .quick-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 11px 0 19px; }
-    .quick-stat { padding: 10px 11px; border: 1px solid var(--border); border-radius: 13px; background: rgba(20, 34, 54, .82); }
-    .quick-stat strong { display: block; font-size: 18px; line-height: 1.15; font-weight: 850; }
-    .quick-stat span { display: block; margin-top: 4px; color: var(--muted); font-size: 9px; }
-
-    .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 19px 2px 9px; }
-    .section-heading h2 { margin: 0; font-size: 15px; letter-spacing: -.2px; }
-    .section-hint { color: var(--muted); font-size: 10px; }
-
-    /* =========================================================
-       Exercise cards — compact image left, information right
-       ========================================================= */
-    .exercise-list { display: grid; gap: 10px; }
-    .exercise-card {
-      overflow: hidden; border: 1px solid var(--border); border-radius: 17px;
-      background: linear-gradient(145deg, rgba(21, 36, 56, .98), rgba(17, 31, 49, .98));
-      box-shadow: 0 7px 22px rgba(0, 0, 0, .12);
-      transition: border-color .18s ease, background .18s ease;
-    }
-    .exercise-card.is-complete { border-color: rgba(85, 223, 189, .32); background: linear-gradient(145deg, #102d2b, #112b2d); }
-    .exercise-layout { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 12px; padding: 11px; align-items: start; }
-    .exercise-media {
-      position: relative; display: grid; place-items: center; overflow: hidden;
-      width: 104px; height: 112px; border: 1px solid rgba(176, 198, 222, .16);
-      border-radius: 11px; background: #0a1726;
-    }
-    .exercise-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
-    .media-placeholder { padding: 8px; color: #9fb1c5; font-size: 9px; line-height: 1.35; text-align: center; }
-    .media-action {
-      position: absolute; right: 4px; bottom: 4px; border: 1px solid rgba(209, 226, 242, .3);
-      border-radius: 7px; padding: 4px 6px; color: white; background: rgba(6, 16, 28, .9);
-      font-size: 9px; font-weight: 750; cursor: pointer;
-    }
-    .exercise-content { min-width: 0; }
-    .exercise-title-row { display: flex; align-items: flex-start; gap: 7px; }
-    .exercise-number {
-      flex: 0 0 22px; display: grid; place-items: center; width: 22px; height: 22px;
-      border-radius: 7px; color: var(--accent); background: rgba(85, 223, 189, .13);
-      font-size: 10px; font-weight: 900;
-    }
-    .exercise-name { margin: 1px 0 0; font-size: 13px; font-weight: 850; line-height: 1.25; letter-spacing: -.12px; }
-    .exercise-meta { margin-top: 4px; color: var(--muted); font-size: 9px; line-height: 1.35; }
-    .exercise-instructions { margin: 8px 0 7px; color: #c4d0de; font-size: 10px; line-height: 1.43; }
-    .exercise-tags { display: flex; flex-wrap: wrap; gap: 5px; }
-    .tag {
-      display: inline-flex; align-items: center; min-height: 20px; padding: 3px 6px;
-      border: 1px solid rgba(176, 198, 222, .13); border-radius: 6px;
-      color: #d6e1ed; background: rgba(7, 19, 33, .52); font-size: 9px; font-weight: 700;
-    }
-    .previous-load {
-      margin: 8px 0 7px; padding: 7px 8px; border: 1px solid rgba(85, 223, 189, .17);
-      border-radius: 8px; color: #b8c9d8; background: rgba(10, 30, 38, .58);
-      font-size: 9px; line-height: 1.4;
-    }
-    .previous-load strong { color: var(--accent); font-size: 11px; }
-    .exercise-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .input-field { min-width: 0; }
-    .input-field label { display: block; margin: 0 0 4px; color: var(--muted); font-size: 8px; font-weight: 800; letter-spacing: .5px; }
-    .input-field input {
-      display: block; width: 100%; min-width: 0; height: 34px; padding: 0 8px;
-      border: 1px solid rgba(176, 198, 222, .2); border-radius: 8px;
-      color: var(--text); background: #0a1726; font-size: 12px;
-    }
-    .input-field input::placeholder { color: #687d94; }
-    .complete-button, .restore-button {
-      display: block; width: 100%; min-height: 34px; margin-top: 7px; border-radius: 8px;
-      font-size: 9px; font-weight: 900; letter-spacing: .45px; cursor: pointer;
-    }
-    .complete-button { border: 0; color: var(--accent-ink); background: linear-gradient(100deg, #4bd4b1, #76e8cb); }
-    .restore-button { border: 1px solid rgba(85, 223, 189, .28); color: #baffed; background: rgba(16, 61, 54, .75); }
-    .completed-record { margin-top: 8px; color: #b8e9dc; font-size: 10px; line-height: 1.4; }
-
-    .empty-state {
-      padding: 20px 16px; border: 1px dashed rgba(176, 198, 222, .2);
-      border-radius: 15px; color: var(--muted); background: rgba(20, 34, 54, .45);
-      font-size: 11px; line-height: 1.5; text-align: center;
-    }
-
-    /* =========================================================
-       Progress — simple comparison cards and visual bars
-       ========================================================= */
-    .progress-intro {
-      margin: 7px 0 14px; padding: 15px; border: 1px solid var(--border);
-      border-radius: 16px; background: var(--surface);
-    }
-    .progress-intro h2 { margin: 0 0 5px; font-size: 16px; }
-    .progress-intro p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
-    .progress-grid { display: grid; gap: 10px; }
-    .progress-card { padding: 13px; border: 1px solid var(--border); border-radius: 15px; background: var(--surface); }
-    .progress-card-title { font-size: 12px; font-weight: 850; }
-    .progress-card-meta { margin-top: 3px; color: var(--muted); font-size: 9px; }
-    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
-    .comparison-cell { padding: 9px; border: 1px solid rgba(176, 198, 222, .1); border-radius: 10px; background: var(--surface-inset); }
-    .comparison-cell span { display: block; color: var(--muted); font-size: 8px; font-weight: 800; letter-spacing: .5px; }
-    .comparison-cell strong { display: block; margin-top: 3px; font-size: 17px; }
-    .progress-message { margin-top: 9px; color: var(--accent); font-size: 10px; font-weight: 750; }
-    .progress-message.neutral { color: var(--gold); }
-    .bar-chart { display: flex; align-items: end; gap: 6px; height: 58px; margin: 12px 1px 16px; padding: 0 2px; }
-    .bar-column { position: relative; flex: 1; min-width: 0; height: 100%; display: flex; align-items: end; }
-    .bar-column i { display: block; width: 100%; min-height: 4px; border-radius: 5px 5px 2px 2px; background: linear-gradient(180deg, #69e5c5, #238b7a); }
-    .bar-column small { position: absolute; right: 0; bottom: -14px; left: 0; color: var(--muted); font-size: 8px; text-align: center; }
-
-    /* =========================================================
-       Modal, responsive details
-       ========================================================= */
-    .modal-backdrop {
-      position: fixed; z-index: 40; inset: 0; display: none; align-items: center; justify-content: center;
-      padding: 18px; background: rgba(0, 0, 0, .72); backdrop-filter: blur(5px);
-    }
-    .modal-backdrop.open { display: flex; }
-    .modal {
-      width: min(100%, 420px); padding: 20px; border: 1px solid var(--border-strong);
-      border-radius: 18px; background: #17283d; box-shadow: 0 25px 80px rgba(0, 0, 0, .45);
-    }
-    .modal h2 { margin: 0 0 7px; font-size: 19px; }
-    .modal p { margin: 0; color: var(--text-soft); font-size: 12px; line-height: 1.55; }
-    .modal button { width: 100%; margin-top: 15px; }
-
-    @media (max-width: 360px) {
-      .container { padding-right: 11px; padding-left: 11px; }
-      .exercise-layout { grid-template-columns: 88px minmax(0, 1fr); gap: 9px; padding: 9px; }
-      .exercise-media { width: 88px; height: 100px; }
-      .exercise-name { font-size: 12px; }
-      .exercise-instructions { font-size: 9px; }
-      .input-field input { height: 32px; padding: 0 6px; font-size: 11px; }
-    }
-    @media (min-width: 680px) {
-      .container { padding-right: 22px; padding-left: 22px; }
-      .exercise-list { grid-template-columns: 1fr 1fr; align-items: start; }
-      .exercise-layout { grid-template-columns: 112px minmax(0, 1fr); gap: 12px; padding: 12px; }
-      .exercise-media { width: 112px; height: 118px; }
-      .exercise-name { font-size: 13px; }
-      .progress-grid { grid-template-columns: 1fr 1fr; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1422">
+<meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
+<title>GYM PROGRESS</title>
+<style>
+:root{
+  color-scheme:dark;--bg:#0b1422;--surface:#142236;--surface2:#192b42;
+  --border:rgba(176,198,222,.14);--text:#f3f7fc;--soft:#c1ccda;--muted:#8fa1b7;
+  --accent:#55dfbd;--accent2:#2dc6a2;--danger:#ff9999;--gold:#f6c779;
+  --radius:18px;--shadow:0 12px 32px rgba(0,0,0,.18)
+}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg);scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(ellipse at 85% -15%,rgba(48,117,130,.18),transparent 42%),linear-gradient(180deg,#0b1422,#0d1929 58%,#0b1422);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}button:disabled{opacity:.55;cursor:wait}
+.container{width:min(100%,900px);margin:0 auto;padding:0 16px}
+header{padding:18px 0 12px}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:38px;height:38px;display:grid;place-items:center;border:1px solid rgba(85,223,189,.3);border-radius:12px;background:rgba(85,223,189,.1);color:var(--accent);font-weight:950;font-size:19px}
+.brand-name{font-size:12px;font-weight:900;letter-spacing:2px}
+.brand-caption{margin-top:3px;color:var(--muted);font-size:9px;letter-spacing:1px}
+.header-right{display:flex;align-items:center;gap:10px}
+.header-date{color:var(--muted);font-size:11px;text-align:right}
+.logout{border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--surface);color:var(--soft);font-size:11px}
+h1{margin:22px 0 4px;font-size:clamp(25px,6vw,32px);letter-spacing:-.8px}
+.subtitle{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+main{padding-bottom:28px}
+.hidden{display:none!important}
+.login-wrap{min-height:70vh;display:grid;place-items:center;padding:20px 0}
+.login-card{width:min(100%,430px);padding:23px;border:1px solid var(--border);border-radius:22px;background:linear-gradient(145deg,rgba(21,36,56,.98),rgba(17,31,49,.98));box-shadow:var(--shadow)}
+.login-card h2{margin:0 0 7px;font-size:21px}
+.login-card p{margin:0 0 18px;color:var(--muted);font-size:12px;line-height:1.5}
+.field{margin:13px 0}
+.field label{display:block;margin:0 0 6px;color:var(--soft);font-size:11px;font-weight:800}
+.field input{width:100%;height:44px;padding:0 12px;border:1px solid var(--border);border-radius:11px;background:#0a1726;color:var(--text);font-size:14px}
+.primary-btn{width:100%;min-height:46px;border:0;border-radius:12px;color:#06251e;background:linear-gradient(100deg,#4bd4b1,#76e8cb);font-size:12px;font-weight:950;letter-spacing:.5px}
+.status{margin-top:12px;padding:10px 12px;border-radius:10px;background:rgba(85,223,189,.09);color:#baffed;font-size:11px;line-height:1.45}
+.status.error{background:rgba(255,153,153,.1);color:#ffc0c0}
+.day-selector{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:16px 0 12px}
+.day-btn{min-width:0;border:1px solid var(--border);border-radius:12px;padding:10px 4px;background:rgba(20,34,54,.82);color:var(--soft);font-size:11px;font-weight:850}
+.day-btn small{display:block;margin-top:3px;color:var(--muted);font-size:9px;font-weight:600}
+.day-btn.active{border-color:rgba(85,223,189,.6);color:#baffed;background:linear-gradient(145deg,rgba(42,137,119,.28),rgba(25,65,65,.5))}
+.hero{padding:17px;border:1px solid rgba(105,185,190,.22);border-radius:21px;background:radial-gradient(circle at 100% 0%,rgba(85,223,189,.18),transparent 42%),linear-gradient(125deg,#153746,#172d45 65%,#17283c);box-shadow:var(--shadow)}
+.eyebrow{color:#9cebd9;font-size:9px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase}
+.hero h2{margin:6px 0 4px;font-size:19px}
+.hero p{margin:0;color:#c4d5e2;font-size:11px;line-height:1.55}
+.hero-meta{display:flex;justify-content:space-between;gap:10px;margin-top:14px;color:#d7e8f0;font-size:10px;font-weight:750}
+.quick-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:11px 0 19px}
+.stat{padding:10px 11px;border:1px solid var(--border);border-radius:13px;background:rgba(20,34,54,.82)}
+.stat strong{display:block;font-size:18px}.stat span{display:block;margin-top:4px;color:var(--muted);font-size:9px}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:20px 2px 9px}
+.section-head h2{margin:0;font-size:15px}.hint{color:var(--muted);font-size:10px}
+.exercise-list{display:grid;gap:10px}
+.exercise-card{overflow:hidden;border:1px solid var(--border);border-radius:17px;background:linear-gradient(145deg,rgba(21,36,56,.98),rgba(17,31,49,.98));box-shadow:0 7px 22px rgba(0,0,0,.12)}
+.exercise-layout{display:grid;grid-template-columns:112px minmax(0,1fr);gap:12px;padding:11px;align-items:start}
+.exercise-media{width:112px;min-height:112px;display:grid;grid-template-columns:1fr 1fr;gap:3px;overflow:hidden;border:1px solid rgba(176,198,222,.16);border-radius:11px;background:#0a1726}
+.exercise-media.single{grid-template-columns:1fr}
+.exercise-media img{display:block;width:100%;height:112px;object-fit:contain;background:#111e2c}
+.media-empty{grid-column:1/-1;min-height:112px;display:grid;place-items:center;padding:8px;color:var(--muted);font-size:9px;text-align:center;line-height:1.4}
+.exercise-content{min-width:0}
+.title-row{display:flex;align-items:flex-start;gap:7px}
+.number{flex:0 0 22px;width:22px;height:22px;display:grid;place-items:center;border-radius:7px;background:rgba(85,223,189,.13);color:var(--accent);font-size:10px;font-weight:900}
+.exercise-name{margin:1px 0 0;font-size:13px;font-weight:850;line-height:1.25}
+.exercise-meta{margin-top:4px;color:var(--muted);font-size:9px;line-height:1.35}
+.instructions{margin:8px 0 7px;color:#c4d0de;font-size:10px;line-height:1.45}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{display:inline-flex;align-items:center;min-height:20px;padding:3px 6px;border:1px solid rgba(176,198,222,.13);border-radius:6px;color:#d6e1ed;background:rgba(7,19,33,.52);font-size:9px;font-weight:700}
+.previous{margin:8px 0;padding:8px;border:1px solid rgba(85,223,189,.17);border-radius:9px;color:#b8c9d8;background:rgba(10,30,38,.58);font-size:10px;line-height:1.45}
+.previous strong{color:var(--accent);font-size:12px}
+.inputs{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.input-field{min-width:0}
+.input-field label{display:block;margin:0 0 4px;color:var(--muted);font-size:8px;font-weight:850;letter-spacing:.45px}
+.input-field input{display:block;width:100%;min-width:0;height:37px;padding:0 8px;border:1px solid rgba(176,198,222,.2);border-radius:8px;background:#0a1726;color:var(--text);font-size:13px}
+.input-field input::placeholder{color:#687d94}
+.save-panel{margin-top:18px;padding:15px;border:1px solid rgba(85,223,189,.25);border-radius:17px;background:linear-gradient(145deg,rgba(18,55,55,.72),rgba(20,34,54,.95))}
+.save-panel p{margin:0 0 11px;color:#c1d9d6;font-size:11px;line-height:1.5}
+.save-panel .primary-btn{min-height:49px}
+.note{margin-top:8px;color:var(--muted);font-size:9px;text-align:center;line-height:1.4}
+.empty{padding:18px;border:1px dashed rgba(176,198,222,.2);border-radius:14px;color:var(--muted);font-size:11px;text-align:center;line-height:1.5}
+.credit{padding:18px 16px 26px;color:var(--muted);font-size:9px;text-align:center}
+.credit a{color:#9cebd9}
+@media(max-width:370px){.container{padding:0 11px}.exercise-layout{grid-template-columns:90px minmax(0,1fr);gap:9px;padding:9px}.exercise-media{width:90px;min-height:96px}.exercise-media img{height:96px}.exercise-name{font-size:12px}.instructions{font-size:9px}.input-field input{height:34px;padding:0 6px;font-size:11px}}
+@media(min-width:700px){.container{padding:0 22px}.exercise-list{grid-template-columns:1fr 1fr;align-items:start}.exercise-layout{grid-template-columns:116px minmax(0,1fr)}.exercise-media{width:116px}.exercise-media img{height:116px}}
+</style>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="app-header">
-      <div class="container">
-        <div class="header-row">
-          <div class="brand-lockup">
-            <div class="brand-mark" aria-hidden="true">G</div>
-            <div>
-              <div class="brand-name">GYM PROGRESS</div>
-              <div class="brand-caption">ENTRENA CON CONSTANCIA</div>
-            </div>
-          </div>
-          <div class="header-date" id="headerDate"></div>
-        </div>
-        <h1 class="page-heading" id="pageHeading">Tu entrenamiento</h1>
-        <p class="page-subtitle" id="pageSubtitle">Tu rutina de hoy, tus cargas y tu evolución.</p>
+<header>
+  <div class="container">
+    <div class="header-row">
+      <div class="brand">
+        <div class="brand-mark">G</div>
+        <div><div class="brand-name">GYM PROGRESS</div><div class="brand-caption">ENTRENA CON CONSTANCIA</div></div>
       </div>
-    </header>
-
-    <main class="container">
-      <!-- Main workout page -->
-      <section class="page active" id="workoutPage" aria-label="Entrenamiento">
-        <div class="day-selector" id="daySelector" aria-label="Seleccionar rutina"></div>
-
-        <section class="session-hero" aria-live="polite">
-          <div class="hero-eyebrow">TU PLAN DE ENTRENAMIENTO</div>
-          <div class="hero-title" id="routineTitle">Preparando rutina</div>
-          <p class="hero-description" id="routineDescription"></p>
-          <div class="hero-progress-row">
-            <span id="progressLabel">Progreso de la sesión</span>
-            <span id="progressCount">0 / 5</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-        </section>
-
-        <div class="quick-stats" aria-label="Resumen de la sesión">
-          <div class="quick-stat"><strong id="pendingNumber">5</strong><span>Pendientes</span></div>
-          <div class="quick-stat"><strong id="completedNumber">0</strong><span>Completados</span></div>
-          <div class="quick-stat"><strong>3 × 12</strong><span>Series y repeticiones habituales</span></div>
-        </div>
-
-        <div class="section-heading">
-          <h2>Ejercicios pendientes</h2>
-          <span class="section-hint" id="pendingHint"></span>
-        </div>
-        <div class="exercise-list" id="pendingExercises"></div>
-
-        <div class="section-heading">
-          <h2>Completados</h2>
-          <span class="section-hint">Se guardan automáticamente</span>
-        </div>
-        <div class="exercise-list" id="completedExercises"></div>
-      </section>
-
-      <!-- Progress page. No visible history/settings pages. -->
-      <section class="page" id="progressPage" aria-label="Mi progreso">
-        <div class="progress-intro">
-          <h2>Tu evolución</h2>
-          <p>Comparamos tus primeros registros con los más recientes. Así puedes ver cómo evolucionan tus cargas sin tener que revisar listas de datos.</p>
-        </div>
-        <div class="progress-grid" id="progressCards"></div>
-      </section>
-    </main>
-
-    <nav class="bottom-nav" aria-label="Navegación principal">
-      <button class="nav-button active" type="button" data-page="workoutPage">
-        <span class="nav-icon" aria-hidden="true">🏋️</span>Entrenamiento
-      </button>
-      <button class="nav-button" type="button" data-page="progressPage">
-        <span class="nav-icon" aria-hidden="true">📈</span>Mi progreso
-      </button>
-    </nav>
-  </div>
-
-  <div class="modal-backdrop" id="completionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal">
-      <h2 id="modalTitle">¡Entrenamiento completado!</h2>
-      <p id="modalMessage">La sesión se ha guardado automáticamente.</p>
-      <button class="complete-button" id="closeModal" type="button">CONTINUAR</button>
+      <div class="header-right">
+        <div class="header-date" id="headerDate"></div>
+        <button class="logout hidden" id="logoutBtn" type="button">Salir</button>
+      </div>
     </div>
+    <h1 id="mainHeading">Tu entrenamiento</h1>
+    <p class="subtitle" id="mainSubtitle">Tu rutina de hoy y tus últimas cargas.</p>
   </div>
+</header>
 
-  <script>
-    "use strict";
+<main class="container">
+  <section id="loginView" class="login-wrap">
+    <form class="login-card" id="loginForm">
+      <h2>Accede a tu entrenamiento</h2>
+      <p>Entra con el correo y la contraseña que registraste en GYM PROGRESS.</p>
+      <div class="field"><label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required placeholder="tu correo"></div>
+      <div class="field"><label for="password">Contraseña</label><input id="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña"></div>
+      <button class="primary-btn" id="loginBtn" type="submit">INICIAR SESIÓN</button>
+      <div id="loginStatus" class="status hidden" role="status"></div>
+    </form>
+  </section>
 
-    /* =========================================================
-       1. APPLICATION CONFIGURATION
-       ========================================================= */
-    const APP_CONFIG = Object.freeze({
-      storageKey: "gym_progress_pro_v5",
-      defaultSets: 3,
-      defaultReps: 12,
-      restSeconds: 75,
-      imageApi: "https://wger.de/api/v2/exerciseinfo/",
-      imageApiLanguage: 2,
-      imageApiPageSize: 100,
-      maxImagePages: 8,
-      imageMatchThreshold: 75
+  <section id="appView" class="hidden">
+    <div class="day-selector" id="daySelector" aria-label="Seleccionar rutina"></div>
+    <section class="hero">
+      <div class="eyebrow">TU PLAN DE ENTRENAMIENTO</div>
+      <h2 id="routineTitle">Preparando rutina</h2>
+      <p id="routineDescription"></p>
+      <div class="hero-meta"><span>Progreso de la sesión</span><span id="routineCount">5 ejercicios</span></div>
+    </section>
+    <div class="quick-stats">
+      <div class="stat"><strong>10 min</strong><span>Bicicleta inicial</span></div>
+      <div class="stat"><strong>3 × 12</strong><span>Series y repeticiones habituales</span></div>
+      <div class="stat"><strong>75 s</strong><span>Descanso orientativo</span></div>
+    </div>
+    <div class="section-head"><h2>Rutina del día</h2><span class="hint">En el orden previsto</span></div>
+    <div class="exercise-list" id="exerciseList"></div>
+    <section class="save-panel">
+      <p>Introduce el peso que vas a utilizar y ajusta las repeticiones si lo necesitas. Al terminar, pulsa una sola vez para guardar todos los ejercicios que hayas rellenado.</p>
+      <button class="primary-btn" id="saveWeightsBtn" type="button">GUARDAR PESOS</button>
+      <div class="note">Los registros quedan privados en tu cuenta y se usarán para mostrarte el último peso la próxima vez.</div>
+      <div id="saveStatus" class="status hidden" role="status"></div>
+    </section>
+  </section>
+</main>
+
+<footer class="credit">
+  Ilustraciones de ejercicios: <a href="https://repdb.co" target="_blank" rel="noopener noreferrer">Exercise data by RepDB (repdb.co)</a>.
+</footer>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://xpvpddzucguypmfrfqtg.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwdnBkZHp1Y2d1eXBtZnJmcXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MDYxMjMsImV4cCI6MjEwOTE4MjEyM30.uMyUBgFP3QAXHEjpq5qDu_rzi17jZCiTnu6nfe1XI8A";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const REPDB_JSON = "https://raw.githubusercontent.com/RepDB/exercise-dataset/main/exercises.json";
+const REPDB_ASSETS = "https://raw.githubusercontent.com/RepDB/exercise-dataset/main/";
+const LEGACY_STORAGE_KEY = "gym_progress_pro_v5";
+const INITIAL_SESSIONS = [{
+  date:"2026-10-27",
+  items:{
+    leg_press:{name:"Prensa de piernas",weight:"20",reps:"12",sets:3},
+    leg_extension:{name:"Extensión de cuádriceps",weight:"30",reps:"12",sets:3},
+    seated_leg_curl:{name:"Curl femoral sentado",weight:"30",reps:"12",sets:3},
+    glute_kickback_machine:{name:"Extensión de glúteo en máquina",weight:"25",reps:"12",sets:3},
+    seated_calf_raise:{name:"Elevación de gemelos sentado",weight:"30",reps:"12",sets:3}
+  }
+}];
+
+const DAYS = {
+  1:{short:"LUN",name:"Lunes",title:"Pecho + tríceps",desc:"10 minutos de bicicleta y cinco ejercicios de fuerza. Mantén una técnica controlada y una carga que puedas mover con seguridad."},
+  2:{short:"MAR",name:"Martes",title:"Cuádriceps + glúteos",desc:"10 minutos de bicicleta y cinco ejercicios. Ajusta la intensidad según la carga de fútbol y cómo notes las piernas."},
+  3:{short:"MIÉ",name:"Miércoles",title:"Espalda + bíceps",desc:"10 minutos de bicicleta y cinco ejercicios. Mantén el tronco estable y controla la subida y la bajada."},
+  4:{short:"JUE",name:"Jueves",title:"Hombros + core",desc:"10 minutos de bicicleta y cinco ejercicios. Evita compensaciones con el cuello o la zona lumbar."}
+};
+
+const ROUTINES = {
+  1:[
+    {id:"chest_machine",repdb:"chest-press-machine",name:"Press de pecho en máquina",muscle:"Pecho",equipment:"Máquina",instruction:"Ajusta el asiento para que las empuñaduras queden a la altura del pecho. Empuja sin bloquear los codos y vuelve lentamente."},
+    {id:"incline_dumbbell_press",repdb:"incline-db-press",name:"Press inclinado con mancuernas",muscle:"Pecho superior",equipment:"Mancuernas y banco",instruction:"Utiliza una inclinación moderada. Baja las mancuernas a los lados del pecho y empuja sin chocar las pesas."},
+    {id:"cable_chest_fly",repdb:"cable-fly",name:"Aperturas de pecho en poleas",muscle:"Pecho",equipment:"Poleas",instruction:"Mantén los codos ligeramente flexionados. Junta las manos delante del pecho y regresa despacio."},
+    {id:"triceps_machine",repdb:"machine-triceps-extension",name:"Extensión de tríceps en máquina",muscle:"Tríceps",equipment:"Máquina",instruction:"Alinea los codos con el eje de giro. Extiende y regresa lentamente, sin dejar caer el peso."},
+    {id:"overhead_triceps_cable",repdb:"cable-overhead-tricep-extension",name:"Extensión de tríceps por encima de la cabeza",muscle:"Tríceps",equipment:"Polea y cuerda",instruction:"Estabiliza el tronco, orienta los codos hacia delante y extiende sin arquear la espalda."}
+  ],
+  2:[
+    {id:"leg_press",repdb:"leg-press",name:"Prensa de piernas",muscle:"Cuádriceps y glúteos",equipment:"Máquina",instruction:"Apoya la espalda y coloca los pies a la anchura de los hombros. Baja hasta donde la pelvis siga apoyada y empuja sin bloquear las rodillas."},
+    {id:"leg_extension",repdb:"leg-extension",name:"Extensión de cuádriceps",muscle:"Cuádriceps",equipment:"Máquina",instruction:"Alinea las rodillas con el eje de giro. Extiende las piernas y baja lentamente sin dejar caer el peso."},
+    {id:"seated_leg_curl",repdb:"seated-leg-curl",name:"Curl femoral sentado",muscle:"Isquiotibiales",equipment:"Máquina",instruction:"Ajusta el rodillo por encima de los tobillos. Flexiona las rodillas y vuelve a la posición inicial lentamente."},
+    {id:"hip_abduction_machine",repdb:"hip-abduction",name:"Abducción de cadera en máquina",muscle:"Glúteos",equipment:"Máquina",instruction:"Mantén la espalda apoyada y separa las rodillas de forma controlada. Regresa sin golpear los topes."},
+    {id:"seated_calf_raise",repdb:"seated-calf-raise",name:"Elevación de gemelos sentado",muscle:"Gemelos",equipment:"Máquina",instruction:"Apoya la parte delantera de los pies. Baja los talones con control y elévalos sin rebotes."}
+  ],
+  3:[
+    {id:"lat_pulldown",repdb:"lat-pulldown",name:"Jalón al pecho",muscle:"Espalda",equipment:"Polea",instruction:"Lleva los codos hacia abajo y acerca la barra a la parte alta del pecho. Evita balancear el tronco."},
+    {id:"seated_cable_row",repdb:"seated-cable-row",name:"Remo sentado en polea",muscle:"Espalda",equipment:"Polea",instruction:"Lleva el agarre hacia el abdomen, junta suavemente los omóplatos y vuelve sin encorvarte."},
+    {id:"chest_supported_machine_row",repdb:"chest-supported-machine-row",name:"Remo en máquina con pecho apoyado",muscle:"Espalda",equipment:"Máquina",instruction:"Mantén el pecho apoyado. Lleva los codos hacia atrás sin elevar los hombros y baja el peso lentamente."},
+    {id:"cable_biceps_curl",repdb:"cable-curl",name:"Curl de bíceps en polea",muscle:"Bíceps",equipment:"Polea",instruction:"Mantén los codos cerca del cuerpo. Flexiona sin balancearte y desciende lentamente."},
+    {id:"cable_hammer_curl",repdb:"cable-hammer-curl",name:"Curl martillo en polea",muscle:"Bíceps y braquial",equipment:"Polea con cuerda",instruction:"Mantén las palmas enfrentadas y los codos estables. Flexiona y baja de forma controlada."}
+  ],
+  4:[
+    {id:"machine_shoulder_press",repdb:"machine-shoulder-press",name:"Press de hombros en máquina",muscle:"Hombros",equipment:"Máquina",instruction:"Ajusta las empuñaduras a la altura de los hombros. Empuja hacia arriba sin bloquear y baja lentamente."},
+    {id:"dumbbell_lateral_raise",repdb:"lateral-raise",name:"Elevaciones laterales",muscle:"Deltoides lateral",equipment:"Mancuernas",instruction:"Eleva los brazos hacia los lados hasta aproximadamente la altura de los hombros. Evita impulsarte con el tronco."},
+    {id:"face_pull",repdb:"face-pull",name:"Face pull en polea",muscle:"Deltoides posterior",equipment:"Polea y cuerda",instruction:"Tira de la cuerda hacia la frente separando las manos. Evita encoger los hombros."},
+    {id:"front_plank",repdb:"plank",name:"Plancha abdominal",muscle:"Core",equipment:"Esterilla",instruction:"Apoya antebrazos y puntas de los pies. Mantén el cuerpo alineado y el abdomen activo.",reps:30,unit:"segundos",bodyweight:true},
+    {id:"cable_crunch",repdb:"cable-crunch",name:"Crunch abdominal en polea",muscle:"Abdominales",equipment:"Polea y cuerda",instruction:"Acerca las costillas a la pelvis flexionando el tronco. No tires únicamente con los brazos."}
+  ]
+};
+
+let currentUser = null;
+let selectedDay = new Date().getDay();
+if(selectedDay < 1 || selectedDay > 4) selectedDay = 1;
+let repdbExercises = new Map();
+let latestRecords = new Map();
+let saving = false;
+
+const $ = id => document.getElementById(id);
+const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const localDate = () => {const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;};
+const prettyDate = value => {if(!value)return "";const d=new Date(value);return new Intl.DateTimeFormat("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"}).format(d);};
+
+function showStatus(target,message,error=false){
+  target.textContent=message;
+  target.classList.remove("hidden","error");
+  if(error)target.classList.add("error");
+}
+function hideStatus(target){target.classList.add("hidden");target.textContent="";}
+
+async function loadRepDB(){
+  try{
+    const response=await fetch(REPDB_JSON,{cache:"force-cache"});
+    if(!response.ok)throw new Error("RepDB no disponible");
+    const data=await response.json();
+    repdbExercises=new Map((data.exercises||[]).map(item=>[item.id,item]));
+  }catch(error){
+    console.warn("No se pudo cargar el catálogo RepDB:",error);
+    repdbExercises=new Map();
+  }
+}
+
+function renderDays(){
+  $("daySelector").innerHTML=[1,2,3,4].map(day=>`
+    <button type="button" class="day-btn ${selectedDay===day?"active":""}" data-day="${day}">
+      ${DAYS[day].short}<small>${DAYS[day].title.split(" + ")[0]}</small>
+    </button>`).join("");
+  $("daySelector").querySelectorAll("[data-day]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      selectedDay=Number(button.dataset.day);
+      renderWorkout();
     });
+  });
+}
 
-    const DAY_NAMES = {
-      1: { short: "LUN", full: "Lunes" },
-      2: { short: "MAR", full: "Martes" },
-      3: { short: "MIÉ", full: "Miércoles" },
-      4: { short: "JUE", full: "Jueves" }
-    };
+function imageMarkup(exercise){
+  const record=repdbExercises.get(exercise.repdb);
+  const flat=record?.images?.flat;
+  if(!flat)return `<div class="exercise-media"><div class="media-empty">Ilustración RepDB no disponible para este ejercicio</div></div>`;
+  const paths=[flat.start,flat.peak].filter(Boolean);
+  if(!paths.length && flat.main)paths.push(flat.main);
+  if(!paths.length)return `<div class="exercise-media"><div class="media-empty">Ilustración RepDB no disponible</div></div>`;
+  const imgs=paths.map(path=>`<img loading="lazy" decoding="async" src="${REPDB_ASSETS+path}" alt="${escapeHTML(exercise.name)}" onerror="this.remove()">`).join("");
+  return `<div class="exercise-media ${paths.length===1?"single":""}">${imgs}</div>`;
+}
 
-    const ROUTINE_INFO = {
-      1: {
-        title: "Pecho + tríceps",
-        description: "10 minutos de bicicleta y cinco ejercicios de fuerza. Trabaja con una carga moderada, técnica controlada y sin necesidad de llegar al fallo en cada serie."
-      },
-      2: {
-        title: "Cuádriceps + glúteos",
-        description: "10 minutos de bicicleta y cinco ejercicios. Ajusta la intensidad según la carga de fútbol y la recuperación de tus piernas."
-      },
-      3: {
-        title: "Espalda + bíceps",
-        description: "10 minutos de bicicleta y cinco ejercicios. Mantén el tronco estable y controla tanto la fase de subida como la de bajada."
-      },
-      4: {
-        title: "Hombros + core",
-        description: "10 minutos de bicicleta y cinco ejercicios. Evita compensaciones con el cuello y la zona lumbar."
-      }
-    };
-
-    /* =========================================================
-       2. INTERNAL EXERCISE LIBRARY
-       This library is not exposed as a user-facing section.
-       ========================================================= */
-    const EXERCISE_LIBRARY = {
-      1: [
-        {
-          id: "chest_machine",
-          name: "Press de pecho en máquina",
-          muscle: "Pecho",
-          equipment: "Máquina",
-          instruction: "Apoya la espalda en el respaldo y coloca las empuñaduras a la altura del pecho. Empuja hacia delante sin bloquear los codos y vuelve lentamente.",
-          imageSearchTerms: ["chest press machine", "machine chest press"],
-          sets: 3, reps: 12, category: "pecho"
-        },
-        {
-          id: "incline_dumbbell_press",
-          name: "Press inclinado con mancuernas",
-          muscle: "Pecho superior",
-          equipment: "Mancuernas y banco",
-          instruction: "Utiliza un banco con inclinación moderada. Baja las mancuernas a los lados del pecho y empuja hacia arriba sin chocar las pesas.",
-          imageSearchTerms: ["incline dumbbell bench press", "incline dumbbell press"],
-          sets: 3, reps: 12, category: "pecho"
-        },
-        {
-          id: "cable_chest_fly",
-          name: "Aperturas de pecho en poleas",
-          muscle: "Pecho",
-          equipment: "Poleas",
-          instruction: "Mantén los codos ligeramente flexionados. Junta las manos delante del pecho y vuelve despacio, sin perder el control del movimiento.",
-          imageSearchTerms: ["cable chest fly", "standing cable fly"],
-          sets: 3, reps: 12, category: "pecho"
-        },
-        {
-          id: "dumbbell_bench_press",
-          name: "Press de pecho con mancuernas",
-          muscle: "Pecho",
-          equipment: "Mancuernas y banco",
-          instruction: "Mantén los pies apoyados. Baja las mancuernas de forma controlada hasta una posición cómoda y empuja verticalmente.",
-          imageSearchTerms: ["dumbbell bench press"],
-          sets: 3, reps: 12, category: "pecho"
-        },
-        {
-          id: "triceps_rope_pushdown",
-          name: "Extensión de tríceps con cuerda",
-          muscle: "Tríceps",
-          equipment: "Polea y cuerda",
-          instruction: "Mantén los codos cerca del tronco. Extiende los antebrazos hacia abajo y vuelve lentamente sin mover los hombros.",
-          imageSearchTerms: ["triceps rope pushdown", "rope triceps pushdown"],
-          sets: 3, reps: 12, category: "triceps"
-        },
-        {
-          id: "overhead_triceps_cable",
-          name: "Extensión de tríceps por encima de la cabeza",
-          muscle: "Tríceps",
-          equipment: "Polea",
-          instruction: "Estabiliza el tronco, orienta los codos hacia delante y extiende los brazos sin arquear la espalda.",
-          imageSearchTerms: ["overhead cable triceps extension"],
-          sets: 3, reps: 12, category: "triceps"
-        },
-        {
-          id: "triceps_machine",
-          name: "Extensión de tríceps en máquina",
-          muscle: "Tríceps",
-          equipment: "Máquina",
-          instruction: "Ajusta el asiento y alinea los codos con el eje de giro. Extiende y regresa lentamente, sin dejar caer el peso.",
-          imageSearchTerms: ["lever triceps extension machine"],
-          sets: 3, reps: 12, category: "triceps"
-        }
-      ],
-      2: [
-        {
-          id: "leg_press",
-          name: "Prensa de piernas",
-          muscle: "Cuádriceps y glúteos",
-          equipment: "Máquina",
-          instruction: "Apoya la espalda y coloca los pies aproximadamente a la anchura de los hombros. Baja hasta donde la pelvis siga apoyada y empuja sin bloquear las rodillas.",
-          imageSearchTerms: ["45 degree leg press", "sled leg press"],
-          sets: 3, reps: 12, category: "cuadriceps"
-        },
-        {
-          id: "leg_extension",
-          name: "Extensión de cuádriceps",
-          muscle: "Cuádriceps",
-          equipment: "Máquina",
-          instruction: "Alinea las rodillas con el eje de giro de la máquina. Extiende las piernas y baja lentamente sin dejar caer el peso.",
-          imageSearchTerms: ["leg extension machine"],
-          sets: 3, reps: 12, category: "cuadriceps"
-        },
-        {
-          id: "seated_leg_curl",
-          name: "Curl femoral sentado",
-          muscle: "Isquiotibiales",
-          equipment: "Máquina",
-          instruction: "Ajusta el rodillo por encima de los tobillos. Flexiona las rodillas y vuelve a la posición inicial lentamente.",
-          imageSearchTerms: ["seated leg curl machine"],
-          sets: 3, reps: 12, category: "isquiotibiales"
-        },
-        {
-          id: "glute_kickback_machine",
-          name: "Extensión de glúteo en máquina",
-          muscle: "Glúteos",
-          equipment: "Máquina",
-          instruction: "Estabiliza la pelvis y lleva la pierna hacia atrás sin arquear la zona lumbar. Regresa despacio.",
-          imageSearchTerms: ["glute kickback machine"],
-          sets: 3, reps: 12, category: "gluteos"
-        },
-        {
-          id: "seated_calf_raise",
-          name: "Elevación de gemelos sentado",
-          muscle: "Gemelos",
-          equipment: "Máquina",
-          instruction: "Apoya la parte delantera de los pies. Baja los talones con control y elévalos sin rebotes.",
-          imageSearchTerms: ["seated calf raise machine"],
-          sets: 3, reps: 12, category: "gemelos"
-        },
-        {
-          id: "hip_abduction_machine",
-          name: "Abducción de cadera en máquina",
-          muscle: "Glúteos",
-          equipment: "Máquina",
-          instruction: "Mantén la espalda apoyada y separa las rodillas de forma controlada. Regresa sin golpear los topes.",
-          imageSearchTerms: ["hip abduction machine"],
-          sets: 3, reps: 12, category: "gluteos"
-        },
-        {
-          id: "dumbbell_split_squat",
-          name: "Sentadilla dividida con mancuernas",
-          muscle: "Cuádriceps y glúteos",
-          equipment: "Mancuernas",
-          instruction: "Da un paso cómodo, mantén el tronco estable y baja verticalmente dentro de un rango de movimiento sin molestias.",
-          imageSearchTerms: ["dumbbell split squat"],
-          sets: 3, reps: 10, category: "cuadriceps"
-        }
-      ],
-      3: [
-        {
-          id: "lat_pulldown",
-          name: "Jalón al pecho",
-          muscle: "Espalda",
-          equipment: "Polea",
-          instruction: "Lleva los codos hacia abajo y acerca la barra a la parte alta del pecho. Evita balancear el tronco.",
-          imageSearchTerms: ["lat pulldown machine"],
-          sets: 3, reps: 12, category: "espalda"
-        },
-        {
-          id: "seated_cable_row",
-          name: "Remo sentado en polea",
-          muscle: "Espalda",
-          equipment: "Polea",
-          instruction: "Lleva el agarre hacia el abdomen, junta suavemente los omóplatos y vuelve extendiendo los brazos sin encorvarte.",
-          imageSearchTerms: ["seated cable row"],
-          sets: 3, reps: 12, category: "espalda"
-        },
-        {
-          id: "chest_supported_row",
-          name: "Remo con pecho apoyado",
-          muscle: "Espalda",
-          equipment: "Máquina o mancuernas",
-          instruction: "Mantén el pecho apoyado. Lleva los codos hacia atrás sin elevar los hombros y baja el peso lentamente.",
-          imageSearchTerms: ["chest supported row machine"],
-          sets: 3, reps: 12, category: "espalda"
-        },
-        {
-          id: "straight_arm_pulldown",
-          name: "Jalón con brazos rectos",
-          muscle: "Espalda",
-          equipment: "Polea",
-          instruction: "Con los codos casi extendidos, lleva la barra hacia los muslos sin balancear el tronco.",
-          imageSearchTerms: ["straight arm cable pulldown"],
-          sets: 3, reps: 12, category: "espalda"
-        },
-        {
-          id: "cable_biceps_curl",
-          name: "Curl de bíceps en polea",
-          muscle: "Bíceps",
-          equipment: "Polea",
-          instruction: "Mantén los codos cerca del cuerpo. Flexiona sin balancearte y desciende lentamente.",
-          imageSearchTerms: ["cable biceps curl"],
-          sets: 3, reps: 12, category: "biceps"
-        },
-        {
-          id: "dumbbell_hammer_curl",
-          name: "Curl martillo con mancuernas",
-          muscle: "Bíceps",
-          equipment: "Mancuernas",
-          instruction: "Mantén las palmas enfrentadas y los codos estables. Flexiona y baja de forma controlada.",
-          imageSearchTerms: ["dumbbell hammer curl"],
-          sets: 3, reps: 12, category: "biceps"
-        },
-        {
-          id: "preacher_curl",
-          name: "Curl de bíceps en banco Scott",
-          muscle: "Bíceps",
-          equipment: "Máquina o banco",
-          instruction: "Apoya los brazos en el soporte. Flexiona sin despegar los brazos y baja de forma controlada.",
-          imageSearchTerms: ["preacher curl machine"],
-          sets: 3, reps: 12, category: "biceps"
-        }
-      ],
-      4: [
-        {
-          id: "machine_shoulder_press",
-          name: "Press de hombros en máquina",
-          muscle: "Hombros",
-          equipment: "Máquina",
-          instruction: "Ajusta las empuñaduras a la altura de los hombros. Empuja hacia arriba sin bloquear y baja lentamente.",
-          imageSearchTerms: ["machine shoulder press"],
-          sets: 3, reps: 12, category: "hombros"
-        },
-        {
-          id: "dumbbell_lateral_raise",
-          name: "Elevaciones laterales",
-          muscle: "Deltoides lateral",
-          equipment: "Mancuernas",
-          instruction: "Eleva los brazos hacia los lados hasta aproximadamente la altura de los hombros. Evita impulsarte con el tronco.",
-          imageSearchTerms: ["dumbbell lateral raise"],
-          sets: 3, reps: 12, category: "hombros"
-        },
-        {
-          id: "face_pull",
-          name: "Face pull en polea",
-          muscle: "Deltoides posterior",
-          equipment: "Polea y cuerda",
-          instruction: "Tira de la cuerda hacia la frente separando las manos. Evita encoger los hombros.",
-          imageSearchTerms: ["face pull cable exercise"],
-          sets: 3, reps: 12, category: "hombros"
-        },
-        {
-          id: "reverse_pec_deck",
-          name: "Aperturas inversas en máquina",
-          muscle: "Deltoides posterior",
-          equipment: "Máquina",
-          instruction: "Apoya el pecho y abre los brazos con control. Evita impulsar el movimiento con el tronco.",
-          imageSearchTerms: ["reverse pec deck machine"],
-          sets: 3, reps: 12, category: "hombros"
-        },
-        {
-          id: "front_plank",
-          name: "Plancha abdominal",
-          muscle: "Core",
-          equipment: "Esterilla",
-          instruction: "Apoya antebrazos y puntas de los pies. Mantén el cuerpo alineado y el abdomen activo.",
-          imageSearchTerms: ["front plank exercise"],
-          sets: 3, reps: 30, unit: "segundos", category: "core"
-        },
-        {
-          id: "cable_crunch",
-          name: "Crunch abdominal en polea",
-          muscle: "Abdominales",
-          equipment: "Polea y cuerda",
-          instruction: "Acerca las costillas a la pelvis flexionando el tronco. No tires únicamente con los brazos.",
-          imageSearchTerms: ["kneeling cable crunch"],
-          sets: 3, reps: 12, category: "core"
-        },
-        {
-          id: "dead_bug",
-          name: "Dead bug",
-          muscle: "Core",
-          equipment: "Esterilla",
-          instruction: "Mantén la zona lumbar estable contra el suelo mientras extiendes brazo y pierna contrarios.",
-          imageSearchTerms: ["dead bug core exercise"],
-          sets: 3, reps: 10, unit: "por lado", category: "core"
-        }
-      ]
-    };
-
-    /* =========================================================
-       3. CONFIRMED STARTING RECORDS
-       Only user-provided values are preloaded.
-       ========================================================= */
-    const INITIAL_SESSIONS = [
-      {
-        date: "2026-10-27",
-        day: 2,
-        routine: "Cuádriceps + glúteos",
-        items: {
-          leg_press: { name: "Prensa de piernas", weight: "20", reps: "12" },
-          leg_extension: { name: "Extensión de cuádriceps", weight: "30", reps: "12" },
-          seated_leg_curl: { name: "Curl femoral sentado", weight: "30", reps: "12" },
-          glute_kickback_machine: { name: "Extensión de glúteo en máquina", weight: "25", reps: "12" },
-          seated_calf_raise: { name: "Elevación de gemelos sentado", weight: "30", reps: "12" }
-        }
-      }
-    ];
-
-    /* =========================================================
-       4. STATE AND STORAGE
-       ========================================================= */
-    let appData = loadAppData();
-    let selectedDay = new Date().getDay();
-    let activePage = "workoutPage";
-    const imageCache = new Map();
-    const exerciseById = buildExerciseIndex();
-
-    function loadAppData() {
-      try {
-        const raw = localStorage.getItem(APP_CONFIG.storageKey);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && Array.isArray(parsed.sessions) && parsed.activeWorkouts) {
-            return parsed;
-          }
-        }
-      } catch (error) {
-        console.warn("No se pudieron leer los datos guardados.", error);
-      }
-      return { sessions: INITIAL_SESSIONS, activeWorkouts: {} };
-    }
-
-    function persistAppData() {
-      try {
-        localStorage.setItem(APP_CONFIG.storageKey, JSON.stringify(appData));
-        return true;
-      } catch (error) {
-        console.error("No se pudieron guardar los datos.", error);
-        showModal("No se han podido guardar los datos", "El navegador no ha permitido guardar los cambios. Comprueba el espacio disponible y que el almacenamiento del sitio esté habilitado.");
-        return false;
-      }
-    }
-
-    function buildExerciseIndex() {
-      const index = new Map();
-      Object.values(EXERCISE_LIBRARY).flat().forEach(exercise => index.set(exercise.id, exercise));
-      return index;
-    }
-
-    function getLocalDate() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const day = String(now.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    }
-
-    function formatDate(dateString) {
-      if (!dateString) return "Sin fecha";
-      const [year, month, day] = dateString.split("-");
-      return `${day}/${month}/${year}`;
-    }
-
-    function escapeHTML(value) {
-      return String(value ?? "").replace(/[&<>"']/g, character => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-      })[character]);
-    }
-
-    function workoutStorageKey(dayNumber) {
-      return `${getLocalDate()}_${dayNumber}`;
-    }
-
-    function getLastExerciseRecord(exerciseId) {
-      const orderedSessions = [...appData.sessions].sort((a, b) => b.date.localeCompare(a.date));
-      for (const session of orderedSessions) {
-        const record = session.items && session.items[exerciseId];
-        if (record && (record.weight !== "" || record.reps !== "")) {
-          return { ...record, date: session.date };
-        }
-      }
-      return null;
-    }
-
-    /* =========================================================
-       5. ROUTINE BUILDER
-       Five exercises are selected internally for each weekday.
-       The internal catalogue is never shown as a library page.
-       ========================================================= */
-    function createDailyRoutine(dayNumber) {
-      const routineIds = {
-        1: ["chest_machine", "incline_dumbbell_press", "cable_chest_fly", "triceps_rope_pushdown", "overhead_triceps_cable"],
-        2: ["leg_press", "leg_extension", "seated_leg_curl", "glute_kickback_machine", "seated_calf_raise"],
-        3: ["lat_pulldown", "seated_cable_row", "chest_supported_row", "cable_biceps_curl", "dumbbell_hammer_curl"],
-        4: ["machine_shoulder_press", "dumbbell_lateral_raise", "face_pull", "front_plank", "cable_crunch"]
-      };
-      return (routineIds[dayNumber] || []).map(id => {
-        const source = exerciseById.get(id);
-        return source ? { ...source } : null;
-      }).filter(Boolean);
-    }
-
-    function getCurrentWorkout() {
-      const key = workoutStorageKey(selectedDay);
-      if (!appData.activeWorkouts[key]) {
-        appData.activeWorkouts[key] = {
-          pending: createDailyRoutine(selectedDay),
-          completed: [],
-          finished: false
-        };
-        persistAppData();
-      }
-      return appData.activeWorkouts[key];
-    }
-
-    /* =========================================================
-       6. NAVIGATION
-       ========================================================= */
-    function navigateTo(pageId) {
-      activePage = pageId;
-      document.querySelectorAll(".page").forEach(page => {
-        page.classList.toggle("active", page.id === pageId);
-      });
-      document.querySelectorAll(".nav-button").forEach(button => {
-        button.classList.toggle("active", button.dataset.page === pageId);
-      });
-
-      const heading = document.getElementById("pageHeading");
-      const subtitle = document.getElementById("pageSubtitle");
-      if (pageId === "workoutPage") {
-        heading.textContent = "Tu entrenamiento";
-        subtitle.textContent = "Tu rutina, tus cargas anteriores y tu evolución.";
-      } else {
-        heading.textContent = "Mi progreso";
-        subtitle.textContent = "Una visión clara de cómo vas mejorando.";
-        renderProgressPage();
-      }
-    }
-
-    document.querySelectorAll(".nav-button").forEach(button => {
-      button.addEventListener("click", () => navigateTo(button.dataset.page));
-    });
-
-    /* =========================================================
-       7. MAIN WORKOUT RENDERING
-       ========================================================= */
-    function renderDaySelector() {
-      const selector = document.getElementById("daySelector");
-      selector.innerHTML = [1, 2, 3, 4].map(dayNumber => {
-        const day = DAY_NAMES[dayNumber];
-        const routine = ROUTINE_INFO[dayNumber];
-        return `
-          <button class="day-button ${selectedDay === dayNumber ? "active" : ""}"
-                  type="button" data-day="${dayNumber}">
-            ${day.short}
-            <small>${routine.title.split(" + ")[0]}</small>
-          </button>`;
-      }).join("");
-
-      selector.querySelectorAll("[data-day]").forEach(button => {
-        button.addEventListener("click", () => {
-          selectedDay = Number(button.dataset.day);
-          renderWorkoutPage();
-        });
-      });
-    }
-
-    function renderWorkoutPage() {
-      renderDaySelector();
-
-      const routineInfo = ROUTINE_INFO[selectedDay];
-      const workout = getCurrentWorkout();
-
-      document.getElementById("routineTitle").textContent =
-        routineInfo ? routineInfo.title : "Día de recuperación";
-      document.getElementById("routineDescription").textContent =
-        routineInfo
-          ? routineInfo.description
-          : "No tienes una rutina de fuerza asignada para hoy. Prioriza la recuperación y tu actividad habitual.";
-
-      const pending = workout.pending || [];
-      const completed = workout.completed || [];
-      const total = pending.length + completed.length;
-      const progress = total > 0 ? Math.round((completed.length / total) * 100) : 0;
-
-      document.getElementById("pendingNumber").textContent = pending.length;
-      document.getElementById("completedNumber").textContent = completed.length;
-      document.getElementById("progressCount").textContent = `${completed.length} / ${total}`;
-      document.getElementById("progressFill").style.width = `${progress}%`;
-      document.getElementById("pendingHint").textContent =
-        `${pending.length} ${pending.length === 1 ? "ejercicio" : "ejercicios"}`;
-
-      const pendingContainer = document.getElementById("pendingExercises");
-      const completedContainer = document.getElementById("completedExercises");
-
-      pendingContainer.innerHTML = pending.length
-        ? pending.map((exercise, index) => renderExerciseCard(exercise, index, false)).join("")
-        : `<div class="empty-state">${completed.length
-            ? "Has terminado todos los ejercicios de esta rutina. Buen trabajo."
-            : "Hoy no tienes ejercicios de fuerza asignados."}</div>`;
-
-      completedContainer.innerHTML = completed.length
-        ? completed.map((exercise, index) => renderExerciseCard(exercise, index, true)).join("")
-        : `<div class="empty-state">Los ejercicios que marques como completados aparecerán aquí. Así la lista de pendientes se mantiene despejada.</div>`;
-
-      bindExerciseCardActions();
-      requestVisibleExerciseImages();
-    }
-
-    function renderExerciseCard(exercise, index, isCompleted) {
-      const previousRecord = getLastExerciseRecord(exercise.id);
-      const previousLabel = previousRecord
-        ? `${previousRecord.weight ? `${escapeHTML(previousRecord.weight)} kg` : "Peso no indicado"} · ${previousRecord.reps ? `${escapeHTML(previousRecord.reps)} rep.` : "Repeticiones sin indicar"} · ${formatDate(previousRecord.date)}`
-        : "Todavía no hay un peso anterior registrado";
-
-      const record = exercise.record || {};
-      const repetitionUnit = exercise.unit || "repeticiones";
-      const numberLabel = isCompleted ? "✓" : index + 1;
-
-      return `
-        <article class="exercise-card ${isCompleted ? "is-complete" : ""}">
-          <div class="exercise-layout">
-            <div class="exercise-media" data-exercise-image="${escapeHTML(exercise.id)}">
-              <div class="media-placeholder">Preparando imagen del ejercicio…</div>
+function renderWorkout(){
+  renderDays();
+  const day=DAYS[selectedDay];
+  const exercises=ROUTINES[selectedDay];
+  $("routineTitle").textContent=day.title;
+  $("routineDescription").textContent=day.desc;
+  $("routineCount").textContent=`${exercises.length} ejercicios`;
+  $("exerciseList").innerHTML=exercises.map((exercise,index)=>{
+    const previous=latestRecords.get(exercise.id);
+    const previousText=previous
+      ? `<strong>${Number(previous.weight).toLocaleString("es-ES")} kg</strong> · ${previous.reps} ${exercise.unit||"repeticiones"} · ${prettyDate(previous.performed_at)}`
+      : "Todavía no tienes un peso registrado para este ejercicio.";
+    const reps=exercise.reps||12;
+    const weightDefault=exercise.bodyweight?"0":"";
+    return `<article class="exercise-card">
+      <div class="exercise-layout">
+        ${imageMarkup(exercise)}
+        <div class="exercise-content">
+          <div class="title-row"><div class="number">${index+1}</div><div>
+            <h3 class="exercise-name">${escapeHTML(exercise.name)}</h3>
+            <div class="exercise-meta">${escapeHTML(exercise.muscle)} · ${escapeHTML(exercise.equipment)}</div>
+          </div></div>
+          <p class="instructions">${escapeHTML(exercise.instruction)}</p>
+          <div class="tags"><span class="tag">3 series</span><span class="tag">Descanso 60–90 s</span></div>
+          <div class="previous">Último peso registrado: ${previousText}</div>
+          <div class="inputs">
+            <div class="input-field"><label for="weight-${exercise.id}">${exercise.bodyweight?"CARGA (KG)":"PESO DE HOY (KG)"}</label>
+              <input id="weight-${exercise.id}" data-weight="${exercise.id}" type="number" min="0" max="500" step="0.5" inputmode="decimal" placeholder="${exercise.bodyweight?"0 si sin carga":"Introduce kg"}" value="${weightDefault}">
             </div>
-
-            <div class="exercise-content">
-              <div class="exercise-title-row">
-                <div class="exercise-number">${numberLabel}</div>
-                <div>
-                  <h3 class="exercise-name">${escapeHTML(exercise.name)}</h3>
-                  <div class="exercise-meta">${escapeHTML(exercise.muscle)} · ${escapeHTML(exercise.equipment)}</div>
-                </div>
-              </div>
-
-              <p class="exercise-instructions">${escapeHTML(exercise.instruction)}</p>
-
-              <div class="exercise-tags">
-                <span class="tag">${exercise.sets} series × ${exercise.reps} ${escapeHTML(repetitionUnit)}</span>
-                <span class="tag">Descanso 60–90 s</span>
-              </div>
-
-              <div class="previous-load">
-                Peso anterior: <strong>${previousLabel}</strong>
-              </div>
-
-              ${isCompleted
-                ? `
-                  <div class="completed-record">
-                    Registrado hoy: <strong>${record.weight ? `${escapeHTML(record.weight)} kg` : "sin peso indicado"}</strong>
-                    · ${escapeHTML(record.reps || "—")} ${escapeHTML(repetitionUnit)}
-                  </div>
-                  <button class="restore-button" type="button" data-restore-exercise="${escapeHTML(exercise.id)}">
-                    VOLVER A PENDIENTES
-                  </button>`
-                : `
-                  <div class="exercise-inputs">
-                    <div class="input-field">
-                      <label for="weight-${escapeHTML(exercise.id)}">PESO DE HOY (KG)</label>
-                      <input id="weight-${escapeHTML(exercise.id)}"
-                             data-weight-for="${escapeHTML(exercise.id)}"
-                             type="number" min="0" max="500" step="0.5"
-                             inputmode="decimal" placeholder="Introduce kg">
-                    </div>
-                    <div class="input-field">
-                      <label for="reps-${escapeHTML(exercise.id)}">${escapeHTML(repetitionUnit).toUpperCase()}</label>
-                      <input id="reps-${escapeHTML(exercise.id)}"
-                             data-reps-for="${escapeHTML(exercise.id)}"
-                             type="number" min="1" max="200" step="1"
-                             inputmode="numeric" value="${exercise.reps}">
-                    </div>
-                  </div>
-                  <button class="complete-button" type="button" data-complete-exercise="${escapeHTML(exercise.id)}">
-                    ✓ MARCAR COMO COMPLETADO
-                  </button>`
-              }
+            <div class="input-field"><label for="reps-${exercise.id}">${(exercise.unit||"REPETICIONES").toUpperCase()}</label>
+              <input id="reps-${exercise.id}" data-reps="${exercise.id}" type="number" min="1" max="200" step="1" inputmode="numeric" value="${reps}">
             </div>
           </div>
-        </article>`;
-    }
+        </div>
+      </div>
+    </article>`;
+  }).join("");
+  hideStatus($("saveStatus"));
+}
 
-    function bindExerciseCardActions() {
-      document.querySelectorAll("[data-complete-exercise]").forEach(button => {
-        button.addEventListener("click", () => completeExercise(button.dataset.completeExercise));
-      });
-      document.querySelectorAll("[data-restore-exercise]").forEach(button => {
-        button.addEventListener("click", () => restoreExercise(button.dataset.restoreExercise));
-      });
-    }
+async function loadLatestRecords(){
+  const {data,error}=await supabase.from("workout_weights")
+    .select("exercise_id,exercise_name,performed_at,weight,sets,reps")
+    .eq("user_id",currentUser.id)
+    .order("performed_at",{ascending:false});
+  if(error)throw error;
+  latestRecords=new Map();
+  for(const row of (data||[])){
+    if(!latestRecords.has(row.exercise_id))latestRecords.set(row.exercise_id,row);
+  }
+}
 
-    /* =========================================================
-       8. EXERCISE COMPLETION AND AUTOMATIC SESSION SAVE
-       ========================================================= */
-    function completeExercise(exerciseId) {
-      const workout = getCurrentWorkout();
-      const exerciseIndex = workout.pending.findIndex(item => item.id === exerciseId);
-      if (exerciseIndex < 0) return;
+async function migrateOldLocalRecords(){
+  const flag=`gym_progress_supabase_migrated_${currentUser.id}`;
+  if(localStorage.getItem(flag)==="1")return;
+  const {count,error}=await supabase.from("workout_weights").select("id",{count:"exact",head:true}).eq("user_id",currentUser.id);
+  if(error)throw error;
+  if((count||0)>0){localStorage.setItem(flag,"1");return;}
 
-      const exercise = workout.pending[exerciseIndex];
-      const weightInput = document.querySelector(`[data-weight-for="${CSS.escape(exerciseId)}"]`);
-      const repsInput = document.querySelector(`[data-reps-for="${CSS.escape(exerciseId)}"]`);
+  let sessions=[];
+  try{
+    const raw=localStorage.getItem(LEGACY_STORAGE_KEY);
+    const parsed=raw?JSON.parse(raw):null;
+    if(parsed&&Array.isArray(parsed.sessions))sessions=parsed.sessions;
+  }catch(e){console.warn("No se pudo leer el registro anterior del navegador.",e);}
+  if(!sessions.length)sessions=INITIAL_SESSIONS;
 
-      const weight = weightInput ? weightInput.value.trim() : "";
-      const reps = repsInput ? repsInput.value.trim() : String(exercise.reps);
-
-      if (weight !== "" && (!Number.isFinite(Number(weight)) || Number(weight) < 0 || Number(weight) > 500)) {
-        showModal("Revisa el peso", `El peso introducido para ${exercise.name} no es válido.`);
-        return;
-      }
-      if (!Number.isInteger(Number(reps)) || Number(reps) < 1 || Number(reps) > 200) {
-        showModal("Revisa las repeticiones", `El número de repeticiones de ${exercise.name} no es válido.`);
-        return;
-      }
-
-      workout.pending.splice(exerciseIndex, 1);
-      workout.completed.push({
-        ...exercise,
-        record: { weight, reps, sets: exercise.sets }
-      });
-
-      if (workout.pending.length === 0) {
-        finishWorkoutAutomatically(workout);
-      } else {
-        appData.activeWorkouts[workoutStorageKey(selectedDay)] = workout;
-        if (persistAppData()) renderWorkoutPage();
-      }
-    }
-
-    function restoreExercise(exerciseId) {
-      const workout = getCurrentWorkout();
-      const index = workout.completed.findIndex(item => item.id === exerciseId);
-      if (index < 0) return;
-
-      const [exercise] = workout.completed.splice(index, 1);
-      delete exercise.record;
-      workout.pending.push(exercise);
-      workout.finished = false;
-
-      appData.activeWorkouts[workoutStorageKey(selectedDay)] = workout;
-      if (persistAppData()) renderWorkoutPage();
-    }
-
-    function finishWorkoutAutomatically(workout) {
-      const sessionItems = {};
-      workout.completed.forEach(exercise => {
-        sessionItems[exercise.id] = {
-          name: exercise.name,
-          muscle: exercise.muscle,
-          weight: exercise.record.weight,
-          reps: exercise.record.reps,
-          sets: exercise.record.sets
-        };
-      });
-
-      const session = {
-        date: getLocalDate(),
-        day: selectedDay,
-        routine: ROUTINE_INFO[selectedDay].title,
-        items: sessionItems
-      };
-
-      const existingIndex = appData.sessions.findIndex(item =>
-        item.date === session.date && item.day === selectedDay
-      );
-      if (existingIndex >= 0) appData.sessions[existingIndex] = session;
-      else appData.sessions.push(session);
-
-      workout.finished = true;
-      appData.activeWorkouts[workoutStorageKey(selectedDay)] = workout;
-
-      if (persistAppData()) {
-        renderWorkoutPage();
-        showModal(
-          "¡Entrenamiento completado!",
-          "Has terminado todos los ejercicios. La sesión, las cargas y las repeticiones se han guardado automáticamente. La próxima vez que repitas estos ejercicios verás tus últimos registros."
-        );
-      }
-    }
-
-    /* =========================================================
-       9. EXERCISE IMAGE LOOKUP
-       A matching image is shown only when the exercise name
-       matches a result from the exercise database. If none is
-       found, show a Google Images search button rather than a
-       misleading image.
-       ========================================================= */
-    function normalizeSearchText(value) {
-      return String(value || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9 ]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-
-    async function fetchExerciseDatabaseImage(exercise) {
-      if (imageCache.has(exercise.id)) return imageCache.get(exercise.id);
-
-      let nextUrl = `${APP_CONFIG.imageApi}?language=${APP_CONFIG.imageApiLanguage}&limit=${APP_CONFIG.imageApiPageSize}`;
-      const results = [];
-      let pageCount = 0;
-
-      while (nextUrl && pageCount < APP_CONFIG.maxImagePages) {
-        const response = await fetch(nextUrl, { headers: { Accept: "application/json" } });
-        if (!response.ok) throw new Error("No se pudo consultar la base de imágenes.");
-        const payload = await response.json();
-        results.push(...(payload.results || []));
-        nextUrl = payload.next;
-        pageCount += 1;
-      }
-
-      const searchNames = [exercise.name, ...(exercise.imageSearchTerms || [])].map(normalizeSearchText);
-      let bestMatch = null;
-      let bestScore = 0;
-
-      for (const candidate of results) {
-        const translations = candidate.translations || [];
-        for (const translation of translations) {
-          const candidateName = normalizeSearchText(translation.name);
-          for (const searchName of searchNames) {
-            let score = 0;
-            if (candidateName === searchName) score = 100;
-            else if (candidateName.includes(searchName) || searchName.includes(candidateName)) score = 78;
-            if (score > bestScore) {
-              bestScore = score;
-              bestMatch = candidate;
-            }
-          }
-        }
-      }
-
-      const selectedImage = bestScore >= APP_CONFIG.imageMatchThreshold && bestMatch && Array.isArray(bestMatch.images)
-        ? (bestMatch.images.find(image => image.is_main) || bestMatch.images[0] || null)
-        : null;
-
-      imageCache.set(exercise.id, selectedImage);
-      return selectedImage;
-    }
-
-    function googleImagesUrl(exercise) {
-      const query = `${exercise.name} técnica correcta ejercicio gimnasio`;
-      return `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`;
-    }
-
-    function renderImageFallback(container, exercise, message) {
-      container.innerHTML = `
-        <div class="media-placeholder">${escapeHTML(message)}</div>
-        <button class="media-action" type="button">BUSCAR</button>`;
-      container.querySelector("button").addEventListener("click", () => {
-        window.open(googleImagesUrl(exercise), "_blank", "noopener,noreferrer");
+  const rows=[];
+  for(const session of sessions){
+    for(const [exerciseId,item] of Object.entries(session.items||{})){
+      if(item.weight===undefined||item.weight===null||String(item.weight).trim()==="")continue;
+      const weight=Number(String(item.weight).replace(",","."));
+      const reps=Number.parseInt(item.reps||12,10);
+      if(!Number.isFinite(weight)||weight<0||!Number.isInteger(reps)||reps<1)continue;
+      rows.push({
+        user_id:currentUser.id,
+        exercise_id:exerciseId,
+        exercise_name:item.name||exerciseId,
+        performed_at:new Date(`${session.date||localDate()}T12:00:00`).toISOString(),
+        weight,
+        sets:Number(item.sets)||3,
+        reps
       });
     }
+  }
+  if(rows.length){
+    const {error:insertError}=await supabase.from("workout_weights").insert(rows);
+    if(insertError)throw insertError;
+  }
+  localStorage.setItem(flag,"1");
+}
 
-    async function loadExerciseImage(exerciseId) {
-      const container = document.querySelector(`[data-exercise-image="${CSS.escape(exerciseId)}"]`);
-      const exercise = exerciseById.get(exerciseId);
-      if (!container || !exercise || container.dataset.loading === "true") return;
-      container.dataset.loading = "true";
-
-      try {
-        const image = await fetchExerciseDatabaseImage(exercise);
-        if (!document.body.contains(container)) return;
-
-        if (image && image.image) {
-          const imageElement = document.createElement("img");
-          imageElement.src = image.image;
-          imageElement.alt = `Imagen de referencia de ${exercise.name}`;
-          imageElement.loading = "lazy";
-          imageElement.decoding = "async";
-          imageElement.onerror = () => renderImageFallback(
-            container,
-            exercise,
-            "La imagen no se ha podido cargar. Busca una referencia visual."
-          );
-
-          container.innerHTML = "";
-          container.appendChild(imageElement);
-
-          const enlargeButton = document.createElement("button");
-          enlargeButton.className = "media-action";
-          enlargeButton.type = "button";
-          enlargeButton.textContent = "AMPLIAR";
-          enlargeButton.addEventListener("click", () => {
-            window.open(image.image, "_blank", "noopener,noreferrer");
-          });
-          container.appendChild(enlargeButton);
-        } else {
-          renderImageFallback(
-            container,
-            exercise,
-            "No hay una imagen específica verificada para este ejercicio."
-          );
-        }
-      } catch (error) {
-        if (document.body.contains(container)) {
-          renderImageFallback(
-            container,
-            exercise,
-            "Imagen no disponible ahora. Puedes buscar una referencia."
-          );
-        }
-      }
+async function saveWeights(){
+  if(saving)return;
+  const exercises=ROUTINES[selectedDay];
+  const rows=[];
+  for(const exercise of exercises){
+    const weightInput=document.querySelector(`[data-weight="${exercise.id}"]`);
+    const repsInput=document.querySelector(`[data-reps="${exercise.id}"]`);
+    const rawWeight=(weightInput?.value||"").trim().replace(",",".");
+    const rawReps=(repsInput?.value||"").trim();
+    if(rawWeight==="")continue;
+    const weight=Number(rawWeight),reps=Number(rawReps);
+    if(!Number.isFinite(weight)||weight<0||weight>500){
+      showStatus($("saveStatus"),`Revisa el peso de ${exercise.name}.`,true);weightInput?.focus();return;
     }
-
-    function requestVisibleExerciseImages() {
-      document.querySelectorAll("[data-exercise-image]").forEach(container => {
-        loadExerciseImage(container.dataset.exerciseImage);
-      });
+    if(!Number.isInteger(reps)||reps<1||reps>200){
+      showStatus($("saveStatus"),`Revisa las repeticiones de ${exercise.name}.`,true);repsInput?.focus();return;
     }
-
-    /* =========================================================
-       10. PROGRESS VIEW
-       Only exercises with actual weight records are displayed.
-       ========================================================= */
-    function collectExerciseHistory(exerciseId) {
-      return appData.sessions
-        .filter(session => session.items && session.items[exerciseId])
-        .map(session => ({
-          date: session.date,
-          ...session.items[exerciseId]
-        }))
-        .filter(record => record.weight !== "" && record.weight !== null && record.weight !== undefined)
-        .sort((a, b) => a.date.localeCompare(b.date));
-    }
-
-    function renderProgressPage() {
-      const container = document.getElementById("progressCards");
-      const exercises = Object.values(EXERCISE_LIBRARY).flat();
-      const cards = [];
-
-      exercises.forEach(exercise => {
-        const history = collectExerciseHistory(exercise.id);
-        if (history.length > 0) cards.push({ exercise, history });
-      });
-
-      if (cards.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            Cuando registres pesos y completes ejercicios, aquí verás comparaciones visuales de tu evolución.
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = cards.map(({ exercise, history }) => {
-        const first = history[0];
-        const latest = history[history.length - 1];
-        const firstWeight = Number(first.weight);
-        const latestWeight = Number(latest.weight);
-        const difference = latestWeight - firstWeight;
-        const isSingleRecord = history.length === 1;
-
-        let message = "Primer registro de este ejercicio.";
-        let messageClass = "neutral";
-        if (!isSingleRecord && difference > 0) {
-          message = `Has aumentado ${formatNumber(difference)} kg respecto al primer registro.`;
-          messageClass = "";
-        } else if (!isSingleRecord && difference < 0) {
-          message = `Has reducido ${formatNumber(Math.abs(difference))} kg respecto al primer registro.`;
-          messageClass = "neutral";
-        } else if (!isSingleRecord) {
-          message = "Has mantenido el mismo peso que en el primer registro.";
-          messageClass = "neutral";
-        }
-
-        const maxWeight = Math.max(...history.map(record => Number(record.weight)), 1);
-        const bars = history.slice(-6).map(record => {
-          const height = Math.max(7, (Number(record.weight) / maxWeight) * 48);
-          const label = record.date.slice(5).replace("-", "/");
-          return `
-            <div class="bar-column" title="${escapeHTML(record.weight)} kg · ${formatDate(record.date)}">
-              <i style="height:${height}px"></i>
-              <small>${escapeHTML(label)}</small>
-            </div>`;
-        }).join("");
-
-        return `
-          <article class="progress-card">
-            <div class="progress-card-title">${escapeHTML(exercise.name)}</div>
-            <div class="progress-card-meta">${escapeHTML(exercise.muscle)} · ${history.length} ${history.length === 1 ? "registro" : "registros"}</div>
-            <div class="comparison">
-              <div class="comparison-cell">
-                <span>PRIMER REGISTRO</span>
-                <strong>${escapeHTML(first.weight)} kg</strong>
-              </div>
-              <div class="comparison-cell">
-                <span>ÚLTIMO REGISTRO</span>
-                <strong>${escapeHTML(latest.weight)} kg</strong>
-              </div>
-            </div>
-            <div class="progress-message ${messageClass}">${message}</div>
-            <div class="bar-chart" aria-label="Evolución de los últimos registros">${bars}</div>
-          </article>`;
-      }).join("");
-    }
-
-    /* =========================================================
-       11. MODAL AND INITIALIZATION
-       ========================================================= */
-    function showModal(title, message) {
-      document.getElementById("modalTitle").textContent = title;
-      document.getElementById("modalMessage").textContent = message;
-      document.getElementById("completionModal").classList.add("open");
-    }
-
-    document.getElementById("closeModal").addEventListener("click", () => {
-      document.getElementById("completionModal").classList.remove("open");
+    rows.push({
+      user_id:currentUser.id,
+      exercise_id:exercise.id,
+      exercise_name:exercise.name,
+      performed_at:new Date().toISOString(),
+      weight,
+      sets:3,
+      reps
     });
+  }
+  if(!rows.length){
+    showStatus($("saveStatus"),"Introduce al menos un peso antes de guardar.",true);
+    return;
+  }
+  saving=true;
+  $("saveWeightsBtn").disabled=true;
+  $("saveWeightsBtn").textContent="GUARDANDO…";
+  try{
+    const {error}=await supabase.from("workout_weights").insert(rows);
+    if(error)throw error;
+    await loadLatestRecords();
+    renderWorkout();
+    showStatus($("saveStatus"),`Guardado correctamente: ${rows.length} ${rows.length===1?"ejercicio":"ejercicios"}. La próxima vez verás estos pesos como último registro.`);
+  }catch(error){
+    console.error(error);
+    showStatus($("saveStatus"),`No se han podido guardar los pesos: ${error.message||"comprueba la conexión y los permisos de la tabla"}`,true);
+  }finally{
+    saving=false;
+    $("saveWeightsBtn").disabled=false;
+    $("saveWeightsBtn").textContent="GUARDAR PESOS";
+  }
+}
 
-    function initializeApplication() {
-      const now = new Date();
-      document.getElementById("headerDate").textContent =
-        new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short", year: "numeric" }).format(now);
+async function enterApp(user){
+  currentUser=user;
+  $("loginView").classList.add("hidden");
+  $("appView").classList.remove("hidden");
+  $("logoutBtn").classList.remove("hidden");
+  $("mainHeading").textContent="Tu entrenamiento";
+  $("mainSubtitle").textContent="Tu rutina diaria y tus últimas cargas.";
+  $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
+  try{
+    await migrateOldLocalRecords();
+    await loadRepDB();
+    await loadLatestRecords();
+    renderWorkout();
+  }catch(error){
+    console.error(error);
+    showStatus($("saveStatus"),`No se han podido cargar tus registros: ${error.message||"comprueba la configuración de Supabase"}`,true);
+  }
+}
 
-      if (selectedDay < 1 || selectedDay > 4) selectedDay = 1;
-      renderWorkoutPage();
-    }
+$("loginForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const email=$("email").value.trim();
+  const password=$("password").value;
+  $("loginBtn").disabled=true;
+  $("loginBtn").textContent="CONECTANDO…";
+  hideStatus($("loginStatus"));
+  const {data,error}=await supabase.auth.signInWithPassword({email,password});
+  $("loginBtn").disabled=false;
+  $("loginBtn").textContent="INICIAR SESIÓN";
+  if(error){
+    showStatus($("loginStatus"),"No se ha podido iniciar sesión. Comprueba el correo y la contraseña que registraste en Supabase.",true);
+    return;
+  }
+  await enterApp(data.user);
+});
 
-    initializeApplication();
-  </script>
+$("logoutBtn").addEventListener("click",async()=>{
+  await supabase.auth.signOut();
+  currentUser=null;
+  $("appView").classList.add("hidden");
+  $("loginView").classList.remove("hidden");
+  $("logoutBtn").classList.add("hidden");
+  $("mainHeading").textContent="Tu entrenamiento";
+  $("mainSubtitle").textContent="Tu rutina de hoy y tus últimas cargas.";
+});
+
+$("saveWeightsBtn").addEventListener("click",saveWeights);
+
+(async function init(){
+  $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
+  const {data:{session}}=await supabase.auth.getSession();
+  if(session?.user)await enterApp(session.user);
+})();
+</script>
 </body>
 </html>
