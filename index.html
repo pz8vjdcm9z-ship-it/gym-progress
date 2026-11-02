@@ -270,6 +270,8 @@ function renderDays(){
   $("daySelector").querySelectorAll("[data-day]").forEach(button=>{
     button.addEventListener("click",()=>{
       selectedDay=Number(button.dataset.day);
+      activeRoutine=loadActiveRoutine(selectedDay);
+      try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
       renderWorkout();
     });
   });
@@ -289,7 +291,7 @@ function imageMarkup(exercise){
 function renderWorkout(){
   renderDays();
   const day=DAYS[selectedDay];
-  const exercises=ROUTINES[selectedDay];
+  const exercises=activeRoutine.length===5?activeRoutine:ROUTINES[selectedDay];
   $("routineTitle").textContent=day.title;
   $("routineDescription").textContent=day.desc;
   $("routineCount").textContent=`${exercises.length} ejercicios · ${completedIds.size}/5 completados`;
@@ -347,10 +349,11 @@ function changeExercise(id){
   const index=activeRoutine.findIndex(x=>x.id===id);
   if(index<0)return;
   const current=activeRoutine[index];
-  const choices=ALTERNATIVES[current.id]||[];
-  const candidate=choices.find(x=>!activeRoutine.some(a=>a.id===x.id));
-  if(!candidate){showStatus($("saveStatus"),"No hay otra alternativa disponible para este ejercicio.",true);return;}
-  activeRoutine[index]={...candidate,reps:current.reps||12};
+  const baseId=current.originalId||current.id;
+  const choices=ALTERNATIVES[baseId]||[];
+  const candidate=choices.find(x=>x.id!==current.id && !activeRoutine.some((a,i)=>i!==index && a.id===x.id));
+  if(!candidate){showStatus($("saveStatus"),`No hay otra alternativa distinta preparada para «${current.name}».`,true);return;}
+  activeRoutine[index]={...candidate,originalId:baseId,reps:current.reps||12};
   completedIds.delete(id);
   localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
   persistRoutine();
@@ -417,7 +420,7 @@ async function migrateOldLocalRecords(){
 
 async function saveWeights(){
   if(saving)return;
-  const exercises=ROUTINES[selectedDay];
+  const exercises=activeRoutine.length===5?activeRoutine:ROUTINES[selectedDay];
   const rows=[];
   for(const exercise of exercises){
     const weightInput=document.querySelector(`[data-weight="${exercise.id}"]`);
@@ -474,6 +477,8 @@ async function enterApp(user){
   $("mainSubtitle").textContent="Tu rutina diaria y tus últimas cargas.";
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
   try{
+    activeRoutine=loadActiveRoutine(selectedDay);
+    try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
     await migrateOldLocalRecords();
     await loadRepDB();
     await loadLatestRecords();
