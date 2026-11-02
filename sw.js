@@ -1,11 +1,6 @@
 
-const CACHE_NAME = "gym-progress-v2";
-
-const APP_FILES = [
-  "./",
-  "./index.html",
-  "./manifest.webmanifest"
-];
+const CACHE_NAME = "gym-progress-v9";
+const APP_FILES = ["./", "./index.html"];
 
 self.addEventListener("install", event => {
   event.waitUntil(
@@ -21,7 +16,10 @@ self.addEventListener("activate", event => {
       .then(keys =>
         Promise.all(
           keys
-            .filter(key => key.startsWith("gym-progress-") && key !== CACHE_NAME)
+            .filter(key =>
+              key.startsWith("gym-progress-") &&
+              key !== CACHE_NAME
+            )
             .map(key => caches.delete(key))
         )
       )
@@ -29,63 +27,49 @@ self.addEventListener("activate", event => {
   );
 });
 
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+
+  event.waitUntil(
+    clients.matchAll({
+      type: "window",
+      includeUncontrolled: true
+    }).then(windowClients => {
+      for (const client of windowClients) {
+        if ("focus" in client) return client.focus();
+      }
+
+      if (clients.openWindow) {
+        return clients.openWindow("./");
+      }
+    })
+  );
+});
+
 self.addEventListener("fetch", event => {
-  const request = event.request;
+  if (event.request.method !== "GET") return;
 
-  if (request.method !== "GET") return;
+  const url = new URL(event.request.url);
 
-  const url = new URL(request.url);
-
-  // No interceptar Supabase, RepDB ni recursos de otros dominios.
   if (url.origin !== self.location.origin) return;
 
-  // Para la página principal, consultar primero la versión publicada.
-  // Solo se usa la copia guardada si no hay conexión.
-  const isPageRequest =
-    request.mode === "navigate" ||
-    url.pathname.endsWith("/index.html") ||
-    url.pathname.endsWith("/");
-
-  if (isPageRequest) {
-    event.respondWith(
-      fetch(request, { cache: "no-store" })
-        .then(response => {
-          if (response && response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-          }
-          return response;
-        })
-        .catch(async () => {
-          const cachedPage = await caches.match(request);
-          if (cachedPage) return cachedPage;
-
-          const cachedIndex = await caches.match("./index.html");
-          if (cachedIndex) return cachedIndex;
-
-          return new Response("No hay conexión y no existe una copia guardada de la aplicación.", {
-            status: 503,
-            headers: { "Content-Type": "text/plain; charset=utf-8" }
-          });
-        })
-    );
-
-    return;
-  }
-
-  // Para los demás archivos locales: usar caché si existe y, si no,
-  // descargarlos y guardar una copia para el uso sin conexión.
   event.respondWith(
-    caches.match(request).then(cached => {
-      if (cached) return cached;
-
-      return fetch(request).then(response => {
+    fetch(event.request, { cache: "no-store" })
+      .then(response => {
         if (response && response.ok) {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+
+          caches.open(CACHE_NAME)
+            .then(cache => cache.put(event.request, copy));
         }
+
         return response;
-      });
-    })
+      })
+      .catch(() =>
+        caches.match(event.request)
+          .then(response =>
+            response || caches.match("./index.html")
+          )
+      )
   );
 });
