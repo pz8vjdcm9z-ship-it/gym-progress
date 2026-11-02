@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v10">
+<meta name="application-version" content="home-v11">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -81,7 +81,7 @@ main{padding-bottom:28px}
 .input-field label{display:block;margin:0 0 4px;color:var(--muted);font-size:8px;font-weight:850;letter-spacing:.45px}
 .input-field input{display:block;width:100%;min-width:0;height:37px;padding:0 8px;border:1px solid rgba(176,198,222,.2);border-radius:8px;background:#0a1726;color:var(--text);font-size:13px}
 .input-field input::placeholder{color:#687d94}
-.exercise-actions{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}.exercise-action{border:1px solid var(--border);border-radius:9px;padding:8px 10px;background:#1b3048;color:var(--soft);font-size:10px;font-weight:850}.exercise-action.complete{border-color:rgba(85,223,189,.4);background:rgba(85,223,189,.12);color:#aaf3df}.exercise-card.is-complete{border-color:rgba(85,223,189,.55);background:linear-gradient(145deg,rgba(25,62,57,.98),rgba(17,43,49,.98))}.exercise-card.is-complete .exercise-name{text-decoration:line-through;text-decoration-color:rgba(85,223,189,.6)}.save-panel{margin-top:18px;padding:15px;border:1px solid rgba(85,223,189,.25);border-radius:17px;background:linear-gradient(145deg,rgba(18,55,55,.72),rgba(20,34,54,.95))}
+.exercise-actions{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}.exercise-action{border:1px solid var(--border);border-radius:9px;padding:9px 11px;background:#1b3048;color:var(--soft);font-size:10px;font-weight:850}.exercise-action[data-previous],.exercise-action[data-change]{border-color:rgba(85,223,189,.42);background:rgba(85,223,189,.10);color:#baffed}.exercise-action.complete{border-color:rgba(85,223,189,.4);background:rgba(85,223,189,.12);color:#aaf3df}.exercise-card.is-complete{border-color:rgba(85,223,189,.55);background:linear-gradient(145deg,rgba(25,62,57,.98),rgba(17,43,49,.98))}.exercise-card.is-complete .exercise-name{text-decoration:line-through;text-decoration-color:rgba(85,223,189,.6)}.save-panel{margin-top:18px;padding:15px;border:1px solid rgba(85,223,189,.25);border-radius:17px;background:linear-gradient(145deg,rgba(18,55,55,.72),rgba(20,34,54,.95))}
 .save-panel p{margin:0 0 11px;color:#c1d9d6;font-size:11px;line-height:1.5}
 .save-panel .primary-btn{min-height:49px}
 .note{margin-top:8px;color:var(--muted);font-size:9px;text-align:center;line-height:1.4}
@@ -730,8 +730,8 @@ function renderWorkout(){
           </div>
           <div class="exercise-actions">
             <button type="button" class="exercise-action complete" data-complete="${escapeHTML(exercise.id)}">${completedIds.has(exercise.id)?"✓ COMPLETADO":"MARCAR COMO COMPLETADO"}</button>
-            <button type="button" class="exercise-action" data-previous="${escapeHTML(exercise.id)}">↶ ANTERIOR</button>
-            <button type="button" class="exercise-action" data-change="${escapeHTML(exercise.id)}">↻ CAMBIAR EJERCICIO</button>
+            <button type="button" class="exercise-action" data-previous="${escapeHTML(exercise.id)}">↶ VOLVER AL ANTERIOR</button>
+            <button type="button" class="exercise-action" data-change="${escapeHTML(exercise.id)}">SIGUIENTE EJERCICIO ↻</button>
           </div>
         </div>
       </div>
@@ -1303,7 +1303,7 @@ window.addEventListener("online",()=>{updateConnectionStatus();syncOfflineQueue(
 window.addEventListener("offline",updateConnectionStatus);
 updateConnectionStatus();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  navigator.serviceWorker.register("./sw.js?v=8",{updateViaCache:"none"})
+  navigator.serviceWorker.register("./sw.js?v=9",{updateViaCache:"none"})
     .then(registration=>registration.update())
     .catch(e=>console.warn("Service worker no disponible",e));
 }
