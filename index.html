@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v1">
+<meta name="application-version" content="home-v2">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -752,6 +752,33 @@ function showWorkout(){
 $("workoutNav").addEventListener("click",showWorkout);
 $("libraryNav").addEventListener("click",showLibrary);
 $("dashboardLibraryBtn").addEventListener("click",showLibrary);
+
+// Navegación entre MI RUTINA y BIBLIOTECA mediante gestos horizontales.
+let mainTabTouchStart=null;
+function enableMainTabSwipe(element, direction){
+  element.addEventListener("touchstart",event=>{
+    if(!event.touches||event.touches.length!==1)return;
+    const target=event.target;
+    // No interferir con campos de texto, controles ni con el gesto interno de la ficha de ejercicio.
+    if(target.closest("input,textarea,select,button,a,[contenteditable='true']"))return;
+    const t=event.touches[0];
+    mainTabTouchStart={x:t.clientX,y:t.clientY,direction};
+  },{passive:true});
+  element.addEventListener("touchend",event=>{
+    if(!mainTabTouchStart||!event.changedTouches||!event.changedTouches.length)return;
+    const start=mainTabTouchStart;mainTabTouchStart=null;
+    const t=event.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
+    if(Math.abs(dx)<85||Math.abs(dy)>65||Math.abs(dx)<Math.abs(dy)*1.4)return;
+    if(start.direction==="routine-to-library"&&dx<0)showLibrary();
+    if(start.direction==="library-to-routine"&&dx>0)showWorkout();
+  },{passive:true});
+  element.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:true});
+}
+enableMainTabSwipe($("workoutSection"),"routine-to-library");
+// En la Biblioteca principal, deslizar a la derecha vuelve a Mi rutina.
+// El detalle de cada grupo muscular conserva su gesto propio para volver a GRUPOS.
+enableMainTabSwipe($("muscleHome"),"library-to-routine");
+
 $("startWorkoutBtn").addEventListener("click",()=>{
   $("daySelector").scrollIntoView({behavior:"smooth",block:"start"});
 });
