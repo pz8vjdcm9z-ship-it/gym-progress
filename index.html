@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v3">
+<meta name="application-version" content="home-v6">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -234,6 +234,31 @@ main{padding-bottom:28px}
 @media(max-width:370px){.home-dashboard{padding:19px 15px 15px}.dashboard-art{width:72px;height:72px;flex-basis:72px;border-radius:22px}.dashboard-art svg{width:44px;height:44px}.dashboard-copy p{font-size:12px}.dashboard-actions{grid-template-columns:1fr}.dashboard-library{min-height:42px}}
 @media(prefers-reduced-motion:no-preference){.home-dashboard{animation:dashboard-arrive .45s ease-out both}.dashboard-art{animation:dashboard-float 5s ease-in-out infinite}@keyframes dashboard-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}@keyframes dashboard-float{0%,100%{transform:translateY(0) rotate(5deg)}50%{transform:translateY(-4px) rotate(2deg)}}}
 
+
+/* Rutina desplegable: inicio limpio y sesión bajo demanda */
+.routine-details{overflow:hidden}
+.routine-details.hidden{display:none!important}
+#startWorkoutBtn{transition:transform .18s ease,filter .18s ease}
+.day-selector{margin-bottom:18px}
+
+
+/* Cronómetro compacto de descanso */
+.rest-timer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 18px;padding:13px 14px;border:1px solid rgba(85,223,189,.22);border-radius:17px;background:linear-gradient(120deg,rgba(22,52,62,.82),rgba(12,25,40,.94));}
+.rest-timer-info{min-width:0;flex:1}
+.rest-timer-label{display:block;margin-bottom:4px;color:#8cebd4;font-size:9px;font-weight:900;letter-spacing:1.2px}
+.rest-timer-sub{display:block;color:#aebdca;font-size:10px;line-height:1.35}
+.rest-timer-clock{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+.rest-timer-time{min-width:54px;color:#f2fbff;font-size:27px;font-weight:900;letter-spacing:-1px;font-variant-numeric:tabular-nums;text-align:center}
+.rest-timer-controls{display:flex;gap:5px;align-items:center}
+.rest-timer-btn{width:34px;height:34px;display:grid;place-items:center;border:1px solid rgba(185,211,229,.18);border-radius:10px;background:rgba(255,255,255,.06);color:#e9f3fa;font-size:17px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.rest-timer-btn.primary{width:auto;min-width:66px;padding:0 10px;border:0;background:linear-gradient(100deg,#65e6c4,#35c9a5);color:#06251f;font-size:10px;letter-spacing:.3px}
+.rest-timer-btn:active{transform:scale(.96)}
+.rest-timer-settings{display:flex;align-items:center;gap:5px;margin-top:9px}
+.rest-timer-settings span{color:#90a5b8;font-size:9px;font-weight:800;margin-right:3px}
+.rest-timer-settings button{padding:5px 8px;border:1px solid rgba(185,211,229,.16);border-radius:8px;background:rgba(255,255,255,.04);color:#c9d8e4;font-size:9px;font-weight:800}
+.rest-timer-settings button.active{border-color:rgba(85,223,189,.55);background:rgba(85,223,189,.13);color:#8cebd4}
+@media(max-width:390px){.rest-timer{padding:11px 10px;gap:7px}.rest-timer-time{font-size:24px;min-width:49px}.rest-timer-btn{width:31px;height:31px}.rest-timer-btn.primary{min-width:59px;padding:0 7px}}
+
 </style>
 </head>
 <body>
@@ -308,6 +333,7 @@ main{padding-bottom:28px}
       </div>
     </section>
     <div class="day-selector" id="daySelector" aria-label="Seleccionar rutina"></div>
+    <div id="routineDetails" class="routine-details hidden">
     <section class="hero">
       <div class="eyebrow">TU PLAN DE ENTRENAMIENTO</div>
       <h2 id="routineTitle">Preparando rutina</h2>
@@ -319,6 +345,25 @@ main{padding-bottom:28px}
       <div class="stat"><strong>3 × 12</strong><span>Series y repeticiones habituales</span></div>
       <div class="stat"><strong>75 s</strong><span>Descanso orientativo</span></div>
     </div>
+    <section class="rest-timer" aria-label="Cronómetro de descanso">
+      <div class="rest-timer-info">
+        <span class="rest-timer-label">DESCANSO ENTRE SERIES</span>
+        <span class="rest-timer-sub" id="restTimerStatus" aria-live="polite">Prepara 30 segundos para tu siguiente serie</span>
+        <div class="rest-timer-settings">
+          <span>TIEMPO</span>
+          <button type="button" data-rest="30" class="active">30 s</button>
+          <button type="button" data-rest="45">45 s</button>
+          <button type="button" data-rest="60">60 s</button>
+        </div>
+      </div>
+      <div class="rest-timer-clock">
+        <div class="rest-timer-time" id="restTimerDisplay">0:30</div>
+        <div class="rest-timer-controls">
+          <button type="button" class="rest-timer-btn primary" id="restTimerStart">INICIAR</button>
+          <button type="button" class="rest-timer-btn" id="restTimerReset" aria-label="Reiniciar cronómetro">↺</button>
+        </div>
+      </div>
+    </section>
     <div class="section-head"><h2>Rutina del día</h2><span class="hint">En el orden previsto</span></div>
     <div class="completion-tabs" role="tablist" aria-label="Estado de ejercicios"><button class="completion-tab active" id="pendingTab" type="button" data-view="pending">SIN COMPLETAR <span id="pendingCount">5</span></button><button class="completion-tab" id="completedTab" type="button" data-view="completed">COMPLETADOS <span id="completedCount">0</span></button></div>
     <div class="exercise-list" id="exerciseList"></div>
@@ -328,6 +373,7 @@ main{padding-bottom:28px}
       <div class="note">Los registros quedan privados en tu cuenta y se usarán para mostrarte el último peso la próxima vez.</div>
       <div id="saveStatus" class="status hidden" role="status"></div><div class="offline-pill" id="connectionStatus">● Comprobando conexión…</div>
     </section>
+    </div>
     </div>
     <section id="librarySection" class="library-panel hidden">
       <h2 class="library-title">Biblioteca de ejercicios</h2>
@@ -432,6 +478,18 @@ let activeRoutine = [];
 let completedIds = new Set();
 let exerciseView = "pending";
 const latestCacheKey = userId => `gym_progress_latest_${userId}`;
+
+const weightDraftKey = (userId,day) => `gym_progress_weight_drafts_${userId||"guest"}_${day}`;
+function readWeightDrafts(day=selectedDay){
+  try{return JSON.parse(localStorage.getItem(weightDraftKey(currentUser?.id,day))||"{}");}
+  catch(e){return {};}
+}
+function writeWeightDraft(exerciseId,value,day=selectedDay){
+  const drafts=readWeightDrafts(day);
+  drafts[exerciseId]=value;
+  localStorage.setItem(weightDraftKey(currentUser?.id,day),JSON.stringify(drafts));
+}
+
 const queueKey = userId => `gym_progress_pending_sync_${userId}`;
 const ALTERNATIVES = {
   chest_machine:[{id:"chest_machine_alt",repdb:"chest-press-machine",name:"Press de pecho en máquina (agarre neutro)",muscle:"Pecho",equipment:"Máquina",instruction:"Usa un agarre cómodo y empuja sin bloquear los codos."},{id:"incline_dumbbell_press",repdb:"incline-db-press",name:"Press inclinado con mancuernas",muscle:"Pecho superior",equipment:"Mancuernas y banco",instruction:"Baja de forma controlada y empuja sin chocar las pesas."}],
@@ -457,6 +515,43 @@ const ALTERNATIVES = {
 };
 
 const $ = id => document.getElementById(id);
+
+let restDuration=30,restRemaining=30,restInterval=null,restDeadline=0;
+function renderRestTimer(){
+  const display=$("restTimerDisplay");
+  if(display)display.textContent=`${Math.floor(restRemaining/60)}:${String(restRemaining%60).padStart(2,"0")}`;
+  const start=$("restTimerStart");
+  if(start)start.textContent=restInterval?"PAUSAR":"INICIAR";
+  document.querySelectorAll("[data-rest]").forEach(button=>button.classList.toggle("active",Number(button.dataset.rest)===restDuration));
+}
+function stopRestTimer(message){
+  if(restInterval){clearInterval(restInterval);restInterval=null;}
+  if(message&&$("restTimerStatus"))$("restTimerStatus").textContent=message;
+  renderRestTimer();
+}
+function tickRestTimer(){
+  restRemaining=Math.max(0,Math.ceil((restDeadline-Date.now())/1000));
+  if(restRemaining<=0){
+    stopRestTimer("¡Descanso terminado! Vamos con la siguiente serie.");
+    if(navigator.vibrate)navigator.vibrate([180,90,180]);
+    return;
+  }
+  renderRestTimer();
+}
+function startRestTimer(){
+  if(restInterval){stopRestTimer("Descanso pausado.");return;}
+  if(restRemaining<=0)restRemaining=restDuration;
+  restDeadline=Date.now()+restRemaining*1000;
+  $("restTimerStatus").textContent="Descansando…";
+  restInterval=setInterval(tickRestTimer,200);
+  renderRestTimer();
+}
+function resetRestTimer(){
+  stopRestTimer("Cronómetro preparado.");
+  restRemaining=restDuration;
+  renderRestTimer();
+}
+
 const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const localDate = () => {const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;};
 const prettyDate = value => {if(!value)return "";const d=new Date(value);return new Intl.DateTimeFormat("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"}).format(d);};
@@ -530,7 +625,9 @@ function renderWorkout(){
       : "Todavía no tienes un peso registrado para este ejercicio.";
     const reps=exercise.reps||12;
     const repsLabel=exercise.unit?`3 × ${reps} ${exercise.unit.toLowerCase()}`:`3 × ${reps} repeticiones`;
-    const weightDefault=exercise.bodyweight?"0":"";
+    const drafts=readWeightDrafts();
+    const savedDraft=drafts[exercise.id];
+    const weightDefault=savedDraft!==undefined?savedDraft:(previous?.weight!==undefined?String(previous.weight):(exercise.bodyweight?"0":""));
     return `<article class="exercise-card ${completedIds.has(exercise.id)?"is-complete":""}" data-card="${escapeHTML(exercise.id)}">
       <div class="exercise-layout">
         ${imageMarkup(exercise)}
@@ -753,34 +850,48 @@ $("workoutNav").addEventListener("click",showWorkout);
 $("libraryNav").addEventListener("click",showLibrary);
 $("dashboardLibraryBtn").addEventListener("click",showLibrary);
 
-// Navegación entre MI RUTINA y BIBLIOTECA mediante gestos horizontales.
+// Gestos globales: funcionan desde cualquier zona de la pantalla, también sobre tarjetas.
 let mainTabTouchStart=null;
-function enableMainTabSwipe(element, direction){
-  element.addEventListener("touchstart",event=>{
-    if(!event.touches||event.touches.length!==1)return;
-    const target=event.target;
-    // No interferir con campos de texto, controles ni con el gesto interno de la ficha de ejercicio.
-    if(target.closest("input,textarea,select,button,a,[contenteditable='true']"))return;
-    const t=event.touches[0];
-    mainTabTouchStart={x:t.clientX,y:t.clientY,direction};
-  },{passive:true});
-  element.addEventListener("touchend",event=>{
-    if(!mainTabTouchStart||!event.changedTouches||!event.changedTouches.length)return;
-    const start=mainTabTouchStart;mainTabTouchStart=null;
-    const t=event.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
-    if(Math.abs(dx)<85||Math.abs(dy)>65||Math.abs(dx)<Math.abs(dy)*1.4)return;
-    if(start.direction==="routine-to-library"&&dx<0)showLibrary();
-    if(start.direction==="library-to-routine"&&dx>0)showWorkout();
-  },{passive:true});
-  element.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:true});
-}
-enableMainTabSwipe($("workoutSection"),"routine-to-library");
-// En la Biblioteca principal, deslizar a la derecha vuelve a Mi rutina.
-// El detalle de cada grupo muscular conserva su gesto propio para volver a GRUPOS.
-enableMainTabSwipe($("muscleHome"),"library-to-routine");
+document.addEventListener("touchstart",event=>{
+  if(!event.touches||event.touches.length!==1)return;
+  const t=event.touches[0];
+  mainTabTouchStart={x:t.clientX,y:t.clientY};
+},{passive:true});
+document.addEventListener("touchend",event=>{
+  if(!mainTabTouchStart||!event.changedTouches||!event.changedTouches.length)return;
+  const start=mainTabTouchStart;mainTabTouchStart=null;
+  const t=event.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
+  // Solo gestos claramente horizontales; el scroll vertical sigue siendo normal.
+  if(Math.abs(dx)<90||Math.abs(dy)>70||Math.abs(dx)<Math.abs(dy)*1.35)return;
+  const libraryOpen=!$("librarySection").classList.contains("hidden");
+  const routineOpen=!$("workoutSection").classList.contains("hidden");
+  if(routineOpen&&dx<0)showLibrary();
+  else if(libraryOpen&&dx>0){
+    // Si estamos dentro de un músculo, primero se conserva la navegación interna.
+    if(libraryGroup)return;
+    showWorkout();
+  }
+},{passive:true});
+document.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:true});
+
+$("restTimerStart").addEventListener("click",startRestTimer);
+$("restTimerReset").addEventListener("click",resetRestTimer);
+document.querySelectorAll("[data-rest]").forEach(button=>button.addEventListener("click",()=>{
+  restDuration=Number(button.dataset.rest);restRemaining=restDuration;
+  stopRestTimer("Tiempo de descanso actualizado.");
+  renderRestTimer();
+}));
+renderRestTimer();
 
 $("startWorkoutBtn").addEventListener("click",()=>{
-  $("daySelector").scrollIntoView({behavior:"smooth",block:"start"});
+  const details=$("routineDetails");
+  const opening=details.classList.contains("hidden");
+  details.classList.toggle("hidden",!opening);
+  $("startWorkoutBtn").innerHTML=opening
+    ? 'OCULTAR RUTINA <span aria-hidden="true">↑</span>'
+    : 'EMPEZAR ENTRENAMIENTO <span aria-hidden="true">→</span>';
+  if(opening)requestAnimationFrame(()=>$("daySelector").scrollIntoView({behavior:"smooth",block:"start"}));
+  else window.scrollTo({top:0,behavior:"smooth"});
 });
 $("muscleGrid").addEventListener("click",event=>{const tile=event.target.closest("[data-muscle]");if(tile)openLibraryGroup(tile.dataset.muscle);});
 $("libraryBack").addEventListener("click",backToLibraryGroups);
@@ -863,6 +974,16 @@ function changeExercise(id){
 }
 $("pendingTab").addEventListener("click",()=>{exerciseView="pending";renderWorkout();});
 $("completedTab").addEventListener("click",()=>{exerciseView="completed";renderWorkout();});
+$("exerciseList").addEventListener("input",event=>{
+  const input=event.target.closest("[data-weight]");
+  if(!input)return;
+  writeWeightDraft(input.dataset.weight,input.value);
+});
+$("exerciseList").addEventListener("change",event=>{
+  const input=event.target.closest("[data-weight]");
+  if(!input)return;
+  writeWeightDraft(input.dataset.weight,input.value);
+});
 $("exerciseList").addEventListener("click",event=>{
   const complete=event.target.closest("[data-complete]");
   const change=event.target.closest("[data-change]");
@@ -929,9 +1050,11 @@ async function saveWeights(){
   if(saving)return;
   const exercises=activeRoutine.length===5?activeRoutine:ROUTINES[selectedDay];
   const rows=[];
+  const drafts=readWeightDrafts();
   for(const exercise of exercises){
     const weightInput=document.querySelector(`[data-weight="${exercise.id}"]`);
-    const rawWeight=(weightInput?.value||"").trim().replace(",",".");
+    const rawValue=drafts[exercise.id]!==undefined?drafts[exercise.id]:(weightInput?.value||"");
+    const rawWeight=String(rawValue||"").trim().replace(",",".");
     if(rawWeight==="")continue;
     const weight=Number(rawWeight),reps=Number(exercise.reps||12);
     if(!Number.isFinite(weight)||weight<0||weight>500){
