@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -890,7 +889,7 @@ async function loadRepDB(){
 function renderDays(){
   $("daySelector").innerHTML=[1,2,3,4].map(day=>`
     <button type="button" class="day-btn ${selectedDay===day?"active":""}" data-day="${day}">
-      ${DAYS[day].short}<small>${DAYS[day].title.split(" + ")[0]}</small>
+      ${DAYS[day].short}<small>${DAYS[day].title}</small>
     </button>`).join("");
   $("daySelector").querySelectorAll("[data-day]").forEach(button=>{
     button.addEventListener("click",()=>{
@@ -1176,6 +1175,11 @@ function currentMainTab(){
 function navigateMainTabBySwipe(direction){
   const current=currentMainTab();
   if(!current)return;
+  // Dentro de un grupo muscular, deslizar a la derecha vuelve primero a la vista de todos los grupos.
+  if(direction>0&&current==="library"&&libraryGroup){
+    backToLibraryGroups();
+    return;
+  }
   if(direction<0&&current==="workout")showLibrary();
   else if(direction>0&&current==="library")showWorkout();
 }
@@ -1188,13 +1192,6 @@ document.addEventListener("touchend",event=>{
   const start=mainTabTouchStart;mainTabTouchStart=null;
   const touch=event.changedTouches[0],dx=touch.clientX-start.x,dy=touch.clientY-start.y;
   if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.25)navigateMainTabBySwipe(dx);
-},{passive:true});
-document.addEventListener("touchend",event=>{
-  if(!mainTabTouchStart||!event.changedTouches||!event.changedTouches.length)return;
-  const start=mainTabTouchStart;mainTabTouchStart=null;
-  const t=event.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
-  if(Math.abs(dx)<75||Math.abs(dy)>65||Math.abs(dx)<Math.abs(dy)*1.3)return;
-  navigateMainTabBySwipe(dx);
 },{passive:true});
 document.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:true});
 
@@ -1784,3 +1781,4 @@ async function initializeSpotifyForApp(){
 </script>
 </body>
 </html>
+
