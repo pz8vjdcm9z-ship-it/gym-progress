@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v11">
+<meta name="application-version" content="home-v12">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -271,6 +271,74 @@ main{padding-bottom:28px}
 .timer-alert-card button{width:100%;min-height:50px;border:0;border-radius:14px;background:linear-gradient(100deg,#65e6c4,#35c9a5);color:#06251f;font-size:12px;font-weight:950;letter-spacing:.6px}
 @keyframes timerAlertPop{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 
+
+
+/* GYM PROGRESS v12: temporizador reorganizado para móvil */
+.rest-timer{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:12px;
+  align-items:stretch;
+  padding:15px;
+}
+.rest-timer-info{min-width:0;width:100%}
+.rest-timer-label{font-size:10px;line-height:1.4}
+.rest-timer-sub{font-size:12px;line-height:1.45;max-width:34ch}
+.rest-timer-settings{display:flex;align-items:center;gap:7px;margin-top:12px;flex-wrap:wrap}
+.rest-timer-settings span{margin-right:4px}
+.rest-timer-settings button{min-width:43px;min-height:39px;padding:7px 10px;font-size:11px}
+.rest-timer-clock{
+  display:grid;
+  grid-template-columns:minmax(76px,auto) minmax(0,1fr);
+  grid-template-areas:"time controls" "notify notify";
+  align-items:center;
+  justify-content:stretch;
+  gap:10px;
+  width:100%;
+  min-width:0;
+}
+.rest-timer-time{
+  grid-area:time;
+  min-width:0;
+  text-align:left;
+  font-size:clamp(36px,10vw,46px);
+  line-height:1;
+  letter-spacing:-1.5px;
+}
+.rest-timer-controls{
+  grid-area:controls;
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  min-width:0;
+}
+.rest-timer-btn{width:42px;height:42px;font-size:19px}
+.rest-timer-btn.primary{min-width:92px;height:42px;padding:0 13px;font-size:11px}
+.rest-notify-row{
+  grid-area:notify;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  width:100%;
+  min-width:0;
+  margin:2px 0 0;
+}
+.rest-notify-btn{min-height:36px;padding:8px 12px;font-size:10px}
+.rest-notify-hint{flex:1 1 150px;font-size:10px;line-height:1.35}
+@media(min-width:560px){
+  .rest-timer{grid-template-columns:minmax(0,1fr) minmax(220px,.9fr);gap:18px;align-items:center}
+  .rest-timer-clock{grid-template-columns:auto 1fr;grid-template-areas:"time controls" "notify notify"}
+  .rest-timer-time{font-size:40px;text-align:left}
+}
+@media(max-width:360px){
+  .rest-timer{padding:12px}
+  .rest-timer-clock{grid-template-columns:72px minmax(0,1fr);gap:7px}
+  .rest-timer-time{font-size:34px}
+  .rest-timer-btn{width:38px;height:40px}
+  .rest-timer-btn.primary{min-width:78px;padding:0 9px;font-size:10px}
+  .rest-notify-hint{flex-basis:100%}
+}
 
 </style>
 </head>
@@ -620,19 +688,69 @@ function resetRestTimer(){
 }
 async function enableRestNotifications(){
   const hint=$("restNotifyHint"),button=$("restNotifyEnable");
-  if(!("Notification" in window)){hint.textContent="Este navegador no admite notificaciones.";return;}
-  if(!window.isSecureContext){hint.textContent="Abre la aplicación desde su dirección segura HTTPS.";return;}
+  if(!("Notification" in window)){
+    hint.textContent="Este navegador no admite notificaciones.";
+    return;
+  }
+  if(!window.isSecureContext){
+    hint.textContent="Abre la aplicación desde su dirección segura HTTPS.";
+    return;
+  }
+
+  // No volver a solicitar permiso si el usuario ya respondió anteriormente.
+  if(Notification.permission==="granted"){
+    hint.textContent="Avisos activados en este dispositivo.";
+    button.textContent="AVISOS ACTIVADOS";
+    button.disabled=true;
+    return;
+  }
+  if(Notification.permission==="denied"){
+    hint.textContent="Permiso rechazado. Puedes cambiarlo desde los ajustes del dispositivo.";
+    button.textContent="PERMISO RECHAZADO";
+    button.disabled=true;
+    return;
+  }
+
   try{
     const permission=await Notification.requestPermission();
     if(permission==="granted"){
-      hint.textContent="Avisos permitidos en este dispositivo.";
+      hint.textContent="Avisos activados en este dispositivo.";
       button.textContent="AVISOS ACTIVADOS";
+      button.disabled=true;
       if("serviceWorker" in navigator){
-        const registration=await navigator.serviceWorker.ready;
-        await registration.showNotification("Avisos de GYM PROGRESS activados",{body:"Recibirás una notificación cuando el temporizador termine mientras la aplicación pueda ejecutar el aviso.",icon:"./icon-192.png",tag:"gym-progress-permission"});
+        try{
+          const registration=await navigator.serviceWorker.ready;
+          await registration.showNotification("Avisos de GYM PROGRESS activados",{
+            body:"Recibirás un aviso cuando termine el temporizador.",
+            icon:"./icon-192.png",
+            tag:"gym-progress-permission"
+          });
+        }catch(e){console.warn("No se pudo mostrar la notificación de prueba",e);}
       }
-    }else hint.textContent=permission==="denied"?"Avisos bloqueados. Actívalos en Ajustes del dispositivo.":"No se han activado los avisos.";
-  }catch(e){hint.textContent="No se pudieron activar las notificaciones en este navegador.";}
+    }else if(permission==="denied"){
+      hint.textContent="Permiso rechazado. No volveremos a solicitarlo. Puedes cambiarlo desde los ajustes del dispositivo.";
+      button.textContent="PERMISO RECHAZADO";
+      button.disabled=true;
+    }else{
+      hint.textContent="No se ha concedido el permiso. Puedes activarlo más adelante desde el navegador.";
+    }
+  }catch(e){
+    hint.textContent="No se pudo gestionar el permiso de notificaciones.";
+  }
+}
+
+function syncRestNotificationButton(){
+  const button=$("restNotifyEnable"),hint=$("restNotifyHint");
+  if(!button||!("Notification" in window))return;
+  if(Notification.permission==="granted"){
+    button.textContent="AVISOS ACTIVADOS";
+    button.disabled=true;
+    hint.textContent="Avisos activados en este dispositivo.";
+  }else if(Notification.permission==="denied"){
+    button.textContent="PERMISO RECHAZADO";
+    button.disabled=true;
+    hint.textContent="Permiso rechazado. Puedes cambiarlo desde los ajustes del dispositivo.";
+  }
 }
 
 const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -962,6 +1080,7 @@ document.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:t
 $("restTimerStart").addEventListener("click",startRestTimer);
 $("restTimerReset").addEventListener("click",resetRestTimer);
 $("restNotifyEnable").addEventListener("click",enableRestNotifications);
+syncRestNotificationButton();
 $("restTimerAlertClose").addEventListener("click",()=>$("restTimerAlert").classList.add("hidden"));
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&restDeadline&&restRemaining>0&&Date.now()>=restDeadline)tickRestTimer();});
 document.querySelectorAll("[data-rest]").forEach(button=>button.addEventListener("click",()=>{
