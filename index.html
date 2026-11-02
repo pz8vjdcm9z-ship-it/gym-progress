@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v2">
+<meta name="application-version" content="home-v3">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -1046,7 +1046,11 @@ async function syncOfflineQueue(){
 window.addEventListener("online",()=>{updateConnectionStatus();syncOfflineQueue();});
 window.addEventListener("offline",updateConnectionStatus);
 updateConnectionStatus();
-if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js").catch(e=>console.warn("Service worker no disponible",e));
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  navigator.serviceWorker.register("./sw.js?v=3",{updateViaCache:"none"})
+    .then(registration=>registration.update())
+    .catch(e=>console.warn("Service worker no disponible",e));
+}
 
 (async function init(){
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
