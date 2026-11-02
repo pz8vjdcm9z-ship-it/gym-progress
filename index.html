@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b1422">
+<meta name="theme-color" content="#0b1422">\n<meta name="application-version" content="library-v1">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -90,6 +90,45 @@ main{padding-bottom:28px}
 .credit a{color:#9cebd9}
 @media(max-width:370px){.container{padding:0 11px}.exercise-layout{grid-template-columns:90px minmax(0,1fr);gap:9px;padding:9px}.exercise-media{width:90px;min-height:96px}.exercise-media img{height:96px}.exercise-name{font-size:12px}.instructions{font-size:9px}.input-field input{height:34px;padding:0 6px;font-size:11px}}
 @media(min-width:700px){.container{padding:0 22px}.exercise-list{grid-template-columns:1fr 1fr;align-items:start}.exercise-layout{grid-template-columns:116px minmax(0,1fr)}.exercise-media{width:116px}.exercise-media img{height:116px}}
+
+/* BIBLIOTECA VISUAL */
+.library-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
+.library-nav button{border:1px solid var(--border);border-radius:12px;padding:12px;background:#142236;color:var(--soft);font-weight:900;font-size:11px}
+.library-nav button.active{border-color:#f07824;background:linear-gradient(135deg,rgba(240,120,36,.2),rgba(229,36,36,.12));color:#fff}
+.library-panel{padding-bottom:22px}
+.library-intro{margin:4px 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+.muscle-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.muscle-tile{position:relative;min-height:142px;overflow:hidden;border:1px solid rgba(240,120,36,.28);border-radius:17px;padding:12px;text-align:left;color:#fff;background:radial-gradient(circle at 80% 15%,rgba(229,36,36,.18),transparent 48%),linear-gradient(145deg,#172538,#0c1726);box-shadow:0 8px 20px rgba(0,0,0,.16)}
+.muscle-tile:active{transform:scale(.985)}
+.muscle-art{height:76px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;color:#f07824}
+.muscle-art svg{height:78px;width:100%;max-width:130px}
+.muscle-tile strong{display:block;font-size:13px;letter-spacing:.2px}
+.muscle-tile small{display:block;margin-top:3px;color:#aebdce;font-size:9px}
+.library-toolbar{display:flex;gap:8px;align-items:center;margin:12px 0}
+.library-search{flex:1;min-width:0;height:42px;border:1px solid var(--border);border-radius:11px;padding:0 12px;background:#0a1726;color:var(--text)}
+.library-back{border:1px solid rgba(240,120,36,.35);border-radius:10px;padding:10px 12px;background:rgba(240,120,36,.12);color:#ffc18e;font-size:11px;font-weight:900}
+.library-title{margin:14px 0 4px;font-size:21px}
+.library-subtitle{margin:0;color:var(--muted);font-size:11px}
+.library-exercises{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:13px}
+.library-card{overflow:hidden;border:1px solid var(--border);border-radius:15px;background:linear-gradient(145deg,#17283d,#101c2c)}
+.library-image{height:142px;background:#0a1726;display:grid;place-items:center;overflow:hidden}
+.library-image img{width:100%;height:100%;object-fit:contain}
+.library-card-body{padding:10px}
+.library-card h3{min-height:34px;margin:0 0 5px;font-size:11px;line-height:1.35}
+.library-meta{min-height:25px;color:var(--muted);font-size:9px}
+.activation{display:flex;flex-wrap:wrap;gap:4px;margin:7px 0}
+.activation span{border-radius:5px;padding:4px 6px;color:#171717;font-size:8px;font-weight:900}
+.activation .primary{background:#e52424;color:white}.activation .secondary{background:#f07824;color:#171717}.activation .light{background:#f3c83d;color:#171717}
+.rating-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+.rating-btn{border:1px solid var(--border);border-radius:8px;padding:7px 2px;background:#0b1725;color:#aebdce;font-size:9px;font-weight:900}
+.rating-btn[aria-pressed="true"][data-rating="like"]{border-color:#22c55e;background:rgba(34,197,94,.16);color:#9cf0b5}
+.rating-btn[aria-pressed="true"][data-rating="maybe"]{border-color:#eab308;background:rgba(234,179,8,.15);color:#ffe18a}
+.rating-btn[aria-pressed="true"][data-rating="dislike"]{border-color:#ef4444;background:rgba(239,68,68,.16);color:#ffaaaa}
+.library-legend{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0;color:#c5d0dd;font-size:9px}
+.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.library-empty{grid-column:1/-1;padding:22px;border:1px dashed var(--border);border-radius:14px;color:var(--muted);text-align:center;font-size:11px}
+@media(max-width:370px){.library-exercises{gap:7px}.library-image{height:120px}.library-card-body{padding:8px}.rating-btn{font-size:8px}}
+
 </style>
 </head>
 <body>
@@ -123,6 +162,11 @@ main{padding-bottom:28px}
   </section>
 
   <section id="appView" class="hidden">
+    <div class="library-nav">
+      <button type="button" id="workoutNav" class="active">MI RUTINA</button>
+      <button type="button" id="libraryNav">BIBLIOTECA</button>
+    </div>
+    <div id="workoutSection">
     <div class="day-selector" id="daySelector" aria-label="Seleccionar rutina"></div>
     <section class="hero">
       <div class="eyebrow">TU PLAN DE ENTRENAMIENTO</div>
@@ -143,6 +187,28 @@ main{padding-bottom:28px}
       <button class="primary-btn" id="saveWeightsBtn" type="button">GUARDAR PESOS</button>
       <div class="note">Los registros quedan privados en tu cuenta y se usarán para mostrarte el último peso la próxima vez.</div>
       <div id="saveStatus" class="status hidden" role="status"></div><div class="offline-pill" id="connectionStatus">● Comprobando conexión…</div>
+    </section>
+    </div>
+    <section id="librarySection" class="library-panel hidden">
+      <h2 class="library-title">Biblioteca de ejercicios</h2>
+      <p class="library-intro">Explora los grupos musculares y valora cada ejercicio. Tus preferencias se utilizarán para ordenar las alternativas de tu rutina.</p>
+      <div class="library-legend">
+        <span><i class="legend-dot" style="background:#e52424"></i>Principal</span>
+        <span><i class="legend-dot" style="background:#f07824"></i>Secundario</span>
+        <span><i class="legend-dot" style="background:#f3c83d"></i>Participación ligera</span>
+      </div>
+      <div id="muscleHome">
+        <div class="muscle-grid" id="muscleGrid"></div>
+      </div>
+      <div id="muscleDetail" class="hidden">
+        <div class="library-toolbar">
+          <button type="button" class="library-back" id="libraryBack">← GRUPOS</button>
+          <input class="library-search" id="librarySearch" type="search" placeholder="Buscar ejercicio…">
+        </div>
+        <h2 class="library-title" id="libraryGroupTitle"></h2>
+        <p class="library-subtitle" id="libraryGroupSubtitle"></p>
+        <div class="library-exercises" id="libraryExerciseGrid"></div>
+      </div>
     </section>
   </section>
 </main>
@@ -429,6 +495,115 @@ function equipmentPreference(item,current){
   if(e.includes("body")||item.is_bodyweight)return 5;
   return 0;
 }
+
+const MUSCLE_GROUPS = [
+  {id:"chest",name:"Pectoral",aliases:["pectoralis_major","pectoralis_minor"],desc:"Pecho y zona superior"},
+  {id:"back",name:"Espalda",aliases:["latissimus_dorsi","rhomboids","trapezius","erector_spinae"],desc:"Dorsales y espalda alta"},
+  {id:"shoulders",name:"Hombros",aliases:["anterior_deltoid","lateral_deltoid","posterior_deltoid"],desc:"Deltoides anterior, lateral y posterior"},
+  {id:"biceps",name:"Bíceps",aliases:["biceps_brachii","brachialis"],desc:"Flexores del codo"},
+  {id:"triceps",name:"Tríceps",aliases:["triceps_brachii"],desc:"Extensores del codo"},
+  {id:"abs",name:"Abdomen",aliases:["rectus_abdominis","transverse_abdominis","obliques"],desc:"Core y zona abdominal"},
+  {id:"quads",name:"Cuádriceps",aliases:["quadriceps","rectus_femoris","vastus_lateralis","vastus_medialis"],desc:"Parte anterior del muslo"},
+  {id:"hamstrings",name:"Isquiotibiales",aliases:["hamstrings","biceps_femoris"],desc:"Parte posterior del muslo"},
+  {id:"glutes",name:"Glúteos",aliases:["gluteus_maximus","gluteus_medius","gluteus_minimus"],desc:"Glúteo mayor y medio"},
+  {id:"calves",name:"Gemelos",aliases:["gastrocnemius","soleus"],desc:"Pantorrilla"}
+];
+let libraryGroup = null;
+let exerciseRatings = {};
+const ratingStorageKey = () => `gym_progress_exercise_ratings_${currentUser?.id||"guest"}`;
+function loadExerciseRatings(){
+  try{
+    const cloud=currentUser?.user_metadata?.gym_progress_exercise_ratings;
+    exerciseRatings=cloud&&typeof cloud==="object"?cloud:JSON.parse(localStorage.getItem(ratingStorageKey())||"{}");
+  }catch(e){exerciseRatings={};}
+}
+async function saveExerciseRatings(){
+  localStorage.setItem(ratingStorageKey(),JSON.stringify(exerciseRatings));
+  if(!currentUser||!navigator.onLine)return;
+  try{
+    const {data,error}=await supabase.auth.updateUser({data:{...(currentUser.user_metadata||{}),gym_progress_exercise_ratings:exerciseRatings}});
+    if(!error&&data?.user)currentUser=data.user;
+    if(error)console.warn("No se pudo sincronizar la valoración en la cuenta; queda guardada en este dispositivo.",error);
+  }catch(error){console.warn("La valoración queda guardada localmente.",error);}
+}
+function muscleArt(group){
+  const accents = group.id==="chest"||group.id==="shoulders"?"#e52424":group.id==="back"||group.id==="glutes"?"#f07824":"#f3c83d";
+  return `<svg viewBox="0 0 120 90" role="img" aria-label="Ilustración anatómica de ${escapeHTML(group.name)}">
+    <path d="M43 9 Q60 1 77 9 L84 22 78 33 74 49 79 82 65 86 60 58 55 86 41 82 46 49 42 33 36 22Z" fill="#718092" opacity=".28" stroke="#aebdce" stroke-width="1.5"/>
+    <path d="M43 18 Q30 16 25 30 L17 49 23 52 35 35 43 31Z M77 18 Q90 16 95 30 L103 49 97 52 85 35 77 31Z" fill="#718092" opacity=".28" stroke="#aebdce" stroke-width="1.5"/>
+    <path d="M45 20 Q60 14 75 20 L72 34 Q60 41 48 34Z" fill="${accents}" opacity=".95"/>
+    <path d="M48 39 Q60 44 72 39 L69 53 60 57 51 53Z" fill="${group.id==="abs"?"#e52424":"#f3c83d"}" opacity=".9"/>
+    <path d="M37 57 L48 57 51 82 42 84Z M72 57 L83 57 78 84 69 82Z" fill="${group.id==="quads"||group.id==="hamstrings"||group.id==="glutes"?"#e52424":"#718092"}" opacity=".8"/>
+    <path d="M45 20 L34 34 29 49 M75 20 L86 34 91 49" fill="none" stroke="#c4d0de" stroke-width="1.2"/>
+  </svg>`;
+}
+function exerciseMatchesGroup(ex,group){
+  const primary=(ex.primary_muscles||[]).map(x=>String(x).toLowerCase());
+  const secondary=(ex.secondary_muscles||[]).map(x=>String(x).toLowerCase());
+  return primary.some(x=>group.aliases.includes(x))||secondary.some(x=>group.aliases.includes(x));
+}
+function renderMuscleHome(){
+  $("muscleGrid").innerHTML=MUSCLE_GROUPS.map(group=>{
+    const count=exerciseCatalog.filter(x=>x.category==="strength"&&exerciseMatchesGroup(x,group)).length;
+    return `<button type="button" class="muscle-tile" data-muscle="${group.id}"><div class="muscle-art">${muscleArt(group)}</div><strong>${group.name}</strong><small>${count} ejercicios disponibles</small></button>`;
+  }).join("");
+}
+function ratingButtons(id){
+  const value=exerciseRatings[id]||"";
+  return `<div class="rating-row" aria-label="Valorar ejercicio">
+    <button type="button" class="rating-btn" data-rating="like" data-exercise="${escapeHTML(id)}" aria-pressed="${value==="like"}">👍 Me gusta</button>
+    <button type="button" class="rating-btn" data-rating="maybe" data-exercise="${escapeHTML(id)}" aria-pressed="${value==="maybe"}">➖ Intermedio</button>
+    <button type="button" class="rating-btn" data-rating="dislike" data-exercise="${escapeHTML(id)}" aria-pressed="${value==="dislike"}">👎 No</button>
+  </div>`;
+}
+function activationMarkup(ex){
+  const primary=(ex.primary_muscles||[]).slice(0,2);
+  const secondary=(ex.secondary_muscles||[]).slice(0,2);
+  const labels=x=>String(x).replaceAll("_"," ").replace(/\b\w/g,c=>c.toUpperCase());
+  return `<div class="activation">${primary.map(x=>`<span class="primary">${escapeHTML(labels(x))}</span>`).join("")}${secondary.map(x=>`<span class="secondary">${escapeHTML(labels(x))}</span>`).join("")}</div>`;
+}
+function renderLibraryGroup(){
+  const group=MUSCLE_GROUPS.find(x=>x.id===libraryGroup);
+  if(!group)return;
+  $("libraryGroupTitle").textContent=group.name;
+  $("libraryGroupSubtitle").textContent=group.desc+" · Selecciona tu valoración para ordenar futuras alternativas.";
+  const q=($("librarySearch").value||"").trim().toLocaleLowerCase("es");
+  const list=exerciseCatalog.filter(x=>x.category==="strength"&&x.images?.flat&&exerciseMatchesGroup(x,group)&&
+    (!q||(x.name_es||"").toLocaleLowerCase("es").includes(q)));
+  const priority={like:0,maybe:1,"":2,dislike:3};
+  list.sort((a,b)=>(priority[exerciseRatings[a.id]||""]??2)-(priority[exerciseRatings[b.id]||""]??2)||(a.name_es||"").localeCompare(b.name_es||"","es"));
+  $("libraryExerciseGrid").innerHTML=list.length?list.map(ex=>{
+    const flat=ex.images.flat;const paths=[flat.start,flat.peak].filter(Boolean);if(!paths.length&&flat.main)paths.push(flat.main);
+    const img=paths[0]?`<img loading="lazy" src="${REPDB_ASSETS+paths[0]}" alt="${escapeHTML(ex.name_es)}">`:`<div class="media-empty">Imagen no disponible</div>`;
+    return `<article class="library-card"><div class="library-image">${img}</div><div class="library-card-body">
+      <h3>${escapeHTML(ex.name_es||ex.name_en||"Ejercicio")}</h3><div class="library-meta">${escapeHTML(ex.equipment||"Material variable")}</div>
+      ${activationMarkup(ex)}${ratingButtons(ex.id)}</div></article>`;
+  }).join(""):`<div class="library-empty">No se han encontrado ejercicios para esta búsqueda.</div>`;
+}
+function openLibraryGroup(id){
+  libraryGroup=id;$("muscleHome").classList.add("hidden");$("muscleDetail").classList.remove("hidden");$("librarySearch").value="";renderLibraryGroup();
+}
+function showLibrary(){
+  $("workoutSection").classList.add("hidden");$("librarySection").classList.remove("hidden");
+  $("workoutNav").classList.remove("active");$("libraryNav").classList.add("active");
+  renderMuscleHome();if(libraryGroup)openLibraryGroup(libraryGroup);
+}
+function showWorkout(){
+  $("librarySection").classList.add("hidden");$("workoutSection").classList.remove("hidden");
+  $("libraryNav").classList.remove("active");$("workoutNav").classList.add("active");
+}
+$("workoutNav").addEventListener("click",showWorkout);
+$("libraryNav").addEventListener("click",showLibrary);
+$("muscleGrid").addEventListener("click",event=>{const tile=event.target.closest("[data-muscle]");if(tile)openLibraryGroup(tile.dataset.muscle);});
+$("libraryBack").addEventListener("click",()=>{libraryGroup=null;$("muscleDetail").classList.add("hidden");$("muscleHome").classList.remove("hidden");});
+$("librarySearch").addEventListener("input",renderLibraryGroup);
+$("libraryExerciseGrid").addEventListener("click",event=>{
+  const button=event.target.closest("[data-rating][data-exercise]");if(!button)return;
+  const id=button.dataset.exercise;const value=button.dataset.rating;
+  exerciseRatings[id]=exerciseRatings[id]===value?"":value;
+  saveExerciseRatings();renderLibraryGroup();
+});
+
 function catalogAlternatives(current,index){
   const source=repdbExercises.get(current.repdb);
   const target=getTargetMuscles(current);
@@ -450,9 +625,11 @@ function catalogAlternatives(current,index){
     return true;
   });
   return matches.sort((a,b)=>{
+    const preference={like:300,maybe:200,"":100,dislike:0};
     const score=x=>
+      (preference[exerciseRatings[x.id]||""]??100)+
       (x.variation_group===source.variation_group?100:0)+
-      (equipmentPreference(x,current))-
+      equipmentPreference(x,current)-
       (recentlyRejected.has(x.id)?1000:0);
     return score(b)-score(a);
   });
@@ -610,6 +787,8 @@ async function enterApp(user){
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
   try{
     await loadRepDB();
+    loadExerciseRatings();
+    renderMuscleHome();
     activeRoutine=loadActiveRoutine(selectedDay);
     try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
     if(navigator.onLine) await migrateOldLocalRecords();
