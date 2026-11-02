@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v6">
+<meta name="application-version" content="home-v7">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -338,7 +338,7 @@ main{padding-bottom:28px}
       <div class="eyebrow">TU PLAN DE ENTRENAMIENTO</div>
       <h2 id="routineTitle">Preparando rutina</h2>
       <p id="routineDescription"></p>
-      <div class="hero-meta"><span>Progreso de la sesión</span><span id="routineCount">5 ejercicios</span></div>
+      <div class="hero-meta"><span>Progreso de la sesión</span><span id="routineCount">6 ejercicios</span></div>
     </section>
     <div class="quick-stats">
       <div class="stat"><strong>10 min</strong><span>Bicicleta inicial</span></div>
@@ -439,28 +439,32 @@ const ROUTINES = {
     {id:"incline_dumbbell_press",repdb:"incline-db-press",name:"Press inclinado con mancuernas",muscle:"Pecho superior",equipment:"Mancuernas y banco",instruction:"Utiliza una inclinación moderada. Baja las mancuernas a los lados del pecho y empuja sin chocar las pesas."},
     {id:"cable_chest_fly",repdb:"cable-fly",name:"Aperturas de pecho en poleas",muscle:"Pecho",equipment:"Poleas",instruction:"Mantén los codos ligeramente flexionados. Junta las manos delante del pecho y regresa despacio."},
     {id:"triceps_machine",repdb:"machine-triceps-extension",name:"Extensión de tríceps en máquina",muscle:"Tríceps",equipment:"Máquina",instruction:"Alinea los codos con el eje de giro. Extiende y regresa lentamente, sin dejar caer el peso."},
-    {id:"overhead_triceps_cable",repdb:"cable-overhead-tricep-extension",name:"Extensión de tríceps por encima de la cabeza",muscle:"Tríceps",equipment:"Polea y cuerda",instruction:"Estabiliza el tronco, orienta los codos hacia delante y extiende sin arquear la espalda."}
+    {id:"overhead_triceps_cable",repdb:"cable-overhead-tricep-extension",name:"Extensión de tríceps por encima de la cabeza",muscle:"Tríceps",equipment:"Polea y cuerda",instruction:"Estabiliza el tronco, orienta los codos hacia delante y extiende sin arquear la espalda."},
+    {id:"chest_fly_machine_extra",name:"Aperturas de pecho en máquina",muscle:"Pecho",equipment:"Máquina",instruction:"Apoya la espalda, mantén los codos ligeramente flexionados y junta los brazos delante del pecho sin forzar el recorrido."}
   ],
   2:[
     {id:"leg_press",repdb:"leg-press",name:"Prensa de piernas",muscle:"Cuádriceps y glúteos",equipment:"Máquina",instruction:"Apoya la espalda y coloca los pies a la anchura de los hombros. Baja hasta donde la pelvis siga apoyada y empuja sin bloquear las rodillas."},
     {id:"leg_extension",repdb:"leg-extension",name:"Extensión de cuádriceps",muscle:"Cuádriceps",equipment:"Máquina",instruction:"Alinea las rodillas con el eje de giro. Extiende las piernas y baja lentamente sin dejar caer el peso."},
     {id:"seated_leg_curl",repdb:"seated-leg-curl",name:"Curl femoral sentado",muscle:"Isquiotibiales",equipment:"Máquina",instruction:"Ajusta el rodillo por encima de los tobillos. Flexiona las rodillas y vuelve a la posición inicial lentamente."},
     {id:"hip_abduction_machine",repdb:"hip-abduction",name:"Abducción de cadera en máquina",muscle:"Glúteos",equipment:"Máquina",instruction:"Mantén la espalda apoyada y separa las rodillas de forma controlada. Regresa sin golpear los topes."},
-    {id:"seated_calf_raise",repdb:"seated-calf-raise",name:"Elevación de gemelos sentado",muscle:"Gemelos",equipment:"Máquina",instruction:"Apoya la parte delantera de los pies. Baja los talones con control y elévalos sin rebotes."}
+    {id:"seated_calf_raise",repdb:"seated-calf-raise",name:"Elevación de gemelos sentado",muscle:"Gemelos",equipment:"Máquina",instruction:"Apoya la parte delantera de los pies. Baja los talones con control y elévalos sin rebotes."},
+    {id:"glute_bridge_extra",name:"Puente de glúteos",muscle:"Glúteos",equipment:"Esterilla",instruction:"Túmbate boca arriba con las rodillas flexionadas. Eleva la pelvis apretando los glúteos, mantén el tronco estable y baja lentamente.",bodyweight:true}
   ],
   3:[
     {id:"lat_pulldown",repdb:"lat-pulldown",name:"Jalón al pecho",muscle:"Espalda",equipment:"Polea",instruction:"Lleva los codos hacia abajo y acerca la barra a la parte alta del pecho. Evita balancear el tronco."},
     {id:"seated_cable_row",repdb:"seated-cable-row",name:"Remo sentado en polea",muscle:"Espalda",equipment:"Polea",instruction:"Lleva el agarre hacia el abdomen, junta suavemente los omóplatos y vuelve sin encorvarte."},
     {id:"chest_supported_machine_row",repdb:"chest-supported-machine-row",name:"Remo en máquina con pecho apoyado",muscle:"Espalda",equipment:"Máquina",instruction:"Mantén el pecho apoyado. Lleva los codos hacia atrás sin elevar los hombros y baja el peso lentamente."},
     {id:"cable_biceps_curl",repdb:"cable-curl",name:"Curl de bíceps en polea",muscle:"Bíceps",equipment:"Polea",instruction:"Mantén los codos cerca del cuerpo. Flexiona sin balancearte y desciende lentamente."},
-    {id:"cable_hammer_curl",repdb:"cable-hammer-curl",name:"Curl martillo en polea",muscle:"Bíceps y braquial",equipment:"Polea con cuerda",instruction:"Mantén las palmas enfrentadas y los codos estables. Flexiona y baja de forma controlada."}
+    {id:"cable_hammer_curl",repdb:"cable-hammer-curl",name:"Curl martillo en polea",muscle:"Bíceps y braquial",equipment:"Polea con cuerda",instruction:"Mantén las palmas enfrentadas y los codos estables. Flexiona y baja de forma controlada."},
+    {id:"dumbbell_biceps_curl_extra",name:"Curl de bíceps con mancuernas",muscle:"Bíceps",equipment:"Mancuernas",instruction:"Mantén los codos junto al cuerpo, flexiona los brazos sin balancear el tronco y baja las mancuernas lentamente."}
   ],
   4:[
     {id:"machine_shoulder_press",repdb:"machine-shoulder-press",name:"Press de hombros en máquina",muscle:"Hombros",equipment:"Máquina",instruction:"Ajusta las empuñaduras a la altura de los hombros. Empuja hacia arriba sin bloquear y baja lentamente."},
     {id:"dumbbell_lateral_raise",repdb:"lateral-raise",name:"Elevaciones laterales",muscle:"Deltoides lateral",equipment:"Mancuernas",instruction:"Eleva los brazos hacia los lados hasta aproximadamente la altura de los hombros. Evita impulsarte con el tronco."},
     {id:"face_pull",repdb:"face-pull",name:"Face pull en polea",muscle:"Deltoides posterior",equipment:"Polea y cuerda",instruction:"Tira de la cuerda hacia la frente separando las manos. Evita encoger los hombros."},
     {id:"front_plank",repdb:"plank",name:"Plancha abdominal",muscle:"Core",equipment:"Esterilla",instruction:"Apoya antebrazos y puntas de los pies. Mantén el cuerpo alineado y el abdomen activo.",reps:30,unit:"segundos",bodyweight:true},
-    {id:"cable_crunch",repdb:"cable-crunch",name:"Crunch abdominal en polea",muscle:"Abdominales",equipment:"Polea y cuerda",instruction:"Acerca las costillas a la pelvis flexionando el tronco. No tires únicamente con los brazos."}
+    {id:"cable_crunch",repdb:"cable-crunch",name:"Crunch abdominal en polea",muscle:"Abdominales",equipment:"Polea y cuerda",instruction:"Acerca las costillas a la pelvis flexionando el tronco. No tires únicamente con los brazos."},
+    {id:"reverse_fly_extra",name:"Aperturas inversas para hombro posterior",muscle:"Deltoides posterior",equipment:"Mancuernas",instruction:"Inclina ligeramente el tronco con la espalda neutra. Abre los brazos con una flexión suave de codos y controla la bajada."}
   ]
 };
 
@@ -610,10 +614,10 @@ function renderWorkout(){
   if(dashboardFocus)dashboardFocus.textContent=`${day.name} · ${day.title}`;
   const dashboardDate=$("dashboardDate");
   if(dashboardDate)dashboardDate.textContent=new Intl.DateTimeFormat("es-ES",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
-  const exercises=activeRoutine.length===5?activeRoutine:ROUTINES[selectedDay];
+  const exercises=activeRoutine.length===6?activeRoutine:ROUTINES[selectedDay];
   $("routineTitle").textContent=day.title;
   $("routineDescription").textContent=day.desc;
-  $("routineCount").textContent=`${exercises.length} ejercicios · ${completedIds.size}/5 completados`;
+  $("routineCount").textContent=`${exercises.length} ejercicios · ${completedIds.size}/${exercises.length} completados`;
   const pendingCount=exercises.filter(x=>!completedIds.has(x.id)).length;
   $("pendingCount").textContent=pendingCount; $("completedCount").textContent=completedIds.size;
   $("pendingTab").classList.toggle("active",exerciseView==="pending"); $("completedTab").classList.toggle("active",exerciseView==="completed");
@@ -660,7 +664,7 @@ function loadActiveRoutine(day){
   const base=ROUTINES[day].map(x=>({...x}));
   try{
     const saved=JSON.parse(localStorage.getItem(routineKey(day))||"null");
-    if(!Array.isArray(saved)||saved.length!==5)return base;
+    if(!Array.isArray(saved)||saved.length!==6)return base;
     // Una rutina guardada solo se conserva si cada sustitución sigue correspondiendo
     // al ejercicio original de ESA posición: mismo músculo principal, fuerza y mecánica.
     return saved.map((item,index)=>{
@@ -1048,7 +1052,7 @@ async function migrateOldLocalRecords(){
 
 async function saveWeights(){
   if(saving)return;
-  const exercises=activeRoutine.length===5?activeRoutine:ROUTINES[selectedDay];
+  const exercises=activeRoutine.length===6?activeRoutine:ROUTINES[selectedDay];
   const rows=[];
   const drafts=readWeightDrafts();
   for(const exercise of exercises){
