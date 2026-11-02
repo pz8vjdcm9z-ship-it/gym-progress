@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -349,11 +350,28 @@ function renderWorkout(){
 }
 
 function loadActiveRoutine(day){
+  const base=ROUTINES[day].map(x=>({...x}));
   try{
     const saved=JSON.parse(localStorage.getItem(routineKey(day))||"null");
-    if(Array.isArray(saved)&&saved.length===5)return saved;
+    if(!Array.isArray(saved)||saved.length!==5)return base;
+    // Una rutina guardada solo se conserva si cada sustitución sigue correspondiendo
+    // al ejercicio original de ESA posición: mismo músculo principal, fuerza y mecánica.
+    return saved.map((item,index)=>{
+      if(!item || item.id===base[index].id)return base[index];
+      const original=repdbExercises.get(base[index].repdb);
+      const replacement=repdbExercises.get(item.repdb);
+      if(!original||!replacement)return base[index];
+      const originalMuscles=new Set(original.primary_muscles||[]);
+      const replacementMuscles=replacement.primary_muscles||[];
+      const sameMuscle=replacementMuscles.some(m=>originalMuscles.has(m));
+      const samePattern=original.force_type===replacement.force_type &&
+        original.mechanic===replacement.mechanic;
+      const valid=replacement.category==="strength" && sameMuscle && samePattern &&
+        !forbiddenExercise(replacement);
+      return valid?item:base[index];
+    });
   }catch(e){}
-  return ROUTINES[day].map(x=>({...x}));
+  return base;
 }
 function persistRoutine(){localStorage.setItem(routineKey(selectedDay),JSON.stringify(activeRoutine));}
 function toggleComplete(id){
@@ -378,28 +396,66 @@ function exerciseEquipmentLabel(value){
 }
 function getTargetMuscles(exercise){
   const record=repdbExercises.get(exercise.repdb);
-  const muscles=[...(record?.primary_muscles?.length?record.primary_muscles:(record?.secondary_muscles||[]))].map(x=>String(x).toLowerCase());
-  if(muscles.length)return new Set(muscles);
+  // Solo se consideran músculos PRINCIPALES. Los secundarios no sirven
+  // para decidir una sustitución (evita que un ejercicio de pecho salga
+  // por compartir tríceps u hombro como músculo secundario).
+  if(record?.primary_muscles?.length)return new Set(record.primary_muscles.map(x=>String(x).toLowerCase()));
   const m=(exercise.muscle||"").toLowerCase();
-  const map={pecho:["chest"],tríceps:["triceps"],bíceps:["biceps"],braquial:["biceps","forearms"],cuádriceps:["quadriceps"],glúteos:["glutes"],isquiotibiales:["hamstrings"],gemelos:["calves"],espalda:["lats","middle-back","lower-back"],hombros:["shoulders"],deltoides:["shoulders"],core:["abdominals"],abdominales:["abdominals"]};
-  const out=new Set();for(const [k,vals] of Object.entries(map))if(m.includes(k))vals.forEach(v=>out.add(v));return out;
+  const map={
+    pecho:["pectoralis_major"],"pecho superior":["pectoralis_major"],
+    tríceps:["triceps_brachii"],bíceps:["biceps_brachii"],
+    cuádriceps:["quadriceps"],glúteos:["gluteus_maximus","gluteus_medius"],
+    isquiotibiales:["hamstrings"],gemelos:["gastrocnemius","soleus"],
+    espalda:["latissimus_dorsi","rhomboids","trapezius"],
+    hombros:["anterior_deltoid","lateral_deltoid","posterior_deltoid"],
+    "deltoides lateral":["lateral_deltoid"],"deltoides posterior":["posterior_deltoid"],
+    core:["rectus_abdominis","transverse_abdominis"],abdominales:["rectus_abdominis","transverse_abdominis"]
+  };
+  for(const [key,values] of Object.entries(map))if(m.includes(key))return new Set(values);
+  return new Set();
+}
+function equipmentPreference(item,current){
+  const e=String(item.equipment||"").toLowerCase();
+  const isTriceps=getTargetMuscles(current).has("triceps_brachii");
+  if(isTriceps){
+    if(e.includes("cable"))return 45;
+    if(e.includes("machine"))return 40;
+    if(e.includes("dumbbell"))return 30;
+    if(e.includes("barbell"))return 20;
+  }else{
+    if(e.includes("machine"))return 45;
+    if(e.includes("dumbbell"))return 35;
+    if(e.includes("cable"))return 25;
+    if(e.includes("barbell"))return 20;
+  }
+  if(e.includes("body")||item.is_bodyweight)return 5;
+  return 0;
 }
 function catalogAlternatives(current,index){
   const source=repdbExercises.get(current.repdb);
   const target=getTargetMuscles(current);
-  if(!target.size)return [];
+  if(!source||!target.size)return [];
   const used=new Set(activeRoutine.filter((_,i)=>i!==index).map(x=>x.repdb));
   const matches=exerciseCatalog.filter(item=>{
     if(!item.images?.flat || forbiddenExercise(item) || item.id===current.repdb || used.has(item.id))return false;
-    if(item.category && !["strength","stretching"].includes(item.category))return false;
+    if(item.category!=="strength")return false;
     const primary=(item.primary_muscles||[]).map(x=>String(x).toLowerCase());
-    const secondary=(item.secondary_muscles||[]).map(x=>String(x).toLowerCase());
-    return primary.some(m=>target.has(m)) || (primary.length===0 && secondary.some(m=>target.has(m)));
+    // Coincidencia obligatoria de músculo principal; nunca usar secundarios.
+    if(!primary.some(m=>target.has(m)))return false;
+    // Mismo patrón de fuerza y mecánica: empuje no cambia a tracción,
+    // ni un ejercicio compuesto a uno de aislamiento.
+    if(item.force_type!==source.force_type || item.mechanic!==source.mechanic)return false;
+    // Si el catálogo identifica una familia de variantes, exigimos esa familia.
+    if(source.variation_group && item.variation_group && item.variation_group!==source.variation_group)return false;
+    // No convertir un ejercicio con carga en uno de peso corporal/suelo.
+    if(!current.bodyweight && item.is_bodyweight)return false;
+    return true;
   });
-  // Prioriza coincidencia de músculo principal y equipamiento parecido al original.
-  const originalEquipment=String(source?.equipment||"").toLowerCase();
   return matches.sort((a,b)=>{
-    const score=x=>((x.primary_muscles||[]).some(m=>target.has(String(m).toLowerCase()))?10:0)+(String(x.equipment||"").toLowerCase()===originalEquipment?3:0)-(recentlyRejected.has(x.id)?20:0);
+    const score=x=>
+      (x.variation_group===source.variation_group?100:0)+
+      (equipmentPreference(x,current))-
+      (recentlyRejected.has(x.id)?1000:0);
     return score(b)-score(a);
   });
 }
@@ -560,10 +616,10 @@ async function enterApp(user){
   $("mainSubtitle").textContent="Tu rutina diaria y tus últimas cargas.";
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
   try{
+    await loadRepDB();
     activeRoutine=loadActiveRoutine(selectedDay);
     try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
     if(navigator.onLine) await migrateOldLocalRecords();
-    await loadRepDB();
     await loadLatestRecords();
     renderWorkout();
   }catch(error){
