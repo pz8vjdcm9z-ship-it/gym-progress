@@ -375,6 +375,41 @@ main{padding-bottom:28px}
   .rest-timer-btn.primary{min-width:88px;padding:0 10px;font-size:10px}
 }
 
+
+/* Spotify mini-player: compacto, flotante y semitransparente */
+.spotify-mini{
+  position:fixed;z-index:50;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));
+  max-width:560px;margin:0 auto;display:grid;grid-template-columns:46px minmax(0,1fr) auto;align-items:center;gap:10px;
+  padding:9px 11px;border:1px solid rgba(255,255,255,.16);border-radius:17px;
+  background:rgba(16,25,39,.76);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);
+  box-shadow:0 10px 34px rgba(0,0,0,.34);color:var(--text)
+}
+.spotify-mini-cover{width:46px;height:46px;border-radius:9px;display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(145deg,rgba(85,223,189,.25),rgba(38,65,84,.9));color:#a8f3df}
+.spotify-mini-cover img{width:100%;height:100%;object-fit:cover;display:none}
+.spotify-mini-meta{min-width:0;display:flex;flex-direction:column;gap:3px}
+.spotify-mini-title{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spotify-mini-artist{font-size:10px;color:#aab8c8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spotify-mini-state{font-size:9px;color:#83e6cf;letter-spacing:.35px}
+.spotify-mini-controls{display:flex;align-items:center;gap:3px}
+.spotify-mini-controls button{width:34px;height:38px;border:0;border-radius:10px;background:transparent;color:#f2f7fc;font-size:18px;display:grid;place-items:center}
+.spotify-mini-controls button:disabled{opacity:.32}
+.spotify-mini-connect{border:1px solid rgba(85,223,189,.38)!important;background:rgba(85,223,189,.12)!important;color:#9af0da!important;font-size:9px!important;font-weight:900;letter-spacing:.2px;width:auto!important;padding:0 9px}
+.spotify-mini-note{grid-column:1/-1;display:none;padding:0 3px 2px;color:#aab8c8;font-size:10px;line-height:1.35}
+.spotify-mini-note.visible{display:block}
+@media(max-width:360px){.spotify-mini{left:9px;right:9px;grid-template-columns:40px minmax(0,1fr) auto;gap:7px;padding:8px}.spotify-mini-cover{width:40px;height:40px}.spotify-mini-controls button{width:30px}}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+
+
+/* Panel anclado al viewport, independiente del desplazamiento de la página */
+.spotify-mini{position:fixed!important;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:1000;transform:translateY(0);transition:transform .28s ease,opacity .22s ease;touch-action:pan-y;}
+.spotify-mini.is-hidden{transform:translateY(calc(100% + 30px));opacity:0;pointer-events:none}
+.spotify-mini-handle{position:fixed;z-index:1001;left:50%;bottom:calc(5px + env(safe-area-inset-bottom));transform:translate(-50%,150%);width:58px;height:22px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(16,25,39,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:grid;place-items:center;transition:transform .28s ease;}
+.spotify-mini-handle span{display:block;width:22px;height:3px;border-radius:3px;background:rgba(235,244,250,.8)}
+.spotify-mini-handle.is-visible{transform:translate(-50%,0)}
+.spotify-mini button:focus-visible,.spotify-mini-handle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.spotify-mini,.spotify-mini-handle{transition:none}}
+
 </style>
 </head>
 <body>
@@ -533,6 +568,26 @@ main{padding-bottom:28px}
 <footer class="credit">
   Ilustraciones de ejercicios: <a href="https://repdb.co" target="_blank" rel="noopener noreferrer">Exercise data by RepDB (repdb.co)</a>.
 </footer>
+
+<!-- Spotify mini-player fijo a la ventana; controles visuales hasta completar OAuth -->
+<div class="spotify-mini" id="spotifyMini" aria-label="Panel de música Spotify">
+  <div class="spotify-mini-cover" aria-hidden="true">
+    <img id="spotifyMiniCover" alt="" />
+    <span id="spotifyMiniCoverFallback">♫</span>
+  </div>
+  <div class="spotify-mini-meta">
+    <div class="spotify-mini-title" id="spotifyMiniTitle">Conecta Spotify</div>
+    <div class="spotify-mini-artist" id="spotifyMiniArtist">Tu música, desde GYM PROGRESS</div>
+    <div class="spotify-mini-state" id="spotifyMiniState">LISTO PARA CONFIGURAR</div>
+  </div>
+  <div class="spotify-mini-controls" aria-label="Controles de reproducción">
+    <button type="button" id="spotifyMiniPrevious" aria-label="Canción anterior" disabled>⏮</button>
+    <button type="button" id="spotifyMiniPlay" aria-label="Pausar o reproducir" disabled>▶</button>
+    <button type="button" id="spotifyMiniNext" aria-label="Canción siguiente" disabled>⏭</button>
+  </div>
+  <div class="spotify-mini-note" id="spotifyMiniNote">La conexión y los controles se activarán cuando configuremos la autorización de Spotify.</div>
+</div>
+<button type="button" class="spotify-mini-handle" id="spotifyMiniHandle" aria-label="Mostrar panel de música" aria-expanded="true"><span></span></button>
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -1461,6 +1516,29 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
     .then(registration=>registration.update())
     .catch(e=>console.warn("Service worker no disponible",e));
 }
+
+
+// Panel Spotify: fijo al viewport y ocultable/recuperable mediante gestos verticales.
+(()=>{
+  const panel=document.getElementById('spotifyMini');
+  const handle=document.getElementById('spotifyMiniHandle');
+  if(!panel||!handle)return;
+  let startY=null;
+  const hide=()=>{panel.classList.add('is-hidden');handle.classList.add('is-visible');handle.setAttribute('aria-expanded','false');};
+  const show=()=>{panel.classList.remove('is-hidden');handle.classList.remove('is-visible');handle.setAttribute('aria-expanded','true');};
+  panel.addEventListener('touchstart',e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
+  panel.addEventListener('touchend',e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta>45)hide();startY=null;},{passive:true});
+  handle.addEventListener('touchstart',e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
+  handle.addEventListener('touchend',e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta < -20)show();startY=null;},{passive:true});
+  handle.addEventListener('click',show);
+  // También permite mostrarlo con gesto ascendente desde la franja inferior.
+  let edgeStart=null;
+  document.addEventListener('touchstart',e=>{if(!panel.classList.contains('is-hidden')||e.touches.length!==1)return;const y=e.touches[0].clientY;if(y>window.innerHeight-70)edgeStart=y;},{passive:true});
+  document.addEventListener('touchend',e=>{if(edgeStart===null)return;const delta=e.changedTouches[0].clientY-edgeStart;if(delta < -35)show();edgeStart=null;},{passive:true});
+  const note=document.getElementById('spotifyMiniNote');
+  const title=document.getElementById('spotifyMiniTitle');
+  panel.addEventListener('dblclick',()=>{note.classList.toggle('visible');title.textContent='Conecta Spotify';});
+})();
 
 (async function init(){
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
