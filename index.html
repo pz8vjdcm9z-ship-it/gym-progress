@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="library-v4">
+<meta name="application-version" content="home-v1">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -203,6 +203,37 @@ main{padding-bottom:28px}
 #muscleDetail .library-search{min-height:42px}
 #muscleDetail{touch-action:pan-y}
 @media(max-width:360px){#muscleDetail .library-back{padding:9px 10px;font-size:10px}}
+
+/* Panel de inicio premium */
+.home-dashboard{position:relative;overflow:hidden;margin:16px 0 22px;padding:22px 19px 18px;border:1px solid rgba(85,223,189,.24);border-radius:24px;background:linear-gradient(135deg,rgba(26,53,68,.98),rgba(13,27,43,.98) 58%,rgba(10,20,34,.98));box-shadow:0 18px 42px rgba(0,0,0,.24)}
+.home-dashboard:before{content:"";position:absolute;width:230px;height:230px;right:-84px;top:-105px;border-radius:50%;border:1px solid rgba(85,223,189,.18);box-shadow:0 0 0 22px rgba(85,223,189,.035),0 0 0 46px rgba(85,223,189,.025)}
+.home-dashboard:after{content:"";position:absolute;width:150px;height:150px;right:-46px;top:-65px;border-radius:50%;background:radial-gradient(circle,rgba(85,223,189,.13),transparent 68%);pointer-events:none}
+.dashboard-topline{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.dashboard-kicker{display:inline-flex;align-items:center;gap:7px;color:#8cebd4;font-size:10px;font-weight:900;letter-spacing:1.35px}
+.dashboard-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(85,223,189,.7)}
+.dashboard-date{color:#a9bacb;font-size:11px;font-weight:700;text-transform:capitalize}
+.dashboard-main{position:relative;z-index:1;display:flex;align-items:center;gap:12px}
+.dashboard-copy{min-width:0;flex:1}
+.dashboard-copy h2{margin:0 0 8px;font-size:clamp(25px,7vw,34px);line-height:1.06;letter-spacing:-1.1px;font-weight:900}
+.dashboard-copy h2 span{color:var(--accent)}
+.dashboard-copy p{max-width:310px;margin:0;color:#b8c7d6;font-size:13px;line-height:1.55}
+.dashboard-art{width:92px;height:92px;flex:0 0 92px;display:grid;place-items:center;border-radius:27px;background:linear-gradient(145deg,rgba(85,223,189,.18),rgba(85,223,189,.035));border:1px solid rgba(85,223,189,.22);transform:rotate(5deg)}
+.dashboard-art svg{width:54px;height:54px;filter:drop-shadow(0 5px 10px rgba(85,223,189,.2));transform:rotate(-5deg)}
+.dashboard-focus{position:relative;z-index:1;margin-top:20px;padding:13px 14px;border:1px solid rgba(255,255,255,.08);border-radius:15px;background:rgba(4,12,22,.32)}
+.dashboard-focus-label{display:block;margin-bottom:5px;color:#8fa5b9;font-size:9px;font-weight:900;letter-spacing:1.1px}
+.dashboard-focus strong{display:block;color:#f3f8fc;font-size:15px;font-weight:850}
+.dashboard-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+.dashboard-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border-radius:999px;background:rgba(255,255,255,.065);color:#c9d6e2;font-size:10px;font-weight:750}
+.dashboard-chip b{color:#8cebd4;font-weight:900}
+.dashboard-actions{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:9px;margin-top:17px}
+.dashboard-start,.dashboard-library{min-height:48px;border-radius:14px;font-weight:900;letter-spacing:.35px;cursor:pointer;touch-action:manipulation}
+.dashboard-start{border:0;background:linear-gradient(100deg,#65e6c4,#35c9a5);color:#06251f;padding:0 15px;font-size:11px;box-shadow:0 8px 20px rgba(45,198,162,.18)}
+.dashboard-start:active,.dashboard-library:active{transform:scale(.98)}
+.dashboard-library{display:flex;align-items:center;justify-content:center;gap:7px;padding:0 13px;border:1px solid rgba(180,204,224,.2);background:rgba(255,255,255,.045);color:#e8f0f7;font-size:10px}
+.dashboard-library svg{width:16px;height:16px}
+@media(max-width:370px){.home-dashboard{padding:19px 15px 15px}.dashboard-art{width:72px;height:72px;flex-basis:72px;border-radius:22px}.dashboard-art svg{width:44px;height:44px}.dashboard-copy p{font-size:12px}.dashboard-actions{grid-template-columns:1fr}.dashboard-library{min-height:42px}}
+@media(prefers-reduced-motion:no-preference){.home-dashboard{animation:dashboard-arrive .45s ease-out both}.dashboard-art{animation:dashboard-float 5s ease-in-out infinite}@keyframes dashboard-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}@keyframes dashboard-float{0%,100%{transform:translateY(0) rotate(5deg)}50%{transform:translateY(-4px) rotate(2deg)}}}
+
 </style>
 </head>
 <body>
@@ -241,6 +272,41 @@ main{padding-bottom:28px}
       <button type="button" id="libraryNav">BIBLIOTECA</button>
     </div>
     <div id="workoutSection">
+    <section class="home-dashboard" id="homeDashboard" aria-label="Panel de inicio">
+      <div class="dashboard-topline">
+        <span class="dashboard-kicker">TU ESPACIO DE ENTRENAMIENTO</span>
+        <span class="dashboard-date" id="dashboardDate"></span>
+      </div>
+      <div class="dashboard-main">
+        <div class="dashboard-copy">
+          <h2>Hoy toca<br><span>superarte.</span></h2>
+          <p>Tu entrenamiento está preparado. Entra, sigue tu rutina y céntrate en cada repetición.</p>
+        </div>
+        <div class="dashboard-art" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 25v14M18 19v26M46 19v26M53 25v14M18 32h28" stroke="#75E8CC" stroke-width="5" stroke-linecap="round"/>
+            <path d="M24 32h16" stroke="#D4FFF3" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="32" cy="32" r="27" stroke="#75E8CC" stroke-opacity=".18" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+      <div class="dashboard-focus">
+        <span class="dashboard-focus-label">TU SESIÓN SELECCIONADA</span>
+        <strong id="dashboardFocus">Preparando tu rutina…</strong>
+      </div>
+      <div class="dashboard-meta">
+        <span class="dashboard-chip"><b>5</b> ejercicios</span>
+        <span class="dashboard-chip"><b>3 × 12</b> repeticiones</span>
+        <span class="dashboard-chip"><b>75 s</b> descanso orientativo</span>
+      </div>
+      <div class="dashboard-actions">
+        <button class="dashboard-start" id="startWorkoutBtn" type="button">EMPEZAR ENTRENAMIENTO <span aria-hidden="true">→</span></button>
+        <button class="dashboard-library" id="dashboardLibraryBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 6h13M8 8.5h8M8 12h8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          BIBLIOTECA
+        </button>
+      </div>
+    </section>
     <div class="day-selector" id="daySelector" aria-label="Seleccionar rutina"></div>
     <section class="hero">
       <div class="eyebrow">TU PLAN DE ENTRENAMIENTO</div>
@@ -445,6 +511,10 @@ function imageMarkup(exercise){
 function renderWorkout(){
   renderDays();
   const day=DAYS[selectedDay];
+  const dashboardFocus=$("dashboardFocus");
+  if(dashboardFocus)dashboardFocus.textContent=`${day.name} · ${day.title}`;
+  const dashboardDate=$("dashboardDate");
+  if(dashboardDate)dashboardDate.textContent=new Intl.DateTimeFormat("es-ES",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
   const exercises=activeRoutine.length===5?activeRoutine:ROUTINES[selectedDay];
   $("routineTitle").textContent=day.title;
   $("routineDescription").textContent=day.desc;
@@ -681,6 +751,10 @@ function showWorkout(){
 }
 $("workoutNav").addEventListener("click",showWorkout);
 $("libraryNav").addEventListener("click",showLibrary);
+$("dashboardLibraryBtn").addEventListener("click",showLibrary);
+$("startWorkoutBtn").addEventListener("click",()=>{
+  $("daySelector").scrollIntoView({behavior:"smooth",block:"start"});
+});
 $("muscleGrid").addEventListener("click",event=>{const tile=event.target.closest("[data-muscle]");if(tile)openLibraryGroup(tile.dataset.muscle);});
 $("libraryBack").addEventListener("click",backToLibraryGroups);
 $("librarySearch").addEventListener("input",renderLibraryGroup);
