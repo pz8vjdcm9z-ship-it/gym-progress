@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -5,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
+<link rel="manifest" href="manifest.webmanifest">
 <title>GYM PROGRESS</title>
 <style>
 :root{
@@ -56,6 +58,7 @@ main{padding-bottom:28px}
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:20px 2px 9px}
 .section-head h2{margin:0;font-size:15px}.hint{color:var(--muted);font-size:10px}
 .exercise-list{display:grid;gap:10px}
+.completion-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 10px}.completion-tab{border:1px solid var(--border);border-radius:12px;padding:11px;background:#142236;color:var(--soft);font-size:11px;font-weight:900}.completion-tab.active{border-color:rgba(85,223,189,.55);background:rgba(85,223,189,.13);color:#baffed}.offline-pill{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 8px;border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:9px}.offline-pill.online{color:#aaf3df;border-color:rgba(85,223,189,.3)}
 .exercise-card{overflow:hidden;border:1px solid var(--border);border-radius:17px;background:linear-gradient(145deg,rgba(21,36,56,.98),rgba(17,31,49,.98));box-shadow:0 7px 22px rgba(0,0,0,.12)}
 .exercise-layout{display:grid;grid-template-columns:112px minmax(0,1fr);gap:12px;padding:11px;align-items:start}
 .exercise-media{width:112px;min-height:112px;display:grid;grid-template-columns:1fr 1fr;gap:3px;overflow:hidden;border:1px solid rgba(176,198,222,.16);border-radius:11px;background:#0a1726}
@@ -132,12 +135,13 @@ main{padding-bottom:28px}
       <div class="stat"><strong>75 s</strong><span>Descanso orientativo</span></div>
     </div>
     <div class="section-head"><h2>Rutina del día</h2><span class="hint">En el orden previsto</span></div>
+    <div class="completion-tabs" role="tablist" aria-label="Estado de ejercicios"><button class="completion-tab active" id="pendingTab" type="button" data-view="pending">SIN COMPLETAR <span id="pendingCount">5</span></button><button class="completion-tab" id="completedTab" type="button" data-view="completed">COMPLETADOS <span id="completedCount">0</span></button></div>
     <div class="exercise-list" id="exerciseList"></div>
     <section class="save-panel">
       <p>Introduce el peso que vas a utilizar y ajusta las repeticiones si lo necesitas. Al terminar, pulsa una sola vez para guardar todos los ejercicios que hayas rellenado.</p>
       <button class="primary-btn" id="saveWeightsBtn" type="button">GUARDAR PESOS</button>
       <div class="note">Los registros quedan privados en tu cuenta y se usarán para mostrarte el último peso la próxima vez.</div>
-      <div id="saveStatus" class="status hidden" role="status"></div>
+      <div id="saveStatus" class="status hidden" role="status"></div><div class="offline-pill" id="connectionStatus">● Comprobando conexión…</div>
     </section>
   </section>
 </main>
@@ -217,6 +221,9 @@ const completionKey = day => `gym_progress_completed_${day}_${localDate()}`;
 const routineKey = day => `gym_progress_routine_${day}`;
 let activeRoutine = [];
 let completedIds = new Set();
+let exerciseView = "pending";
+const latestCacheKey = userId => `gym_progress_latest_${userId}`;
+const queueKey = userId => `gym_progress_pending_sync_${userId}`;
 const ALTERNATIVES = {
   chest_machine:[{id:"chest_machine_alt",repdb:"chest-press-machine",name:"Press de pecho en máquina (agarre neutro)",muscle:"Pecho",equipment:"Máquina",instruction:"Usa un agarre cómodo y empuja sin bloquear los codos."},{id:"incline_dumbbell_press",repdb:"incline-db-press",name:"Press inclinado con mancuernas",muscle:"Pecho superior",equipment:"Mancuernas y banco",instruction:"Baja de forma controlada y empuja sin chocar las pesas."}],
   incline_dumbbell_press:[{id:"chest_machine",repdb:"chest-press-machine",name:"Press de pecho en máquina",muscle:"Pecho",equipment:"Máquina",instruction:"Empuja hacia delante con la espalda apoyada."}],
@@ -299,7 +306,11 @@ function renderWorkout(){
   $("routineTitle").textContent=day.title;
   $("routineDescription").textContent=day.desc;
   $("routineCount").textContent=`${exercises.length} ejercicios · ${completedIds.size}/5 completados`;
-  $("exerciseList").innerHTML=exercises.map((exercise,index)=>{
+  const pendingCount=exercises.filter(x=>!completedIds.has(x.id)).length;
+  $("pendingCount").textContent=pendingCount; $("completedCount").textContent=completedIds.size;
+  $("pendingTab").classList.toggle("active",exerciseView==="pending"); $("completedTab").classList.toggle("active",exerciseView==="completed");
+  const visibleExercises=exercises.map((exercise,index)=>({exercise,index})).filter(({exercise})=>exerciseView==="completed"?completedIds.has(exercise.id):!completedIds.has(exercise.id));
+  $("exerciseList").innerHTML=visibleExercises.map(({exercise,index})=>{
     const previous=latestRecords.get(exercise.id);
     const previousText=previous
       ? `<strong>${Number(previous.weight).toLocaleString("es-ES")} kg</strong> · ${previous.reps} ${exercise.unit||"repeticiones"} · ${prettyDate(previous.performed_at)}`
@@ -333,6 +344,7 @@ function renderWorkout(){
       </div>
     </article>`;
   }).join("");
+  if(!visibleExercises.length) $("exerciseList").innerHTML=`<div class="empty">${exerciseView==="pending"?"¡Todos los ejercicios están completados! Puedes consultarlos en la pestaña Completados.":"Todavía no has completado ningún ejercicio."}</div>`;
   hideStatus($("saveStatus"));
 }
 
@@ -345,7 +357,7 @@ function loadActiveRoutine(day){
 }
 function persistRoutine(){localStorage.setItem(routineKey(selectedDay),JSON.stringify(activeRoutine));}
 function toggleComplete(id){
-  if(completedIds.has(id))completedIds.delete(id);else completedIds.add(id);
+  if(completedIds.has(id)){completedIds.delete(id);exerciseView="pending";}else{completedIds.add(id);exerciseView="pending";}
   localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
   renderWorkout();
 }
@@ -416,6 +428,8 @@ function changeExercise(id){
   renderWorkout();
   showStatus($("saveStatus"),`Ejercicio actualizado: ${next.name}.`);
 }
+$("pendingTab").addEventListener("click",()=>{exerciseView="pending";renderWorkout();});
+$("completedTab").addEventListener("click",()=>{exerciseView="completed";renderWorkout();});
 $("exerciseList").addEventListener("click",event=>{
   const complete=event.target.closest("[data-complete]");
   const change=event.target.closest("[data-change]");
@@ -424,15 +438,18 @@ $("exerciseList").addEventListener("click",event=>{
 });
 
 async function loadLatestRecords(){
+  if(!navigator.onLine){
+    const cached=JSON.parse(localStorage.getItem(latestCacheKey(currentUser.id))||"[]");
+    latestRecords=new Map(cached.map(row=>[row.exercise_id,row]));
+    return;
+  }
   const {data,error}=await supabase.from("workout_weights")
     .select("exercise_id,exercise_name,performed_at,weight,sets,reps")
-    .eq("user_id",currentUser.id)
-    .order("performed_at",{ascending:false});
+    .eq("user_id",currentUser.id).order("performed_at",{ascending:false});
   if(error)throw error;
   latestRecords=new Map();
-  for(const row of (data||[])){
-    if(!latestRecords.has(row.exercise_id))latestRecords.set(row.exercise_id,row);
-  }
+  for(const row of (data||[])){if(!latestRecords.has(row.exercise_id))latestRecords.set(row.exercise_id,row);}
+  localStorage.setItem(latestCacheKey(currentUser.id),JSON.stringify([...latestRecords.values()]));
 }
 
 async function migrateOldLocalRecords(){
@@ -510,14 +527,23 @@ async function saveWeights(){
   $("saveWeightsBtn").disabled=true;
   $("saveWeightsBtn").textContent="GUARDANDO…";
   try{
-    const {error}=await supabase.from("workout_weights").insert(rows);
-    if(error)throw error;
-    await loadLatestRecords();
-    renderWorkout();
-    showStatus($("saveStatus"),`Guardado correctamente: ${rows.length} ${rows.length===1?"ejercicio":"ejercicios"}. La próxima vez verás estos pesos como último registro.`);
+    if(!navigator.onLine){
+      const queue=JSON.parse(localStorage.getItem(queueKey(currentUser.id))||"[]");
+      queue.push(...rows); localStorage.setItem(queueKey(currentUser.id),JSON.stringify(queue));
+      const cached=new Map(JSON.parse(localStorage.getItem(latestCacheKey(currentUser.id))||"[]").map(x=>[x.exercise_id,x]));
+      rows.forEach(row=>cached.set(row.exercise_id,row)); localStorage.setItem(latestCacheKey(currentUser.id),JSON.stringify([...cached.values()]));
+      await loadLatestRecords(); renderWorkout();
+      showStatus($("saveStatus"),`Guardado sin conexión en este dispositivo: ${rows.length} ejercicios. Se sincronizarán con Supabase cuando vuelva internet.`);
+    }else{
+      const queued=JSON.parse(localStorage.getItem(queueKey(currentUser.id))||"[]");
+      const {error}=await supabase.from("workout_weights").insert([...queued,...rows]); if(error)throw error;
+      localStorage.removeItem(queueKey(currentUser.id));
+      await loadLatestRecords(); renderWorkout();
+      showStatus($("saveStatus"),`Guardado correctamente: ${rows.length} ${rows.length===1?"ejercicio":"ejercicios"}.`);
+    }
   }catch(error){
     console.error(error);
-    showStatus($("saveStatus"),`No se han podido guardar los pesos: ${error.message||"comprueba la conexión y los permisos de la tabla"}`,true);
+    showStatus($("saveStatus"),`No se han podido sincronizar los pesos: ${error.message||"comprueba la conexión y los permisos"}`,true);
   }finally{
     saving=false;
     $("saveWeightsBtn").disabled=false;
@@ -536,7 +562,7 @@ async function enterApp(user){
   try{
     activeRoutine=loadActiveRoutine(selectedDay);
     try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
-    await migrateOldLocalRecords();
+    if(navigator.onLine) await migrateOldLocalRecords();
     await loadRepDB();
     await loadLatestRecords();
     renderWorkout();
@@ -574,6 +600,23 @@ $("logoutBtn").addEventListener("click",async()=>{
 });
 
 $("saveWeightsBtn").addEventListener("click",saveWeights);
+
+function updateConnectionStatus(){
+  const el=$("connectionStatus"); if(!el)return;
+  el.textContent=navigator.onLine?"● Con conexión · sincronización disponible":"● Sin conexión · modo local activo";
+  el.classList.toggle("online",navigator.onLine);
+}
+async function syncOfflineQueue(){
+  if(!navigator.onLine||!currentUser)return;
+  const queue=JSON.parse(localStorage.getItem(queueKey(currentUser.id))||"[]");
+  if(!queue.length)return;
+  try{const {error}=await supabase.from("workout_weights").insert(queue);if(error)throw error;localStorage.removeItem(queueKey(currentUser.id));await loadLatestRecords();showStatus($("saveStatus"),`Sincronización completada: ${queue.length} registros enviados a Supabase.`);}
+  catch(error){console.warn("La sincronización se reintentará más tarde",error);}
+}
+window.addEventListener("online",()=>{updateConnectionStatus();syncOfflineQueue();});
+window.addEventListener("offline",updateConnectionStatus);
+updateConnectionStatus();
+if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js").catch(e=>console.warn("Service worker no disponible",e));
 
 (async function init(){
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
