@@ -1,5 +1,4 @@
 
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -76,7 +75,7 @@ main{padding-bottom:28px}
 .tag{display:inline-flex;align-items:center;min-height:20px;padding:3px 6px;border:1px solid rgba(176,198,222,.13);border-radius:6px;color:#d6e1ed;background:rgba(7,19,33,.52);font-size:9px;font-weight:700}
 .previous{margin:8px 0;padding:8px;border:1px solid rgba(85,223,189,.17);border-radius:9px;color:#b8c9d8;background:rgba(10,30,38,.58);font-size:10px;line-height:1.45}
 .previous strong{color:var(--accent);font-size:12px}
-.inputs{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.inputs{display:grid;grid-template-columns:1fr;gap:7px}
 .input-field{min-width:0}
 .input-field label{display:block;margin:0 0 4px;color:var(--muted);font-size:8px;font-weight:850;letter-spacing:.45px}
 .input-field input{display:block;width:100%;min-width:0;height:37px;padding:0 8px;border:1px solid rgba(176,198,222,.2);border-radius:8px;background:#0a1726;color:var(--text);font-size:13px}
@@ -139,7 +138,7 @@ main{padding-bottom:28px}
     <div class="completion-tabs" role="tablist" aria-label="Estado de ejercicios"><button class="completion-tab active" id="pendingTab" type="button" data-view="pending">SIN COMPLETAR <span id="pendingCount">5</span></button><button class="completion-tab" id="completedTab" type="button" data-view="completed">COMPLETADOS <span id="completedCount">0</span></button></div>
     <div class="exercise-list" id="exerciseList"></div>
     <section class="save-panel">
-      <p>Introduce el peso que vas a utilizar y ajusta las repeticiones si lo necesitas. Al terminar, pulsa una sola vez para guardar todos los ejercicios que hayas rellenado.</p>
+      <p>Las repeticiones son fijas: 3 series de 12 repeticiones. En los ejercicios por tiempo se indica la duración. Introduce el peso y pulsa una sola vez para guardar los ejercicios que hayas rellenado.</p>
       <button class="primary-btn" id="saveWeightsBtn" type="button">GUARDAR PESOS</button>
       <div class="note">Los registros quedan privados en tu cuenta y se usarán para mostrarte el último peso la próxima vez.</div>
       <div id="saveStatus" class="status hidden" role="status"></div><div class="offline-pill" id="connectionStatus">● Comprobando conexión…</div>
@@ -317,6 +316,7 @@ function renderWorkout(){
       ? `<strong>${Number(previous.weight).toLocaleString("es-ES")} kg</strong> · ${previous.reps} ${exercise.unit||"repeticiones"} · ${prettyDate(previous.performed_at)}`
       : "Todavía no tienes un peso registrado para este ejercicio.";
     const reps=exercise.reps||12;
+    const repsLabel=exercise.unit?`3 × ${reps} ${exercise.unit.toLowerCase()}`:`3 × ${reps} repeticiones`;
     const weightDefault=exercise.bodyweight?"0":"";
     return `<article class="exercise-card ${completedIds.has(exercise.id)?"is-complete":""}" data-card="${escapeHTML(exercise.id)}">
       <div class="exercise-layout">
@@ -327,14 +327,11 @@ function renderWorkout(){
             <div class="exercise-meta">${escapeHTML(exercise.muscle)} · ${escapeHTML(exercise.equipment)}</div>
           </div></div>
           <p class="instructions">${escapeHTML(exercise.instruction)}</p>
-          <div class="tags"><span class="tag">3 series</span><span class="tag">Descanso 60–90 s</span></div>
+          <div class="tags"><span class="tag">${repsLabel}</span><span class="tag">Descanso: 60–90 s</span></div>
           <div class="previous">Último peso registrado: ${previousText}</div>
           <div class="inputs">
             <div class="input-field"><label for="weight-${exercise.id}">${exercise.bodyweight?"CARGA (KG)":"PESO DE HOY (KG)"}</label>
               <input id="weight-${exercise.id}" data-weight="${exercise.id}" type="number" min="0" max="500" step="0.5" inputmode="decimal" placeholder="${exercise.bodyweight?"0 si sin carga":"Introduce kg"}" value="${weightDefault}">
-            </div>
-            <div class="input-field"><label for="reps-${exercise.id}">${(exercise.unit||"REPETICIONES").toUpperCase()}</label>
-              <input id="reps-${exercise.id}" data-reps="${exercise.id}" type="number" min="1" max="200" step="1" inputmode="numeric" value="${reps}">
             </div>
           </div>
           <div class="exercise-actions">
@@ -554,16 +551,11 @@ async function saveWeights(){
   const rows=[];
   for(const exercise of exercises){
     const weightInput=document.querySelector(`[data-weight="${exercise.id}"]`);
-    const repsInput=document.querySelector(`[data-reps="${exercise.id}"]`);
     const rawWeight=(weightInput?.value||"").trim().replace(",",".");
-    const rawReps=(repsInput?.value||"").trim();
     if(rawWeight==="")continue;
-    const weight=Number(rawWeight),reps=Number(rawReps);
+    const weight=Number(rawWeight),reps=Number(exercise.reps||12);
     if(!Number.isFinite(weight)||weight<0||weight>500){
       showStatus($("saveStatus"),`Revisa el peso de ${exercise.name}.`,true);weightInput?.focus();return;
-    }
-    if(!Number.isInteger(reps)||reps<1||reps>200){
-      showStatus($("saveStatus"),`Revisa las repeticiones de ${exercise.name}.`,true);repsInput?.focus();return;
     }
     rows.push({
       user_id:currentUser.id,
