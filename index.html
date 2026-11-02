@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v9">
+<meta name="application-version" content="home-v10">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -258,6 +258,19 @@ main{padding-bottom:28px}
 .rest-timer-settings button{padding:5px 8px;border:1px solid rgba(185,211,229,.16);border-radius:8px;background:rgba(255,255,255,.04);color:#c9d8e4;font-size:9px;font-weight:800}
 .rest-timer-settings button.active{border-color:rgba(85,223,189,.55);background:rgba(85,223,189,.13);color:#8cebd4}
 @media(max-width:390px){.rest-timer{padding:11px 10px;gap:7px}.rest-timer-time{font-size:24px;min-width:49px}.rest-timer-btn{width:31px;height:31px}.rest-timer-btn.primary{min-width:59px;padding:0 7px}}
+.rest-notify-row{display:flex;align-items:center;gap:7px;margin-top:9px;flex-wrap:wrap}
+.rest-notify-btn{border:1px solid rgba(85,223,189,.35);border-radius:8px;padding:6px 9px;background:rgba(85,223,189,.09);color:#aaf3df;font-size:9px;font-weight:850}
+.rest-notify-hint{color:var(--muted);font-size:8px;line-height:1.35}
+.timer-alert{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:22px;background:rgba(3,9,17,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.timer-alert.hidden{display:none!important}
+.timer-alert-card{width:min(100%,390px);padding:27px 22px 23px;border:1px solid rgba(85,223,189,.55);border-radius:26px;text-align:center;background:radial-gradient(circle at 50% 0%,rgba(85,223,189,.23),transparent 58%),linear-gradient(155deg,#193c4a,#12243a 72%);box-shadow:0 22px 80px rgba(0,0,0,.55),0 0 36px rgba(85,223,189,.15);animation:timerAlertPop .32s ease-out}
+.timer-alert-icon{width:76px;height:76px;display:grid;place-items:center;margin:0 auto 14px;border:1px solid rgba(85,223,189,.5);border-radius:24px;background:rgba(85,223,189,.13);font-size:38px;box-shadow:0 0 30px rgba(85,223,189,.14)}
+.timer-alert-kicker{color:#8cebd4;font-size:10px;font-weight:950;letter-spacing:2px}
+.timer-alert-card h2{margin:9px 0 7px;color:#fff;font-size:clamp(27px,8vw,36px);font-weight:950;letter-spacing:-1px}
+.timer-alert-card p{margin:0 0 21px;color:#c7d9e5;font-size:13px;line-height:1.5}
+.timer-alert-card button{width:100%;min-height:50px;border:0;border-radius:14px;background:linear-gradient(100deg,#65e6c4,#35c9a5);color:#06251f;font-size:12px;font-weight:950;letter-spacing:.6px}
+@keyframes timerAlertPop{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
 
 </style>
 </head>
@@ -362,8 +375,21 @@ main{padding-bottom:28px}
           <button type="button" class="rest-timer-btn primary" id="restTimerStart">INICIAR</button>
           <button type="button" class="rest-timer-btn" id="restTimerReset" aria-label="Reiniciar cronómetro">↺</button>
         </div>
+        <div class="rest-notify-row">
+          <button type="button" class="rest-notify-btn" id="restNotifyEnable">ACTIVAR AVISOS</button>
+          <span class="rest-notify-hint" id="restNotifyHint">Aviso visible y sonido al terminar</span>
+        </div>
       </div>
     </section>
+    <div class="timer-alert hidden" id="restTimerAlert" role="dialog" aria-modal="true" aria-labelledby="restTimerAlertTitle">
+      <div class="timer-alert-card">
+        <div class="timer-alert-icon" aria-hidden="true">⏱️</div>
+        <div class="timer-alert-kicker">GYM PROGRESS · DESCANSO</div>
+        <h2 id="restTimerAlertTitle">¡TIEMPO!</h2>
+        <p>Tu descanso ha terminado.<br>Vamos con la siguiente serie.</p>
+        <button type="button" id="restTimerAlertClose">CONTINUAR ENTRENAMIENTO</button>
+      </div>
+    </div>
     <div class="section-head"><h2>Rutina del día</h2><span class="hint">En el orden previsto</span></div>
     <div class="completion-tabs" role="tablist" aria-label="Estado de ejercicios"><button class="completion-tab active" id="pendingTab" type="button" data-view="pending">SIN COMPLETAR <span id="pendingCount">6</span></button><button class="completion-tab" id="completedTab" type="button" data-view="completed">COMPLETADOS <span id="completedCount">0</span></button></div>
     <div class="exercise-list" id="exerciseList"></div>
@@ -522,7 +548,7 @@ const ALTERNATIVES = {
 
 const $ = id => document.getElementById(id);
 
-let restDuration=30,restRemaining=30,restInterval=null,restDeadline=0;
+let restDuration=30,restRemaining=30,restInterval=null,restDeadline=0,restAlertShown=false,restAudioContext=null;
 function renderRestTimer(){
   const display=$("restTimerDisplay");
   if(display)display.textContent=`${Math.floor(restRemaining/60)}:${String(restRemaining%60).padStart(2,"0")}`;
@@ -535,27 +561,78 @@ function stopRestTimer(message){
   if(message&&$("restTimerStatus"))$("restTimerStatus").textContent=message;
   renderRestTimer();
 }
+function playRestAlarm(){
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext;
+    if(!Ctx)return;
+    restAudioContext=restAudioContext||new Ctx();
+    if(restAudioContext.state==="suspended")restAudioContext.resume();
+    const now=restAudioContext.currentTime;
+    [0,0.28,0.56].forEach((offset,i)=>{
+      const osc=restAudioContext.createOscillator(),gain=restAudioContext.createGain();
+      osc.type="sine";osc.frequency.value=i===1?1046:880;
+      gain.gain.setValueAtTime(0.0001,now+offset);
+      gain.gain.exponentialRampToValueAtTime(0.22,now+offset+0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+0.22);
+      osc.connect(gain);gain.connect(restAudioContext.destination);
+      osc.start(now+offset);osc.stop(now+offset+0.24);
+    });
+  }catch(e){console.warn("No se pudo reproducir el aviso sonoro",e);}
+}
+async function notifyRestFinished(){
+  const alert=$("restTimerAlert");
+  if(alert)alert.classList.remove("hidden");
+  playRestAlarm();
+  if(navigator.vibrate)navigator.vibrate([300,120,300,120,500]);
+  if("Notification" in window&&Notification.permission==="granted"){
+    try{
+      const options={body:"Tu descanso ha terminado. Vamos con la siguiente serie.",icon:"./icon-192.png",badge:"./icon-192.png",tag:"gym-progress-rest-finished",renotify:true};
+      if("serviceWorker" in navigator){
+        const registration=await navigator.serviceWorker.ready;
+        await registration.showNotification("¡Tiempo de descanso!",options);
+      }else new Notification("¡Tiempo de descanso!",options);
+    }catch(e){console.warn("No se pudo mostrar la notificación",e);}
+  }
+}
 function tickRestTimer(){
   restRemaining=Math.max(0,Math.ceil((restDeadline-Date.now())/1000));
   if(restRemaining<=0){
     stopRestTimer("¡Descanso terminado! Vamos con la siguiente serie.");
-    if(navigator.vibrate)navigator.vibrate([180,90,180]);
+    if(!restAlertShown){restAlertShown=true;notifyRestFinished();}
     return;
   }
   renderRestTimer();
 }
 function startRestTimer(){
   if(restInterval){stopRestTimer("Descanso pausado.");return;}
-  if(restRemaining<=0)restRemaining=restDuration;
+  if(restRemaining<=0){restRemaining=restDuration;restAlertShown=false;}
   restDeadline=Date.now()+restRemaining*1000;
   $("restTimerStatus").textContent="Descansando…";
+  try{const Ctx=window.AudioContext||window.webkitAudioContext;if(Ctx){restAudioContext=restAudioContext||new Ctx();if(restAudioContext.state==="suspended")restAudioContext.resume();}}catch(e){}
   restInterval=setInterval(tickRestTimer,200);
   renderRestTimer();
 }
 function resetRestTimer(){
   stopRestTimer("Cronómetro preparado.");
-  restRemaining=restDuration;
+  restRemaining=restDuration;restAlertShown=false;
+  $("restTimerAlert")?.classList.add("hidden");
   renderRestTimer();
+}
+async function enableRestNotifications(){
+  const hint=$("restNotifyHint"),button=$("restNotifyEnable");
+  if(!("Notification" in window)){hint.textContent="Este navegador no admite notificaciones.";return;}
+  if(!window.isSecureContext){hint.textContent="Abre la aplicación desde su dirección segura HTTPS.";return;}
+  try{
+    const permission=await Notification.requestPermission();
+    if(permission==="granted"){
+      hint.textContent="Avisos permitidos en este dispositivo.";
+      button.textContent="AVISOS ACTIVADOS";
+      if("serviceWorker" in navigator){
+        const registration=await navigator.serviceWorker.ready;
+        await registration.showNotification("Avisos de GYM PROGRESS activados",{body:"Recibirás una notificación cuando el temporizador termine mientras la aplicación pueda ejecutar el aviso.",icon:"./icon-192.png",tag:"gym-progress-permission"});
+      }
+    }else hint.textContent=permission==="denied"?"Avisos bloqueados. Actívalos en Ajustes del dispositivo.":"No se han activado los avisos.";
+  }catch(e){hint.textContent="No se pudieron activar las notificaciones en este navegador.";}
 }
 
 const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -884,6 +961,9 @@ document.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:t
 
 $("restTimerStart").addEventListener("click",startRestTimer);
 $("restTimerReset").addEventListener("click",resetRestTimer);
+$("restNotifyEnable").addEventListener("click",enableRestNotifications);
+$("restTimerAlertClose").addEventListener("click",()=>$("restTimerAlert").classList.add("hidden"));
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&restDeadline&&restRemaining>0&&Date.now()>=restDeadline)tickRestTimer();});
 document.querySelectorAll("[data-rest]").forEach(button=>button.addEventListener("click",()=>{
   restDuration=Number(button.dataset.rest);restRemaining=restDuration;
   stopRestTimer("Tiempo de descanso actualizado.");
@@ -1223,7 +1303,7 @@ window.addEventListener("online",()=>{updateConnectionStatus();syncOfflineQueue(
 window.addEventListener("offline",updateConnectionStatus);
 updateConnectionStatus();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  navigator.serviceWorker.register("./sw.js?v=6",{updateViaCache:"none"})
+  navigator.serviceWorker.register("./sw.js?v=8",{updateViaCache:"none"})
     .then(registration=>registration.update())
     .catch(e=>console.warn("Service worker no disponible",e));
 }
