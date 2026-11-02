@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v7">
+<meta name="application-version" content="home-v8">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -320,7 +320,7 @@ main{padding-bottom:28px}
         <strong id="dashboardFocus">Preparando tu rutina…</strong>
       </div>
       <div class="dashboard-meta">
-        <span class="dashboard-chip"><b>5</b> ejercicios</span>
+        <span class="dashboard-chip"><b>6</b> ejercicios</span>
         <span class="dashboard-chip"><b>3 × 12</b> repeticiones</span>
         <span class="dashboard-chip"><b>75 s</b> descanso orientativo</span>
       </div>
@@ -365,7 +365,7 @@ main{padding-bottom:28px}
       </div>
     </section>
     <div class="section-head"><h2>Rutina del día</h2><span class="hint">En el orden previsto</span></div>
-    <div class="completion-tabs" role="tablist" aria-label="Estado de ejercicios"><button class="completion-tab active" id="pendingTab" type="button" data-view="pending">SIN COMPLETAR <span id="pendingCount">5</span></button><button class="completion-tab" id="completedTab" type="button" data-view="completed">COMPLETADOS <span id="completedCount">0</span></button></div>
+    <div class="completion-tabs" role="tablist" aria-label="Estado de ejercicios"><button class="completion-tab active" id="pendingTab" type="button" data-view="pending">SIN COMPLETAR <span id="pendingCount">6</span></button><button class="completion-tab" id="completedTab" type="button" data-view="completed">COMPLETADOS <span id="completedCount">0</span></button></div>
     <div class="exercise-list" id="exerciseList"></div>
     <section class="save-panel">
       <p>Las repeticiones son fijas: 3 series de 12 repeticiones. En los ejercicios por tiempo se indica la duración. Introduce el peso y pulsa una sola vez para guardar los ejercicios que hayas rellenado.</p>
@@ -427,10 +427,10 @@ const INITIAL_SESSIONS = [{
 }];
 
 const DAYS = {
-  1:{short:"LUN",name:"Lunes",title:"Pecho + tríceps",desc:"10 minutos de bicicleta y cinco ejercicios de fuerza. Mantén una técnica controlada y una carga que puedas mover con seguridad."},
-  2:{short:"MAR",name:"Martes",title:"Cuádriceps + glúteos",desc:"10 minutos de bicicleta y cinco ejercicios. Ajusta la intensidad según la carga de fútbol y cómo notes las piernas."},
-  3:{short:"MIÉ",name:"Miércoles",title:"Espalda + bíceps",desc:"10 minutos de bicicleta y cinco ejercicios. Mantén el tronco estable y controla la subida y la bajada."},
-  4:{short:"JUE",name:"Jueves",title:"Hombros + core",desc:"10 minutos de bicicleta y cinco ejercicios. Evita compensaciones con el cuello o la zona lumbar."}
+  1:{short:"LUN",name:"Lunes",title:"Pecho + tríceps",desc:"10 minutos de bicicleta y seis ejercicios de fuerza. Mantén una técnica controlada y una carga que puedas mover con seguridad."},
+  2:{short:"MAR",name:"Martes",title:"Cuádriceps + glúteos",desc:"10 minutos de bicicleta y seis ejercicios de fuerza. Ajusta la intensidad según la carga de fútbol y cómo notes las piernas."},
+  3:{short:"MIÉ",name:"Miércoles",title:"Espalda + bíceps",desc:"10 minutos de bicicleta y seis ejercicios de fuerza. Mantén el tronco estable y controla la subida y la bajada."},
+  4:{short:"JUE",name:"Jueves",title:"Hombros + core",desc:"10 minutos de bicicleta y seis ejercicios de fuerza. Evita compensaciones con el cuello o la zona lumbar."}
 };
 
 const ROUTINES = {
@@ -1174,7 +1174,7 @@ window.addEventListener("online",()=>{updateConnectionStatus();syncOfflineQueue(
 window.addEventListener("offline",updateConnectionStatus);
 updateConnectionStatus();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  navigator.serviceWorker.register("./sw.js?v=3",{updateViaCache:"none"})
+  navigator.serviceWorker.register("./sw.js?v=5",{updateViaCache:"none"})
     .then(registration=>registration.update())
     .catch(e=>console.warn("Service worker no disponible",e));
 }
