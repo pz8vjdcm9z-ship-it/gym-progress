@@ -1703,17 +1703,32 @@ $("loginForm").addEventListener("submit",async event=>{
   event.preventDefault();
   const email=$("email").value.trim();
   const password=$("password").value;
-  $("loginBtn").disabled=true;
-  $("loginBtn").textContent="CONECTANDO…";
-  hideStatus($("loginStatus"));
-  const {data,error}=await supabase.auth.signInWithPassword({email,password});
-  $("loginBtn").disabled=false;
-  $("loginBtn").textContent="INICIAR SESIÓN";
-  if(error){
-    showStatus($("loginStatus"),"No se ha podido iniciar sesión. Comprueba el correo y la contraseña que registraste en Supabase.",true);
-    return;
+  const button=$("loginBtn");
+  const status=$("loginStatus");
+  button.disabled=true;
+  button.textContent="CONECTANDO…";
+  hideStatus(status);
+  try{
+    if(!navigator.onLine){
+      throw new Error("No hay conexión a Internet. Conéctate y vuelve a intentarlo.");
+    }
+    const {data,error}=await supabase.auth.signInWithPassword({email,password});
+    if(error){
+      console.error("Supabase signInWithPassword:",error);
+      throw new Error(error.message||error.msg||"Supabase ha rechazado el inicio de sesión.");
+    }
+    if(!data?.user){
+      throw new Error("Supabase no devolvió un usuario. Comprueba la configuración de autenticación.");
+    }
+    await enterApp(data.user);
+  }catch(error){
+    console.error("Error de inicio de sesión:",error);
+    const detail=error?.message||error?.msg||String(error)||"Error desconocido";
+    showStatus(status,`No se ha podido iniciar sesión: ${detail}`,true);
+  }finally{
+    button.disabled=false;
+    button.textContent="INICIAR SESIÓN";
   }
-  await enterApp(data.user);
 });
 
 $("logoutBtn").addEventListener("click",async()=>{
