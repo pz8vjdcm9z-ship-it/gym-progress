@@ -423,6 +423,12 @@ body:not(.spotify-visible) #spotifyMini,
 body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
 
 
+
+/* RACHA: calendario limpio y contador anual, aislado del resto de la aplicación */
+.streak-panel{padding:22px 0 40px}.streak-summary{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0 20px}.streak-total-card{padding:22px;border:1px solid rgba(117,232,204,.22);border-radius:20px;background:linear-gradient(135deg,rgba(117,232,204,.12),rgba(255,255,255,.035));box-shadow:0 12px 35px rgba(0,0,0,.12)}.streak-total-label{display:block;color:var(--muted,#9aa8b8);font-size:11px;font-weight:850;letter-spacing:1.2px;text-transform:uppercase}.streak-total-number{display:block;margin:7px 0 2px;color:var(--accent,#75e8cc);font-size:48px;line-height:1;font-weight:950;letter-spacing:-2px}.streak-total-caption{color:var(--muted,#9aa8b8);font-size:12px}.streak-calendar-card{padding:17px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(255,255,255,.035)}.streak-month-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}.streak-month-title{font-size:17px;font-weight:900;text-transform:capitalize}.streak-month-controls{display:flex;gap:8px}.streak-month-controls button{width:36px;height:36px;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:rgba(255,255,255,.06);color:inherit;font-size:20px}.streak-weekdays,.streak-days-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}.streak-weekdays{margin-bottom:8px}.streak-weekdays span{text-align:center;color:var(--muted,#9aa8b8);font-size:10px;font-weight:900}.streak-day{aspect-ratio:1;display:grid;place-items:center;border-radius:11px;background:rgba(255,255,255,.045);color:var(--text,#fff);font-size:12px;font-weight:750;position:relative}.streak-day.empty{background:transparent}.streak-day.done{background:rgba(65,198,145,.2);color:#8df0c3;border:1px solid rgba(65,198,145,.42)}.streak-day.missed{background:rgba(255,105,105,.10);color:#ff9b9b;border:1px solid rgba(255,105,105,.2)}.streak-day.rest{color:rgba(255,255,255,.34);background:rgba(255,255,255,.025)}.streak-day.today{outline:2px solid var(--accent,#75e8cc);outline-offset:1px}.streak-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;color:var(--muted,#9aa8b8);font-size:10px}.streak-legend span{display:flex;align-items:center;gap:5px}.streak-legend i{width:8px;height:8px;border-radius:50%;display:inline-block}.streak-week-progress{margin-top:14px;padding:15px 16px;border-radius:15px;background:rgba(255,255,255,.04);display:flex;justify-content:space-between;align-items:center;gap:12px}.streak-week-progress strong{font-size:17px}.streak-week-progress span{font-size:12px;color:var(--muted,#9aa8b8)}.streak-error{margin-top:12px;color:#ffaaaa;font-size:12px}
+.app-main-nav{display:flex;gap:7px;overflow-x:auto}.app-main-nav button{flex:1;min-width:0;white-space:nowrap;font-size:10px;padding-left:8px;padding-right:8px}
+@media(min-width:600px){.streak-panel{max-width:720px;margin:0 auto}.streak-summary{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -459,6 +465,7 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
     <div class="library-nav app-main-nav">
       <button type="button" id="workoutNav" class="active">MI RUTINA</button>
       <button type="button" id="libraryNav">BIBLIOTECA</button>
+      <button type="button" id="streakNav">CALENDARIO</button>
     </div>
     <div id="workoutSection">
     <section class="home-dashboard" id="homeDashboard" aria-label="Panel de inicio">
@@ -574,6 +581,19 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
         <p class="library-subtitle" id="libraryGroupSubtitle"></p>
         <div class="library-exercises" id="libraryExerciseGrid"></div>
       </div>
+    </section>
+    <section id="streakSection" class="streak-panel hidden" aria-label="Calendario de entrenamientos">
+      <h2 class="library-title">Tu progreso</h2>
+      <p class="library-intro">Consulta tus entrenamientos completados y tu actividad durante el año.</p>
+      <div class="streak-summary"><div class="streak-total-card"><span class="streak-total-label">Entrenamientos este año</span><strong class="streak-total-number" id="streakYearTotal">0</strong><span class="streak-total-caption" id="streakYearCaption">Días completados en 2026</span></div></div>
+      <div class="streak-calendar-card">
+        <div class="streak-month-row"><strong class="streak-month-title" id="streakMonthTitle">Mes</strong><div class="streak-month-controls"><button type="button" id="streakPrevMonth" aria-label="Mes anterior">‹</button><button type="button" id="streakNextMonth" aria-label="Mes siguiente">›</button></div></div>
+        <div class="streak-weekdays"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+        <div class="streak-days-grid" id="streakCalendarGrid"></div>
+        <div class="streak-legend"><span><i style="background:#41c691"></i>Entrenamiento completado</span><span><i style="background:#ff6969"></i>No realizado</span><span><i style="background:#777"></i>Descanso</span></div>
+      </div>
+      <div class="streak-week-progress"><div><strong>Esta semana</strong><br><span>Entrenamientos completados</span></div><strong id="streakWeekTotal">0 / 4</strong></div>
+      <div id="streakStatus" class="streak-error hidden" role="status"></div>
     </section>
   </section>
 </main>
@@ -889,7 +909,7 @@ async function loadRepDB(){
 function renderDays(){
   $("daySelector").innerHTML=[1,2,3,4].map(day=>`
     <button type="button" class="day-btn ${selectedDay===day?"active":""}" data-day="${day}">
-      ${DAYS[day].short}<small>${DAYS[day].title}</small>
+      ${DAYS[day].short}<small>${DAYS[day].title.split(" + ")[0]}</small>
     </button>`).join("");
   $("daySelector").querySelectorAll("[data-day]").forEach(button=>{
     button.addEventListener("click",()=>{
@@ -992,9 +1012,53 @@ function loadActiveRoutine(day){
   return base;
 }
 function persistRoutine(){localStorage.setItem(routineKey(selectedDay),JSON.stringify(activeRoutine));}
+// El calendario usa almacenamiento local independiente: nunca bloquea el login ni el guardado de pesos.
+let streakViewDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+const streakStorageKey = () => `gym_progress_completed_days_${currentUser?.id || "guest"}`;
+function readWorkoutDays(){
+  try{const data=JSON.parse(localStorage.getItem(streakStorageKey())||"[]");return Array.isArray(data)?data.filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)):[];}catch(e){return [];}
+}
+function registerWorkoutDay(){
+  try{
+    const key=localDate();
+    const records=readWorkoutDays();
+    if(records.some(x=>x.date===key))return;
+    records.push({date:key,routineDay:Number(selectedDay),completedAt:new Date().toISOString()});
+    localStorage.setItem(streakStorageKey(),JSON.stringify(records));
+  }catch(error){console.warn("No se pudo actualizar el contador del calendario:",error);}
+}
+function renderStreakCalendar(){
+  try{
+    const now=new Date();const year=now.getFullYear();const records=readWorkoutDays();
+    const dates=new Set(records.map(x=>x.date));
+    const yearCount=records.filter(x=>Number(x.date.slice(0,4))===year).length;
+    $("streakYearTotal").textContent=String(yearCount);
+    $("streakYearCaption").textContent=`Días completados en ${year}`;
+    const y=streakViewDate.getFullYear(),m=streakViewDate.getMonth();
+    $("streakMonthTitle").textContent=new Intl.DateTimeFormat("es-ES",{month:"long",year:"numeric"}).format(streakViewDate);
+    $("streakNextMonth").disabled=(y>year||(y===year&&m>=now.getMonth()));
+    const first=new Date(y,m,1);const offset=(first.getDay()+6)%7;const total=new Date(y,m+1,0).getDate();
+    let html="";for(let i=0;i<offset;i++)html+='<div class="streak-day empty" aria-hidden="true"></div>';
+    for(let day=1;day<=total;day++){
+      const date=new Date(y,m,day);const key=`${y}-${String(m+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+      const weekday=date.getDay();const trainingDay=weekday>=1&&weekday<=4;const future=date>new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      let cls="streak-day";if(dates.has(key))cls+=" done";else if(!trainingDay)cls+=" rest";else if(!future)cls+=" missed";
+      if(key===localDate())cls+=" today";
+      html+=`<div class="${cls}" title="${dates.has(key)?"Entrenamiento completado":!trainingDay?"Día de descanso":future?"Pendiente":"Entrenamiento no realizado"}">${day}</div>`;
+    }
+    $("streakCalendarGrid").innerHTML=html;
+    const monday=new Date(now);monday.setDate(now.getDate()-((now.getDay()+6)%7));
+    const weekCount=records.filter(x=>{const d=new Date(`${x.date}T12:00:00`);return d>=new Date(monday.getFullYear(),monday.getMonth(),monday.getDate())&&d<=new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()+3);}).length;
+    $("streakWeekTotal").textContent=`${Math.min(weekCount,4)} / 4`;
+    $("streakStatus").classList.add("hidden");
+  }catch(error){console.warn("Error al mostrar el calendario:",error);const status=$("streakStatus");if(status){status.textContent="No se ha podido mostrar el calendario. El resto de la aplicación sigue funcionando.";status.classList.remove("hidden");}}
+}
+function changeStreakMonth(delta){const next=new Date(streakViewDate.getFullYear(),streakViewDate.getMonth()+delta,1);const now=new Date();if(next>new Date(now.getFullYear(),now.getMonth(),1))return;streakViewDate=next;renderStreakCalendar();}
+
 function toggleComplete(id){
   if(completedIds.has(id)){completedIds.delete(id);exerciseView="pending";}else{completedIds.add(id);exerciseView="pending";}
   localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
+  if(completedIds.size===6)registerWorkoutDay();
   renderWorkout();
 }
 function forbiddenExercise(ex){
@@ -1151,8 +1215,11 @@ function backToLibraryGroups(){
 function setMainTab(tab){
   $("workoutSection").classList.toggle("hidden",tab!=="workout");
   $("librarySection").classList.toggle("hidden",tab!=="library");
+  $("streakSection").classList.toggle("hidden",tab!=="streak");
   $("workoutNav").classList.toggle("active",tab==="workout");
   $("libraryNav").classList.toggle("active",tab==="library");
+  $("streakNav").classList.toggle("active",tab==="streak");
+  if(tab==="streak")renderStreakCalendar();
 }
 function showLibrary(){
   setMainTab("library");
@@ -1161,6 +1228,9 @@ function showLibrary(){
 function showWorkout(){setMainTab("workout");}
 $("workoutNav").addEventListener("click",showWorkout);
 $("libraryNav").addEventListener("click",showLibrary);
+$("streakNav").addEventListener("click",()=>setMainTab("streak"));
+$("streakPrevMonth").addEventListener("click",()=>changeStreakMonth(-1));
+$("streakNextMonth").addEventListener("click",()=>changeStreakMonth(1));
 $("dashboardLibraryBtn").addEventListener("click",showLibrary);
 
 // Navegación por deslizamiento entre MI RUTINA y BIBLIOTECA.
@@ -1175,11 +1245,6 @@ function currentMainTab(){
 function navigateMainTabBySwipe(direction){
   const current=currentMainTab();
   if(!current)return;
-  // Dentro de un grupo muscular, deslizar a la derecha vuelve primero a la vista de todos los grupos.
-  if(direction>0&&current==="library"&&libraryGroup){
-    backToLibraryGroups();
-    return;
-  }
   if(direction<0&&current==="workout")showLibrary();
   else if(direction>0&&current==="library")showWorkout();
 }
@@ -1192,6 +1257,13 @@ document.addEventListener("touchend",event=>{
   const start=mainTabTouchStart;mainTabTouchStart=null;
   const touch=event.changedTouches[0],dx=touch.clientX-start.x,dy=touch.clientY-start.y;
   if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.25)navigateMainTabBySwipe(dx);
+},{passive:true});
+document.addEventListener("touchend",event=>{
+  if(!mainTabTouchStart||!event.changedTouches||!event.changedTouches.length)return;
+  const start=mainTabTouchStart;mainTabTouchStart=null;
+  const t=event.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
+  if(Math.abs(dx)<75||Math.abs(dy)>65||Math.abs(dx)<Math.abs(dy)*1.3)return;
+  navigateMainTabBySwipe(dx);
 },{passive:true});
 document.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:true});
 
@@ -1492,6 +1564,7 @@ async function enterApp(user){
     if(navigator.onLine) await migrateOldLocalRecords();
     await loadLatestRecords();
     renderWorkout();
+    try{renderStreakCalendar();}catch(calendarError){console.warn("Calendario no disponible:",calendarError);}
   }catch(error){
     console.error(error);
     showStatus($("saveStatus"),`No se han podido cargar tus registros: ${error.message||"comprueba la configuración de Supabase"}`,true);
@@ -1781,4 +1854,3 @@ async function initializeSpotifyForApp(){
 </script>
 </body>
 </html>
-
