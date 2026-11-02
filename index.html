@@ -1,229 +1,249 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101820">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>GYM PROGRESS</title>
-  <style>
-    :root {
-      --bg: #101820;
-      --panel: #192630;
-      --panel2: #21343b;
-      --text: #f4f7f8;
-      --muted: #a9b8c1;
-      --accent: #65e6b0;
-      --line: #30434c;
-      --warning: #f3c66b;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      min-height: 100vh;
-    }
-    button { font: inherit; }
-    .app { max-width: 760px; margin: 0 auto; padding: 22px 16px 100px; }
-    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; }
-    .brand { font-size:22px; font-weight:900; letter-spacing:.5px; }
-    .brand span { color:var(--accent); }
-    .eyebrow { color:var(--muted); font-size:11px; letter-spacing:1.5px; font-weight:700; }
-    .date { color:var(--muted); font-size:13px; margin-top:5px; }
-    .hero {
-      background:linear-gradient(145deg,#21343b,#17242d);
-      border:1px solid var(--line); border-radius:22px; padding:22px; margin-bottom:18px;
-    }
-    h1 { font-size:28px; line-height:1.15; margin:9px 0 8px; }
-    h2 { font-size:19px; margin:0 0 14px; }
-    h3 { font-size:16px; margin:0 0 7px; }
-    p { color:var(--muted); line-height:1.5; margin:6px 0; }
-    .stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:18px 0; }
-    .stat { background:rgba(255,255,255,.06); padding:13px; border-radius:14px; }
-    .stat strong { display:block; font-size:24px; }
-    .stat small { color:var(--muted); }
-    .primary {
-      width:100%; border:0; border-radius:14px; background:var(--accent); color:#10221c;
-      padding:15px; font-weight:900; cursor:pointer;
-    }
-    .section { background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:18px; margin-top:14px; }
-    .days { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-    .day {
-      border:1px solid var(--line); background:var(--panel2); color:var(--text);
-      border-radius:12px; padding:12px 5px; cursor:pointer; font-weight:800;
-    }
-    .day small { display:block; color:var(--muted); font-size:10px; margin-top:4px; font-weight:500; }
-    .day.active { border-color:var(--accent); color:var(--accent); }
-    .item { padding:13px 0; border-bottom:1px solid var(--line); }
-    .item:last-child { border-bottom:0; }
-    .item-top { display:flex; justify-content:space-between; gap:12px; }
-    .tag { font-size:11px; color:var(--accent); background:rgba(101,230,176,.1); padding:5px 8px; border-radius:20px; white-space:nowrap; height:max-content; }
-    .unknown { color:var(--warning); }
-    .nav {
-      position:fixed; bottom:0; left:0; right:0; background:rgba(16,24,32,.96);
-      border-top:1px solid var(--line); display:flex; justify-content:center; gap:6px;
-      padding:10px 8px calc(10px + env(safe-area-inset-bottom)); z-index:5;
-    }
-    .nav button { flex:1; max-width:180px; border:0; color:var(--muted); background:transparent; padding:9px 4px; border-radius:10px; font-size:11px; cursor:pointer; }
-    .nav button.active { background:var(--panel2); color:var(--accent); }
-    .hidden { display:none !important; }
-    .note { border-left:3px solid var(--warning); padding:10px 12px; background:rgba(243,198,107,.08); border-radius:8px; }
-    .history-row { display:flex; justify-content:space-between; gap:10px; padding:12px 0; border-bottom:1px solid var(--line); }
-    .history-row:last-child { border:0; }
-    @media (min-width:600px) { .app { padding-top:34px; } h1 {font-size:34px;} }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101820">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>GYM PROGRESS</title>
+<style>
+:root{--bg:#101820;--panel:#192630;--panel2:#21343b;--text:#f4f7f8;--muted:#a9b8c1;--accent:#65e6b0;--line:#30434c;--warn:#f3c66b;--red:#f08b91}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}.app{max-width:760px;margin:auto;padding:20px 15px 100px}
+header{display:flex;justify-content:space-between;align-items:center;margin:5px 0 22px}.brand{font-size:22px;font-weight:900}.brand span{color:var(--accent)}.muted{color:var(--muted)}.small{font-size:12px}
+h1{font-size:27px;margin:7px 0}h2{font-size:19px;margin:0 0 13px}h3{font-size:16px;margin:0 0 5px}p{color:var(--muted);line-height:1.45;margin:6px 0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:17px;margin:13px 0}
+.hero{background:linear-gradient(145deg,#213b40,#192630);border-radius:22px;padding:21px;border:1px solid var(--line)}
+.eyebrow{font-size:10px;letter-spacing:1.5px;color:var(--accent);font-weight:800}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:16px 0}.stat{background:#ffffff0c;border-radius:12px;padding:12px}.stat strong{display:block;font-size:23px}.stat span{font-size:11px;color:var(--muted)}
+.primary,.secondary,.danger{border:0;border-radius:12px;padding:13px 15px;font-weight:800}.primary{background:var(--accent);color:#10221c;width:100%}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.danger{background:#472b32;color:#ffdfe1}
+.grid-days{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.day{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:11px;padding:11px 3px;font-weight:800}.day.active{border-color:var(--accent);color:var(--accent)}.day small{display:block;font-size:9px;color:var(--muted);margin-top:4px}
+.tabs{position:fixed;z-index:10;bottom:0;left:0;right:0;background:#101820f5;border-top:1px solid var(--line);display:flex;justify-content:center;padding:8px 5px calc(8px + env(safe-area-inset-bottom));gap:4px}.tabs button{flex:1;max-width:180px;background:none;border:0;color:var(--muted);padding:8px 2px;border-radius:10px;font-size:11px}.tabs button.active{background:var(--panel2);color:var(--accent)}
+.page.hidden{display:none}.exercise{border:1px solid var(--line);border-radius:15px;padding:13px;margin:11px 0;background:#17242d}
+.exercise-head{display:flex;gap:11px;align-items:center}.visual{width:68px;height:68px;flex:none;border-radius:12px;background:linear-gradient(145deg,#29464a,#1c2c35);display:grid;place-items:center;font-size:28px}
+.exercise-main{flex:1;min-width:0}.pill{display:inline-block;border-radius:20px;background:#65e6b01a;color:var(--accent);padding:4px 8px;font-size:10px;margin-top:4px}
+.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.actions button{font-size:12px;padding:9px 10px}.exercise-detail{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.45}
+input,select{background:#101a21;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px;width:100%;margin:5px 0}
+.weight-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.label{font-size:11px;color:var(--muted)}
+.notice{border-left:3px solid var(--warn);background:#f3c66b12;padding:11px;border-radius:8px;font-size:12px;color:var(--muted);line-height:1.45}
+.listrow{padding:11px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}.listrow:last-child{border:0}
+@media(min-width:600px){.app{padding-top:30px}h1{font-size:33px}}
+</style>
 </head>
 <body>
-  <main class="app">
-    <header>
-      <div>
-        <div class="brand">GYM <span>PROGRESS</span></div>
-        <div class="date" id="todayDate">Cargando fecha...</div>
-      </div>
-      <div aria-hidden="true" style="font-size:27px">✦</div>
-    </header>
+<main class="app">
+<header><div><div class="brand">GYM <span>PROGRESS</span></div><div class="muted small" id="todayLabel"></div></div><div style="font-size:25px">✦</div></header>
 
-    <section id="homePage">
-      <div class="hero">
-        <div class="eyebrow">TU PLAN DE ENTRENAMIENTO</div>
-        <h1 id="welcomeTitle">Tu entrenamiento</h1>
-        <p id="todayMuscles">Consulta la planificación semanal.</p>
-        <div class="stats">
-          <div class="stat"><strong>40–45'</strong><small>Duración habitual</small></div>
-          <div class="stat"><strong>5</strong><small>Ejercicios de fuerza</small></div>
-        </div>
-        <button class="primary" id="goRoutine">VER ENTRENAMIENTO</button>
-      </div>
+<section id="home" class="page">
+<div class="hero">
+<div class="eyebrow">ENTRENAMIENTO PERSONAL</div>
+<h1 id="homeTitle">Tu entrenamiento</h1>
+<p id="homeSubtitle">Rutinas dinámicas adaptadas a tu semana.</p>
+<div class="stats"><div class="stat"><strong>40–45'</strong><span>Duración objetivo</span></div><div class="stat"><strong>5</strong><span>Ejercicios de fuerza</span></div></div>
+<button class="primary" id="startToday">PREPARAR ENTRENAMIENTO</button>
+</div>
+<div class="panel"><h2>Tu planificación fija</h2><div class="grid-days" id="dayButtons"></div><p class="small">Viernes, sábado y domingo: sin rutina de fuerza asignada.</p></div>
+<div class="panel"><h2>Cómo funciona</h2><p>La aplicación selecciona cinco ejercicios de la biblioteca, evita repetirlos demasiado, reduce la frecuencia de los que no te gustan y consulta tus últimos pesos registrados.</p></div>
+</section>
 
-      <div class="section">
-        <h2>Planificación semanal</h2>
-        <div class="days">
-          <button class="day" data-day="1">LUN<small>Pecho</small></button>
-          <button class="day" data-day="2">MAR<small>Pierna</small></button>
-          <button class="day" data-day="3">MIÉ<small>Espalda</small></button>
-          <button class="day" data-day="4">JUE<small>Hombros</small></button>
-        </div>
-        <p style="font-size:12px;margin-top:12px">Viernes, sábado y domingo: sin rutina de fuerza asignada.</p>
-      </div>
+<section id="workout" class="page hidden">
+<div class="panel">
+<div class="eyebrow" id="workoutDate"></div><h1 id="workoutTitle">Entrenamiento</h1>
+<p>6 elementos · 10 min de bicicleta + 5 ejercicios de fuerza</p>
+<div class="notice">Comprueba cómo te encuentras antes de empezar. Si tienes dolor, no fuerces el movimiento. Esta herramienta no realiza diagnósticos médicos.</div>
+<div id="exerciseList"></div>
+<button class="primary" id="finishWorkout">FINALIZAR Y REGISTRAR SESIÓN</button>
+</div>
+</section>
 
-      <div class="section">
-        <h2>Reglas de entrenamiento</h2>
-        <p>10 minutos de bicicleta + 5 ejercicios de fuerza. Normalmente 3 series de 12 repeticiones, con técnica controlada y sin buscar habitualmente el fallo muscular.</p>
-      </div>
-    </section>
+<section id="library" class="page hidden">
+<div class="panel"><h1>Biblioteca</h1><p id="libraryCount"></p><label class="label" for="filterGroup">Filtrar grupo muscular</label><select id="filterGroup"><option value="all">Todos los ejercicios</option><option value="chest">Pectoral</option><option value="triceps">Tríceps</option><option value="quads">Cuádriceps</option><option value="posterior">Glúteos y femoral</option><option value="calves">Gemelos</option><option value="back">Espalda</option><option value="biceps">Bíceps</option><option value="shoulders">Hombros</option><option value="core">Core</option></select><div id="libraryList"></div></div>
+</section>
 
-    <section id="routinePage" class="hidden">
-      <div class="section">
-        <div class="eyebrow" id="routineDate"></div>
-        <h1 id="routineTitle">Rutina</h1>
-        <p>6 elementos · 10 min de bicicleta + 5 ejercicios de fuerza</p>
-        <div id="routineContent"></div>
-      </div>
-      <div class="section">
-        <h2>Antes de entrenar</h2>
-        <p>Comprueba cómo te encuentras hoy. Si tienes dolor, no fuerces los movimientos y valora consultar con un profesional sanitario.</p>
-        <div class="note"><strong>Importante:</strong> esta primera versión solo muestra los datos históricos confirmados. Los ejercicios y pesos que faltan se completarán cuando facilites tu rutina original.</div>
-      </div>
-    </section>
+<section id="history" class="page hidden">
+<div class="panel"><h1>Historial y pesos</h1><p>Solo se muestran sesiones y cargas registradas en esta aplicación o datos históricos iniciales confirmados.</p><div id="historyList"></div></div>
+</section>
 
-    <section id="historyPage" class="hidden">
-      <div class="section">
-        <h1>Historial</h1>
-        <p>Registros históricos confirmados de partida.</p>
-        <div class="history-row"><div><strong>27/10/2026</strong><p>Cuádriceps + glúteo · sesión completada</p></div><span class="tag">5 ejercicios</span></div>
-        <div class="history-row"><div><strong>29/10/2026</strong><p>Hombros + core · fondos asistidos</p></div><span class="tag">36 reps</span></div>
-      </div>
-      <div class="section">
-        <h2>Detalle del 27/10/2026</h2>
-        <div class="history-row"><span>Prensa de piernas</span><strong>20 kg</strong></div>
-        <div class="history-row"><span>Extensión de cuádriceps</span><strong>30 kg</strong></div>
-        <div class="history-row"><span>Curl femoral sentado</span><strong>30 kg</strong></div>
-        <div class="history-row"><span>Extensión de glúteo</span><strong>25 kg</strong></div>
-        <div class="history-row"><span>Máquina de gemelos</span><strong>30 kg</strong></div>
-        <p>3 series × 12 repeticiones en cada ejercicio. Comentario: «Me han gustado todos los ejercicios».</p>
-      </div>
-      <div class="section">
-        <h2>Detalle del 29/10/2026</h2>
-        <div class="history-row"><span>Fondos en máquina asistida</span><strong>20 kg asistencia</strong></div>
-        <p>3 series × 12 repeticiones. Los 20 kg corresponden a asistencia, no a peso levantado. Los demás pesos de la sesión no constan.</p>
-      </div>
-    </section>
+<section id="preferences" class="page hidden">
+<div class="panel"><h1>Mis preferencias</h1><p>«No me gusta» reduce la frecuencia del ejercicio, pero no lo elimina. Puedes cambiar su valoración cuando quieras.</p><div id="preferenceList"></div></div>
+</section>
+</main>
+<nav class="tabs">
+<button class="active" data-page="home">⌂<br>Inicio</button><button data-page="workout">▤<br>Rutina</button><button data-page="library">▦<br>Biblioteca</button><button data-page="history">◷<br>Historial</button><button data-page="preferences">♡<br>Preferencias</button>
+</nav>
 
-    <section id="progressPage" class="hidden">
-      <div class="section">
-        <h1>Mi progreso</h1>
-        <p>Aún hay pocos registros para calcular tendencias fiables.</p>
-        <div class="note">No se afirmará que has mejorado ni se recomendará aumentar cargas sin comparar datos reales del mismo ejercicio y las mismas condiciones.</div>
-      </div>
-    </section>
-  </main>
+<script>
+const DAYS={
+1:{name:"PECTORAL + TRÍCEPS",parts:[["chest",3],["triceps",2]]},
+2:{name:"CUÁDRICEPS + GLÚTEO",parts:[["quads",2],["posterior",2],["calves",1]]},
+3:{name:"ESPALDA + BÍCEPS",parts:[["back",3],["biceps",2]]},
+4:{name:"HOMBROS + CORE",parts:[["shoulders",3],["core",2]]}
+};
+const EXERCISES=[
+["chest_press","Press de pecho en máquina","chest","Máquina","Pectoral; tríceps; deltoides anterior","Ajusta el asiento, mantén la espalda apoyada y empuja sin bloquear los codos.","beginner"],
+["incline_press_machine","Press inclinado en máquina","chest","Máquina","Pectoral superior; tríceps","Alinea las empuñaduras con la parte alta del pecho y controla la bajada.","beginner"],
+["pec_deck","Aperturas en máquina","chest","Máquina","Pectoral","Mantén una ligera flexión de codos y evita llevar los brazos demasiado atrás.","beginner"],
+["cable_fly","Aperturas en poleas","chest","Poleas","Pectoral","Junta las manos delante del pecho sin balancear el tronco.","intermediate"],
+["cable_press","Press de pecho en polea","chest","Poleas","Pectoral; tríceps","Colócate estable y empuja al frente con control.","intermediate"],
+["db_bench","Press de pecho con mancuernas","chest","Mancuernas","Pectoral; tríceps","Mantén muñecas alineadas y baja hasta un rango cómodo.","intermediate"],
+["db_incline","Press inclinado con mancuernas","chest","Mancuernas","Pectoral superior; tríceps","Banco ligeramente inclinado y movimiento controlado.","intermediate"],
+["barbell_bench","Press de banca con barra","chest","Barra","Pectoral; tríceps","Utiliza soportes y una carga que controles con seguridad.","intermediate"],
+["triceps_rope","Extensión de tríceps con cuerda","triceps","Poleas","Tríceps","Mantén los codos cerca del cuerpo y separa suavemente la cuerda al bajar.","beginner"],
+["triceps_bar","Extensión de tríceps con barra en polea","triceps","Poleas","Tríceps","Evita mover los hombros; extiende los codos sin impulso.","beginner"],
+["triceps_single","Extensión unilateral de tríceps","triceps","Poleas","Tríceps","Trabaja un brazo cada vez, con el codo estable.","beginner"],
+["triceps_overhead","Extensión de tríceps por encima de la cabeza","triceps","Poleas","Tríceps","Mantén el abdomen activo y evita arquear la zona lumbar.","intermediate"],
+["assisted_dip","Fondos en máquina asistida","triceps","Máquina asistida","Tríceps; pectoral","Ajusta la asistencia para mantener un movimiento controlado. La cifra es asistencia, no carga levantada.","intermediate"],
+["triceps_machine","Extensión de tríceps en máquina","triceps","Máquina","Tríceps","Ajusta el eje de giro y controla la extensión.","beginner"],
+["leg_press","Prensa de piernas","quads","Máquina","Cuádriceps; glúteos","Mantén la espalda apoyada y evita bloquear las rodillas.","beginner"],
+["leg_extension","Extensión de cuádriceps","quads","Máquina","Cuádriceps","Alinea la rodilla con el eje y evita impulsarte.","beginner"],
+["goblet_squat","Sentadilla goblet","quads","Mancuerna","Cuádriceps; glúteos","Sujeta una mancuerna cerca del pecho y baja hasta un rango cómodo.","beginner"],
+["smith_squat","Sentadilla en multipower","quads","Barra guiada","Cuádriceps; glúteos","Ajusta la posición de los pies y utiliza topes de seguridad.","intermediate"],
+["db_lunge","Zancada con mancuernas","quads","Mancuernas","Cuádriceps; glúteos","Da un paso estable y controla la bajada sin perder equilibrio.","intermediate"],
+["unilateral_press","Prensa unilateral","quads","Máquina","Cuádriceps; glúteos","Trabaja una pierna cada vez sin girar la pelvis.","intermediate"],
+["glute_machine","Extensión de glúteo en máquina","posterior","Máquina","Glúteo mayor","Extiende la cadera sin arquear la espalda.","beginner"],
+["cable_kickback","Patada de glúteo en polea","posterior","Poleas","Glúteo mayor","Sujétate estable y mueve la pierna sin rotar la pelvis.","beginner"],
+["hip_thrust","Hip thrust","posterior","Barra o máquina","Glúteos; isquiotibiales","Eleva la cadera sin hiperextender la zona lumbar.","intermediate"],
+["glute_bridge","Puente de glúteo","posterior","Peso corporal","Glúteos","Aprieta glúteos arriba y mantén costillas y pelvis controladas.","beginner"],
+["seated_curl","Curl femoral sentado","posterior","Máquina","Isquiotibiales","Ajusta el rodillo y flexiona las rodillas sin despegar la cadera.","beginner"],
+["lying_curl","Curl femoral tumbado","posterior","Máquina","Isquiotibiales","Evita levantar la pelvis y controla el retorno.","beginner"],
+["db_rdl","Peso muerto rumano con mancuernas","posterior","Mancuernas","Isquiotibiales; glúteos","Lleva la cadera atrás con espalda neutra y recorrido cómodo.","intermediate"],
+["hip_abduction","Abducción de cadera en máquina","posterior","Máquina","Glúteo medio","Abre las piernas con control sin balancear el tronco.","beginner"],
+["calf_seated","Elevación de gemelos sentado","calves","Máquina","Gemelos; sóleo","Realiza recorrido completo y pausa brevemente arriba.","beginner"],
+["calf_standing","Elevación de gemelos de pie","calves","Máquina","Gemelos","Mantén las rodillas estables y evita rebotes.","beginner"],
+["calf_press","Gemelos en prensa","calves","Máquina","Gemelos","Mueve el tobillo sin bloquear las rodillas.","beginner"],
+["lat_pulldown","Jalón al pecho","back","Polea","Dorsal ancho; bíceps","Lleva la barra hacia la parte alta del pecho sin balancearte.","beginner"],
+["neutral_pulldown","Jalón con agarre neutro","back","Polea","Dorsal ancho; bíceps","Mantén el torso estable y dirige los codos hacia abajo.","beginner"],
+["seated_row","Remo sentado en polea","back","Polea","Espalda media; dorsal","Lleva los codos atrás sin redondear la espalda.","beginner"],
+["machine_row","Remo en máquina","back","Máquina","Espalda media; dorsal","Apoya el pecho si la máquina lo permite y controla el retorno.","beginner"],
+["chest_supported_row","Remo con pecho apoyado","back","Máquina o banco","Espalda media","Evita impulsarte y junta suavemente las escápulas.","beginner"],
+["one_arm_cable_row","Remo unilateral en polea","back","Polea","Dorsal; espalda media","Mantén el tronco quieto y trabaja cada lado por separado.","intermediate"],
+["pullover_cable","Pullover en polea","back","Polea","Dorsal ancho","Con codos ligeramente flexionados, lleva las manos hacia los muslos.","intermediate"],
+["db_row","Remo con mancuerna","back","Mancuerna","Dorsal; espalda media","Apoya una mano y evita girar el tronco.","intermediate"],
+["biceps_machine","Curl de bíceps en máquina","biceps","Máquina","Bíceps","Alinea los codos con el eje y evita despegar los brazos.","beginner"],
+["db_curl","Curl de bíceps con mancuernas","biceps","Mancuernas","Bíceps","Mantén los codos cerca del cuerpo y evita balancearte.","beginner"],
+["hammer_curl","Curl martillo","biceps","Mancuernas","Bíceps; braquial","Mantén las palmas enfrentadas y controla la bajada.","beginner"],
+["cable_curl","Curl de bíceps en polea","biceps","Polea","Bíceps","Mantén tensión constante sin mover los hombros.","beginner"],
+["preacher_curl","Curl Scott","biceps","Banco o máquina","Bíceps","No bloquees el codo al extender y controla el recorrido.","intermediate"],
+["alternate_curl","Curl alterno","biceps","Mancuernas","Bíceps","Alterna los brazos manteniendo el tronco estable.","beginner"],
+["ez_curl","Curl con barra Z","biceps","Barra Z","Bíceps","Agarra la barra con comodidad y evita impulsarte.","intermediate"],
+["concentration_curl","Curl concentrado","biceps","Mancuerna","Bíceps","Apoya el brazo en el muslo y evita mover el hombro.","intermediate"],
+["shoulder_machine","Press de hombros en máquina","shoulders","Máquina","Deltoides; tríceps","Ajusta el asiento y no fuerces el rango por encima de la cabeza.","beginner"],
+["db_shoulder_press","Press de hombros con mancuernas","shoulders","Mancuernas","Deltoides; tríceps","Mantén abdomen activo y utiliza un rango sin molestias.","intermediate"],
+["lateral_machine","Elevación lateral en máquina","shoulders","Máquina","Deltoides medio","Eleva hasta una altura cómoda sin encoger los hombros.","beginner"],
+["db_lateral","Elevación lateral con mancuernas","shoulders","Mancuernas","Deltoides medio","Usa poco impulso y evita subir por encima de lo controlable.","beginner"],
+["cable_lateral","Elevación lateral en polea","shoulders","Polea","Deltoides medio","Mantén tensión continua y hombro relajado.","intermediate"],
+["reverse_pecdeck","Pájaros en máquina","shoulders","Máquina","Deltoides posterior","Abre los brazos sin encoger los hombros.","beginner"],
+["rear_delt_db","Pájaros con mancuernas","shoulders","Mancuernas","Deltoides posterior","Inclina el tronco con espalda neutra y usa carga ligera.","intermediate"],
+["face_pull","Face pull en polea","shoulders","Polea","Deltoides posterior; espalda alta","Lleva la cuerda hacia la cara con codos abiertos y control.","beginner"],
+["crunch_machine","Crunch abdominal en máquina","core","Máquina","Recto abdominal","Flexiona el tronco sin tirar del cuello.","beginner"],
+["cable_crunch","Crunch en polea","core","Polea","Recto abdominal","Acerca costillas a pelvis sin convertirlo en una sentadilla.","intermediate"],
+["plank","Plancha abdominal","core","Peso corporal","Abdominales; estabilizadores","Mantén cuerpo alineado y respira con normalidad.","beginner"],
+["side_plank","Plancha lateral","core","Peso corporal","Oblicuos; estabilizadores","Mantén cadera elevada sin rotar el tronco.","beginner"],
+["dead_bug","Dead bug","core","Peso corporal","Abdominales profundos","Extiende brazo y pierna contrarios manteniendo zona lumbar estable.","beginner"],
+["bird_dog","Bird dog","core","Peso corporal","Estabilizadores del tronco","Extiende brazo y pierna contrarios sin girar la pelvis.","beginner"],
+["knee_raise","Elevación controlada de rodillas","core","Banco o silla romana","Abdominales; flexores de cadera","Eleva las rodillas sin balancear el cuerpo.","intermediate"],
+["reverse_crunch","Crunch inverso","core","Peso corporal","Recto abdominal","Eleva suavemente la pelvis sin impulso.","beginner"]
+].map(a=>({id:a[0],name:a[1],group:a[2],equipment:a[3],muscles:a[4],technique:a[5],level:a[6]}));
 
-  <nav class="nav" aria-label="Navegación principal">
-    <button class="active" data-page="homePage">⌂<br>Inicio</button>
-    <button data-page="routinePage">▤<br>Rutinas</button>
-    <button data-page="historyPage">◷<br>Historial</button>
-    <button data-page="progressPage">↗<br>Progreso</button>
-  </nav>
-
-  <script>
-    const routines = {
-      1: { name: "PECTORAL + TRÍCEPS", exercises: null },
-      2: { name: "CUÁDRICEPS + GLÚTEO", exercises: [
-        ["Bicicleta estática","10 minutos","Calentamiento cardiovascular suave."],
-        ["Prensa de piernas","3 × 12 · último peso: 20 kg","Apoya la espalda, controla la bajada y evita bloquear las rodillas."],
-        ["Extensión de cuádriceps","3 × 12 · último peso: 30 kg","Ajusta el respaldo y extiende las rodillas sin impulso."],
-        ["Curl femoral sentado","3 × 12 · último peso: 30 kg","Mantén la cadera apoyada y controla la vuelta."],
-        ["Máquina de extensión de glúteo","3 × 12 · último peso: 25 kg","Extiende la cadera sin arquear la zona lumbar."],
-        ["Máquina de gemelos","3 × 12 · último peso: 30 kg","Sube y baja los talones con recorrido controlado."]
-      ]},
-      3: { name: "ESPALDA + BÍCEPS", exercises: null },
-      4: { name: "HOMBROS + CORE", exercises: [
-        ["Bicicleta estática","10 minutos","Calentamiento cardiovascular suave."],
-        ["Fondos en máquina asistida","3 × 12 · 20 kg de asistencia","Mantén el tronco estable y controla el movimiento. Los 20 kg son asistencia."],
-        ["Otros cuatro ejercicios","Pendientes de confirmar","No se muestran ejercicios ni pesos porque no constan en el historial facilitado."]
-      ]}
-    };
-
-    const dayNames = ["DOMINGO","LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES","SÁBADO"];
-    const today = new Date();
-    const day = today.getDay();
-    const dateText = dayNames[day] + " · " + String(today.getDate()).padStart(2,"0") + "/" +
-      String(today.getMonth()+1).padStart(2,"0") + "/" + today.getFullYear();
-    document.getElementById("todayDate").textContent = dateText;
-    const dayToRoutine = day >= 1 && day <= 4 ? day : null;
-    document.getElementById("welcomeTitle").textContent = dayToRoutine ? "¡Vamos a entrenar!" : "Día sin rutina asignada";
-    document.getElementById("todayMuscles").textContent = dayToRoutine ? routines[day].name : "Hoy no hay entrenamiento de fuerza asignado según tu planificación.";
-
-    function showPage(pageId) {
-      ["homePage","routinePage","historyPage","progressPage"].forEach(id => document.getElementById(id).classList.toggle("hidden", id !== pageId));
-      document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.page === pageId));
-    }
-    function openRoutine(selectedDay) {
-      const routine = routines[selectedDay];
-      const date = new Date();
-      document.getElementById("routineDate").textContent = selectedDay === day ? dateText : "PLANIFICACIÓN SEMANAL";
-      document.getElementById("routineTitle").textContent = routine.name;
-      const content = document.getElementById("routineContent");
-      if (!routine.exercises) {
-        content.innerHTML = '<div class="note"><strong>Rutina pendiente de completar.</strong><p>Los ejercicios concretos de este día todavía no se han facilitado. No añadiremos ejercicios inventados.</p></div>';
-      } else {
-        content.innerHTML = routine.exercises.map((ex,i) =>
-          '<div class="item"><div class="item-top"><div><h3>' + (i+1) + '. ' + ex[0] + '</h3><p>' + ex[2] + '</p></div><span class="tag">' + ex[1] + '</span></div></div>'
-        ).join("");
-      }
-      showPage("routinePage");
-    }
-    document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => showPage(btn.dataset.page)));
-    document.querySelectorAll(".day").forEach(btn => btn.addEventListener("click", () => openRoutine(Number(btn.dataset.day))));
-    document.getElementById("goRoutine").addEventListener("click", () => {
-      if (dayToRoutine) openRoutine(dayToRoutine);
-      else showPage("routinePage"), document.getElementById("routineDate").textContent = dateText,
-        document.getElementById("routineTitle").textContent = "Sin rutina asignada",
-        document.getElementById("routineContent").innerHTML = '<p>Viernes, sábado y domingo no tienen rutina de fuerza asignada.</p>';
-    });
-  </script>
+const KEY="gymProgressV2";
+let db=loadDB(), currentDay=new Date().getDay(), currentWorkout=[];
+/* Historial inicial confirmado: se incorpora una sola vez como referencia de última carga. */
+if(!db.seededInitial){
+ const seedDate="27/10/2026";
+ db.weights.leg_press=[{value:20,reps:12,date:seedDate,kind:"load"}];
+ db.weights.leg_extension=[{value:30,reps:12,date:seedDate,kind:"load"}];
+ db.weights.seated_curl=[{value:30,reps:12,date:seedDate,kind:"load"}];
+ db.weights.glute_machine=[{value:25,reps:12,date:seedDate,kind:"load"}];
+ db.weights.calf_seated=[{value:30,reps:12,date:seedDate,kind:"load"}];
+ db.weights.assisted_dip=[{value:20,reps:12,date:"29/10/2026",kind:"assistance"}];
+ db.seededInitial=true;saveDB();
+}
+function loadDB(){try{return JSON.parse(localStorage.getItem(KEY))||{ratings:{},weights:{},sessions:[],recent:[]}}catch(e){return{ratings:{},weights:{},sessions:[],recent:[]}}}
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(db))}
+function fmtDate(d=new Date()){return d.toLocaleDateString("es-ES",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"}).toUpperCase()}
+function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("hidden",p.id!==id));document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="library")renderLibrary();if(id==="history")renderHistory();if(id==="preferences")renderPreferences()}
+function getLastWeight(id){const a=db.weights[id]||[];return a.length?a[a.length-1]:null}
+function chooseExercises(day){
+ const config=DAYS[day],picked=[],used=new Set(),recent=db.recent.slice(-10);
+ config.parts.forEach(([group,count])=>{
+  let pool=EXERCISES.filter(e=>e.group===group&&!used.has(e.id));
+  pool.sort((a,b)=>{
+   const score=e=>{let s=Math.random()*2;const r=db.ratings[e.id];if(r==="like")s+=4;if(r==="dislike")s-=3.2;if(recent.includes(e.id))s-=5;if(!getLastWeight(e.id))s+=.6;return s};
+   return score(b)-score(a);
+  });
+  pool.slice(0,count).forEach(e=>{picked.push({...e});used.add(e.id)});
+ });
+ return picked;
+}
+function startWorkout(day=currentDay){
+ if(!DAYS[day]){alert("Este día no tiene rutina de fuerza asignada.");return}
+ currentDay=day;currentWorkout=chooseExercises(day);renderWorkout();showPage("workout");
+}
+function renderWorkout(){
+ document.getElementById("workoutDate").textContent=fmtDate();
+ document.getElementById("workoutTitle").textContent=DAYS[currentDay].name;
+ const rows=currentWorkout.map((e,i)=>{
+  const last=getLastWeight(e.id),lastText=last?`${last.value} kg${last.kind==="assistance"?" de asistencia":""} · ${last.date}`:"Sin registro anterior de peso";
+  return `<article class="exercise" data-id="${e.id}">
+   <div class="exercise-head"><div class="visual">🏋️</div><div class="exercise-main"><h3>${i+1}. ${e.name}</h3><span class="pill">${e.equipment} · ${e.level==="beginner"?"Básico":"Intermedio"}</span></div></div>
+   <div class="exercise-detail"><b>Músculos:</b> ${e.muscles}<br><b>Plan:</b> 3 series × 12 repeticiones · descanso orientativo 60–90 segundos<br><b>Técnica:</b> ${e.technique}<br><b>Último peso:</b> ${lastText}</div>
+   <div class="weight-row"><label><span class="label">${e.id==="assisted_dip"?"Asistencia utilizada (kg)":"Peso utilizado (kg)"}</span><input class="weightInput" type="number" min="0" step="0.5" inputmode="decimal" placeholder="Ej. 20"></label><label><span class="label">Repeticiones realizadas</span><input class="repsInput" type="number" min="0" max="100" inputmode="numeric" value="12"></label></div>
+   <div class="actions"><button class="secondary" onclick="rateExercise('${e.id}','like')">♥ Me gusta</button><button class="secondary" onclick="rateExercise('${e.id}','dislike')">↓ No me gusta</button><button class="secondary" onclick="replaceExercise('${e.id}')">↻ Cambiar</button></div>
+  </article>`;
+ }).join("");
+ document.getElementById("exerciseList").innerHTML=`<div class="exercise"><b>🚴 Bicicleta estática</b><p>10 minutos de calentamiento a intensidad cómoda.</p></div>${rows}`;
+}
+function rateExercise(id,rating){db.ratings[id]=rating;saveDB();alert(rating==="like"?"Preferencia guardada en este dispositivo.":"Se reducirá la frecuencia de este ejercicio.");renderWorkout()}
+function replaceExercise(id){
+ const old=currentWorkout.find(e=>e.id===id);if(!old)return;
+ const used=new Set(currentWorkout.map(e=>e.id));
+ let pool=EXERCISES.filter(e=>e.group===old.group&&!used.has(e.id));
+ pool.sort((a,b)=>{const score=e=>(db.ratings[e.id]==="like"?4:0)-(db.ratings[e.id]==="dislike"?4:0)-(db.recent.includes(e.id)?3:0)+Math.random();return score(b)-score(a)});
+ if(!pool.length){alert("No hay otra alternativa disponible en esta categoría.");return}
+ const replacement=pool[0];currentWorkout=currentWorkout.map(e=>e.id===id?replacement:e);renderWorkout();
+}
+function finishWorkout(){
+ const records=[];
+ document.querySelectorAll("#exerciseList .exercise[data-id]").forEach(card=>{
+  const id=card.dataset.id,weight=card.querySelector(".weightInput").value,reps=card.querySelector(".repsInput").value;
+  if(weight!==""){const rec={value:Number(weight),reps:Number(reps||12),date:new Date().toLocaleDateString("es-ES"),kind:id==="assisted_dip"?"assistance":"load"};db.weights[id]=db.weights[id]||[];db.weights[id].push(rec);records.push({id,...rec})}
+ });
+ db.sessions.push({date:new Date().toISOString(),day:currentDay,exercises:currentWorkout.map(e=>e.id),weights:records});
+ db.recent.push(...currentWorkout.map(e=>e.id));db.recent=db.recent.slice(-20);saveDB();
+ alert("Sesión registrada en este dispositivo. Los pesos solo se han guardado en los ejercicios donde has introducido una carga.");
+ showPage("history");
+}
+function renderLibrary(){
+ const group=document.getElementById("filterGroup").value;
+ const list=EXERCISES.filter(e=>group==="all"||e.group===group);
+ document.getElementById("libraryCount").textContent=`${list.length} ejercicios disponibles en esta biblioteca inicial.`;
+ document.getElementById("libraryList").innerHTML=list.map(e=>`<div class="listrow"><div><b>${e.name}</b><div class="small muted">${e.equipment} · ${e.muscles}</div></div><span class="pill">${db.ratings[e.id]==="like"?"Favorito":db.ratings[e.id]==="dislike"?"Menos frecuente":"Disponible"}</span></div>`).join("");
+}
+function renderHistory(){
+ const el=document.getElementById("historyList");
+ let html="";
+ const initial=[["27/10/2026","Prensa de piernas","20 kg"],["27/10/2026","Extensión de cuádriceps","30 kg"],["27/10/2026","Curl femoral sentado","30 kg"],["27/10/2026","Extensión de glúteo","25 kg"],["27/10/2026","Máquina de gemelos","30 kg"],["29/10/2026","Fondos en máquina asistida","20 kg de asistencia"]];
+ html+="<h3>Historial inicial confirmado</h3>"+initial.map(x=>`<div class="listrow"><div>${x[1]}<div class="small muted">${x[0]}</div></div><b>${x[2]}</b></div>`).join("");
+ html+="<h3 style='margin-top:20px'>Sesiones registradas en la aplicación</h3>";
+ if(!db.sessions.length)html+="<p>Aún no has registrado sesiones nuevas.</p>";
+ db.sessions.slice().reverse().forEach(s=>{html+=`<div class="listrow"><div><b>${DAYS[s.day].name}</b><div class="small muted">${new Date(s.date).toLocaleString("es-ES")}</div></div><span class="pill">${s.exercises.length} ejercicios</span></div>`});
+ el.innerHTML=html;
+}
+function renderPreferences(){
+ document.getElementById("preferenceList").innerHTML=EXERCISES.filter(e=>db.ratings[e.id]).map(e=>`<div class="listrow"><div><b>${e.name}</b><div class="small muted">${e.group}</div></div><button class="secondary" onclick="clearRating('${e.id}')">${db.ratings[e.id]==="like"?"♥ Favorito · cambiar":"↓ Menos frecuente · cambiar"}</button></div>`).join("")||"<p>Aún no has valorado ejercicios. Puedes hacerlo desde cualquier entrenamiento.</p>";
+}
+function clearRating(id){delete db.ratings[id];saveDB();renderPreferences()}
+document.getElementById("finishWorkout").addEventListener("click",finishWorkout);
+document.getElementById("filterGroup").addEventListener("change",renderLibrary);
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+document.getElementById("startToday").addEventListener("click",()=>startWorkout(currentDay));
+document.getElementById("todayLabel").textContent=fmtDate();
+document.getElementById("dayButtons").innerHTML=[1,2,3,4].map(d=>`<button class="day" onclick="startWorkout(${d})">${["","LUN","MAR","MIÉ","JUE"][d]}<small>${DAYS[d].name.split(" + ")[0]}</small></button>`).join("");
+document.getElementById("homeTitle").textContent=DAYS[currentDay]?"¡Vamos a entrenar!":"Hoy no hay rutina asignada";
+document.getElementById("homeSubtitle").textContent=DAYS[currentDay]?DAYS[currentDay].name:"Viernes, sábado y domingo no tienen rutina de fuerza asignada.";
+document.getElementById("startToday").disabled=!DAYS[currentDay];
+document.getElementById("startToday").style.opacity=DAYS[currentDay]?1:.45;
+</script>
 </body>
 </html>
