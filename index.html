@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101820">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>GYM PROGRESS</title>
+  <style>
+    :root {
+      --bg: #101820;
+      --panel: #192630;
+      --panel2: #21343b;
+      --text: #f4f7f8;
+      --muted: #a9b8c1;
+      --accent: #65e6b0;
+      --line: #30434c;
+      --warning: #f3c66b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+    button { font: inherit; }
+    .app { max-width: 760px; margin: 0 auto; padding: 22px 16px 100px; }
+    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; }
+    .brand { font-size:22px; font-weight:900; letter-spacing:.5px; }
+    .brand span { color:var(--accent); }
+    .eyebrow { color:var(--muted); font-size:11px; letter-spacing:1.5px; font-weight:700; }
+    .date { color:var(--muted); font-size:13px; margin-top:5px; }
+    .hero {
+      background:linear-gradient(145deg,#21343b,#17242d);
+      border:1px solid var(--line); border-radius:22px; padding:22px; margin-bottom:18px;
+    }
+    h1 { font-size:28px; line-height:1.15; margin:9px 0 8px; }
+    h2 { font-size:19px; margin:0 0 14px; }
+    h3 { font-size:16px; margin:0 0 7px; }
+    p { color:var(--muted); line-height:1.5; margin:6px 0; }
+    .stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:18px 0; }
+    .stat { background:rgba(255,255,255,.06); padding:13px; border-radius:14px; }
+    .stat strong { display:block; font-size:24px; }
+    .stat small { color:var(--muted); }
+    .primary {
+      width:100%; border:0; border-radius:14px; background:var(--accent); color:#10221c;
+      padding:15px; font-weight:900; cursor:pointer;
+    }
+    .section { background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:18px; margin-top:14px; }
+    .days { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    .day {
+      border:1px solid var(--line); background:var(--panel2); color:var(--text);
+      border-radius:12px; padding:12px 5px; cursor:pointer; font-weight:800;
+    }
+    .day small { display:block; color:var(--muted); font-size:10px; margin-top:4px; font-weight:500; }
+    .day.active { border-color:var(--accent); color:var(--accent); }
+    .item { padding:13px 0; border-bottom:1px solid var(--line); }
+    .item:last-child { border-bottom:0; }
+    .item-top { display:flex; justify-content:space-between; gap:12px; }
+    .tag { font-size:11px; color:var(--accent); background:rgba(101,230,176,.1); padding:5px 8px; border-radius:20px; white-space:nowrap; height:max-content; }
+    .unknown { color:var(--warning); }
+    .nav {
+      position:fixed; bottom:0; left:0; right:0; background:rgba(16,24,32,.96);
+      border-top:1px solid var(--line); display:flex; justify-content:center; gap:6px;
+      padding:10px 8px calc(10px + env(safe-area-inset-bottom)); z-index:5;
+    }
+    .nav button { flex:1; max-width:180px; border:0; color:var(--muted); background:transparent; padding:9px 4px; border-radius:10px; font-size:11px; cursor:pointer; }
+    .nav button.active { background:var(--panel2); color:var(--accent); }
+    .hidden { display:none !important; }
+    .note { border-left:3px solid var(--warning); padding:10px 12px; background:rgba(243,198,107,.08); border-radius:8px; }
+    .history-row { display:flex; justify-content:space-between; gap:10px; padding:12px 0; border-bottom:1px solid var(--line); }
+    .history-row:last-child { border:0; }
+    @media (min-width:600px) { .app { padding-top:34px; } h1 {font-size:34px;} }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <div class="brand">GYM <span>PROGRESS</span></div>
+        <div class="date" id="todayDate">Cargando fecha...</div>
+      </div>
+      <div aria-hidden="true" style="font-size:27px">✦</div>
+    </header>
+
+    <section id="homePage">
+      <div class="hero">
+        <div class="eyebrow">TU PLAN DE ENTRENAMIENTO</div>
+        <h1 id="welcomeTitle">Tu entrenamiento</h1>
+        <p id="todayMuscles">Consulta la planificación semanal.</p>
+        <div class="stats">
+          <div class="stat"><strong>40–45'</strong><small>Duración habitual</small></div>
+          <div class="stat"><strong>5</strong><small>Ejercicios de fuerza</small></div>
+        </div>
+        <button class="primary" id="goRoutine">VER ENTRENAMIENTO</button>
+      </div>
+
+      <div class="section">
+        <h2>Planificación semanal</h2>
+        <div class="days">
+          <button class="day" data-day="1">LUN<small>Pecho</small></button>
+          <button class="day" data-day="2">MAR<small>Pierna</small></button>
+          <button class="day" data-day="3">MIÉ<small>Espalda</small></button>
+          <button class="day" data-day="4">JUE<small>Hombros</small></button>
+        </div>
+        <p style="font-size:12px;margin-top:12px">Viernes, sábado y domingo: sin rutina de fuerza asignada.</p>
+      </div>
+
+      <div class="section">
+        <h2>Reglas de entrenamiento</h2>
+        <p>10 minutos de bicicleta + 5 ejercicios de fuerza. Normalmente 3 series de 12 repeticiones, con técnica controlada y sin buscar habitualmente el fallo muscular.</p>
+      </div>
+    </section>
+
+    <section id="routinePage" class="hidden">
+      <div class="section">
+        <div class="eyebrow" id="routineDate"></div>
+        <h1 id="routineTitle">Rutina</h1>
+        <p>6 elementos · 10 min de bicicleta + 5 ejercicios de fuerza</p>
+        <div id="routineContent"></div>
+      </div>
+      <div class="section">
+        <h2>Antes de entrenar</h2>
+        <p>Comprueba cómo te encuentras hoy. Si tienes dolor, no fuerces los movimientos y valora consultar con un profesional sanitario.</p>
+        <div class="note"><strong>Importante:</strong> esta primera versión solo muestra los datos históricos confirmados. Los ejercicios y pesos que faltan se completarán cuando facilites tu rutina original.</div>
+      </div>
+    </section>
+
+    <section id="historyPage" class="hidden">
+      <div class="section">
+        <h1>Historial</h1>
+        <p>Registros históricos confirmados de partida.</p>
+        <div class="history-row"><div><strong>27/10/2026</strong><p>Cuádriceps + glúteo · sesión completada</p></div><span class="tag">5 ejercicios</span></div>
+        <div class="history-row"><div><strong>29/10/2026</strong><p>Hombros + core · fondos asistidos</p></div><span class="tag">36 reps</span></div>
+      </div>
+      <div class="section">
+        <h2>Detalle del 27/10/2026</h2>
+        <div class="history-row"><span>Prensa de piernas</span><strong>20 kg</strong></div>
+        <div class="history-row"><span>Extensión de cuádriceps</span><strong>30 kg</strong></div>
+        <div class="history-row"><span>Curl femoral sentado</span><strong>30 kg</strong></div>
+        <div class="history-row"><span>Extensión de glúteo</span><strong>25 kg</strong></div>
+        <div class="history-row"><span>Máquina de gemelos</span><strong>30 kg</strong></div>
+        <p>3 series × 12 repeticiones en cada ejercicio. Comentario: «Me han gustado todos los ejercicios».</p>
+      </div>
+      <div class="section">
+        <h2>Detalle del 29/10/2026</h2>
+        <div class="history-row"><span>Fondos en máquina asistida</span><strong>20 kg asistencia</strong></div>
+        <p>3 series × 12 repeticiones. Los 20 kg corresponden a asistencia, no a peso levantado. Los demás pesos de la sesión no constan.</p>
+      </div>
+    </section>
+
+    <section id="progressPage" class="hidden">
+      <div class="section">
+        <h1>Mi progreso</h1>
+        <p>Aún hay pocos registros para calcular tendencias fiables.</p>
+        <div class="note">No se afirmará que has mejorado ni se recomendará aumentar cargas sin comparar datos reales del mismo ejercicio y las mismas condiciones.</div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="Navegación principal">
+    <button class="active" data-page="homePage">⌂<br>Inicio</button>
+    <button data-page="routinePage">▤<br>Rutinas</button>
+    <button data-page="historyPage">◷<br>Historial</button>
+    <button data-page="progressPage">↗<br>Progreso</button>
+  </nav>
+
+  <script>
+    const routines = {
+      1: { name: "PECTORAL + TRÍCEPS", exercises: null },
+      2: { name: "CUÁDRICEPS + GLÚTEO", exercises: [
+        ["Bicicleta estática","10 minutos","Calentamiento cardiovascular suave."],
+        ["Prensa de piernas","3 × 12 · último peso: 20 kg","Apoya la espalda, controla la bajada y evita bloquear las rodillas."],
+        ["Extensión de cuádriceps","3 × 12 · último peso: 30 kg","Ajusta el respaldo y extiende las rodillas sin impulso."],
+        ["Curl femoral sentado","3 × 12 · último peso: 30 kg","Mantén la cadera apoyada y controla la vuelta."],
+        ["Máquina de extensión de glúteo","3 × 12 · último peso: 25 kg","Extiende la cadera sin arquear la zona lumbar."],
+        ["Máquina de gemelos","3 × 12 · último peso: 30 kg","Sube y baja los talones con recorrido controlado."]
+      ]},
+      3: { name: "ESPALDA + BÍCEPS", exercises: null },
+      4: { name: "HOMBROS + CORE", exercises: [
+        ["Bicicleta estática","10 minutos","Calentamiento cardiovascular suave."],
+        ["Fondos en máquina asistida","3 × 12 · 20 kg de asistencia","Mantén el tronco estable y controla el movimiento. Los 20 kg son asistencia."],
+        ["Otros cuatro ejercicios","Pendientes de confirmar","No se muestran ejercicios ni pesos porque no constan en el historial facilitado."]
+      ]}
+    };
+
+    const dayNames = ["DOMINGO","LUNES","MARTES","MIÉRCOLES","JUEVES","VIERNES","SÁBADO"];
+    const today = new Date();
+    const day = today.getDay();
+    const dateText = dayNames[day] + " · " + String(today.getDate()).padStart(2,"0") + "/" +
+      String(today.getMonth()+1).padStart(2,"0") + "/" + today.getFullYear();
+    document.getElementById("todayDate").textContent = dateText;
+    const dayToRoutine = day >= 1 && day <= 4 ? day : null;
+    document.getElementById("welcomeTitle").textContent = dayToRoutine ? "¡Vamos a entrenar!" : "Día sin rutina asignada";
+    document.getElementById("todayMuscles").textContent = dayToRoutine ? routines[day].name : "Hoy no hay entrenamiento de fuerza asignado según tu planificación.";
+
+    function showPage(pageId) {
+      ["homePage","routinePage","historyPage","progressPage"].forEach(id => document.getElementById(id).classList.toggle("hidden", id !== pageId));
+      document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.page === pageId));
+    }
+    function openRoutine(selectedDay) {
+      const routine = routines[selectedDay];
+      const date = new Date();
+      document.getElementById("routineDate").textContent = selectedDay === day ? dateText : "PLANIFICACIÓN SEMANAL";
+      document.getElementById("routineTitle").textContent = routine.name;
+      const content = document.getElementById("routineContent");
+      if (!routine.exercises) {
+        content.innerHTML = '<div class="note"><strong>Rutina pendiente de completar.</strong><p>Los ejercicios concretos de este día todavía no se han facilitado. No añadiremos ejercicios inventados.</p></div>';
+      } else {
+        content.innerHTML = routine.exercises.map((ex,i) =>
+          '<div class="item"><div class="item-top"><div><h3>' + (i+1) + '. ' + ex[0] + '</h3><p>' + ex[2] + '</p></div><span class="tag">' + ex[1] + '</span></div></div>'
+        ).join("");
+      }
+      showPage("routinePage");
+    }
+    document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => showPage(btn.dataset.page)));
+    document.querySelectorAll(".day").forEach(btn => btn.addEventListener("click", () => openRoutine(Number(btn.dataset.day))));
+    document.getElementById("goRoutine").addEventListener("click", () => {
+      if (dayToRoutine) openRoutine(dayToRoutine);
+      else showPage("routinePage"), document.getElementById("routineDate").textContent = dateText,
+        document.getElementById("routineTitle").textContent = "Sin rutina asignada",
+        document.getElementById("routineContent").innerHTML = '<p>Viernes, sábado y domingo no tienen rutina de fuerza asignada.</p>';
+    });
+  </script>
+</body>
+</html>
