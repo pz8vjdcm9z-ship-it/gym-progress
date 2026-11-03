@@ -580,7 +580,7 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
         </div>
         <div class="rest-notify-row">
           <button type="button" class="rest-notify-btn" id="restNotifyEnable">ACTIVAR AVISOS</button>
-          <span class="rest-notify-hint" id="restNotifyHint">Aviso visible y sonido al terminar</span>
+          <span class="rest-notify-hint" id="restNotifyHint">Sonido y aviso al terminar. Mantén la app abierta durante el descanso.</span>
         </div>
       </div>
     </section>
@@ -785,6 +785,11 @@ function writeWeightDraft(exerciseId,value,day=selectedDay){
   drafts[exerciseId]=value;
   localStorage.setItem(weightDraftKey(currentUser?.id,day),JSON.stringify(drafts));
 }
+function persistVisibleWeightInputs(day=selectedDay){
+  document.querySelectorAll("[data-weight]").forEach(input=>{
+    if(input.dataset.weight)writeWeightDraft(input.dataset.weight,input.value,day);
+  });
+}
 
 const queueKey = userId => `gym_progress_pending_sync_${userId}`;
 const ALTERNATIVES = {
@@ -825,21 +830,31 @@ function stopRestTimer(message){
   if(message&&$("restTimerStatus"))$("restTimerStatus").textContent=message;
   renderRestTimer();
 }
-function playRestAlarm(){
+async function prepareRestAlarmAudio(){
   try{
     const Ctx=window.AudioContext||window.webkitAudioContext;
-    if(!Ctx)return;
+    if(!Ctx)return false;
     restAudioContext=restAudioContext||new Ctx();
-    if(restAudioContext.state==="suspended")restAudioContext.resume();
+    if(restAudioContext.state==="suspended")await restAudioContext.resume();
+    return restAudioContext.state==="running";
+  }catch(e){
+    console.warn("No se pudo preparar el sonido de descanso",e);
+    return false;
+  }
+}
+async function playRestAlarm(){
+  try{
+    const ready=await prepareRestAlarmAudio();
+    if(!ready||!restAudioContext)return;
     const now=restAudioContext.currentTime;
-    [0,0.28,0.56].forEach((offset,i)=>{
+    [0,0.32,0.64,0.96].forEach((offset,i)=>{
       const osc=restAudioContext.createOscillator(),gain=restAudioContext.createGain();
-      osc.type="sine";osc.frequency.value=i===1?1046:880;
+      osc.type="sine";osc.frequency.value=i%2===0?880:1046;
       gain.gain.setValueAtTime(0.0001,now+offset);
-      gain.gain.exponentialRampToValueAtTime(0.22,now+offset+0.025);
-      gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+0.22);
+      gain.gain.exponentialRampToValueAtTime(0.28,now+offset+0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+0.25);
       osc.connect(gain);gain.connect(restAudioContext.destination);
-      osc.start(now+offset);osc.stop(now+offset+0.24);
+      osc.start(now+offset);osc.stop(now+offset+0.27);
     });
   }catch(e){console.warn("No se pudo reproducir el aviso sonoro",e);}
 }
@@ -872,7 +887,8 @@ function startRestTimer(){
   if(restRemaining<=0){restRemaining=restDuration;restAlertShown=false;}
   restDeadline=Date.now()+restRemaining*1000;
   $("restTimerStatus").textContent="Descansando…";
-  try{const Ctx=window.AudioContext||window.webkitAudioContext;if(Ctx){restAudioContext=restAudioContext||new Ctx();if(restAudioContext.state==="suspended")restAudioContext.resume();}}catch(e){}
+  // Desbloquear el audio durante el toque del usuario (necesario en Safari/iPhone).
+  prepareRestAlarmAudio();
   restInterval=setInterval(tickRestTimer,200);
   renderRestTimer();
 }
@@ -981,6 +997,7 @@ function renderDays(){
     </button>`).join("");
   $("daySelector").querySelectorAll("[data-day]").forEach(button=>{
     button.addEventListener("click",()=>{
+      persistVisibleWeightInputs(selectedDay);
       selectedDay=Number(button.dataset.day);
       activeRoutine=loadActiveRoutine(selectedDay);
     try{exerciseSwapHistory=JSON.parse(localStorage.getItem(swapHistoryKey(selectedDay))||"{}");}catch(e){exerciseSwapHistory={};}
@@ -1002,6 +1019,8 @@ function imageMarkup(exercise){
 }
 
 function renderWorkout(){
+  // Guarda los pesos escritos antes de reconstruir las tarjetas o cambiar de vista.
+  persistVisibleWeightInputs(selectedDay);
   renderDays();
   const day=DAYS[selectedDay];
   const dashboardFocus=$("dashboardFocus");
@@ -1124,9 +1143,35 @@ function renderStreakCalendar(){
 function changeStreakMonth(delta){const next=new Date(streakViewDate.getFullYear(),streakViewDate.getMonth()+delta,1);const now=new Date();if(next>new Date(now.getFullYear(),now.getMonth(),1))return;streakViewDate=next;renderStreakCalendar();}
 
 function toggleComplete(id){
-  if(completedIds.has(id)){completedIds.delete(id);exerciseView="pending";}else{completedIds.add(id);exerciseView="pending";}
+  const wasComplete=completedIds.has(id);
+  if(wasComplete){
+    completedIds.delete(id);
+    exerciseView="pending";
+  }else{
+    completedIds.add(id);
+    exerciseView="pending";
+  }
   localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
-  if(completedIds.size===6)registerWorkoutDay();
+  const allExercisesComplete=activeRoutine.length===6&&activeRoutine.every(exercise=>completedIds.has(exercise.id));
+  if(allExercisesComplete&&!wasComplete){
+    registerWorkoutDay();
+    // Al completar el último ejercicio, mostrar la pestaña de completados
+    // y llevar el botón de guardar pesos a una posición visible.
+    exerciseView="completed";
+    renderWorkout();
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const savePanel=document.querySelector(".save-panel");
+        const saveButton=$("saveWeightsBtn");
+        (savePanel||saveButton)?.scrollIntoView({behavior:"smooth",block:"center"});
+        if($("saveStatus")){
+          $("saveStatus").classList.remove("hidden");
+          $("saveStatus").textContent="¡Rutina completada! Revisa los pesos registrados y pulsa GUARDAR PESOS.";
+        }
+      });
+    });
+    return;
+  }
   renderWorkout();
 }
 function forbiddenExercise(ex){
@@ -1281,6 +1326,8 @@ function backToLibraryGroups(){
   requestAnimationFrame(()=>window.scrollTo({top:libraryHomeScrollY,behavior:"auto"}));
 }
 function setMainTab(tab){
+  // Cambiar de pestaña no debe descartar los pesos que se hayan escrito.
+  persistVisibleWeightInputs(selectedDay);
   $("workoutSection").classList.toggle("hidden",tab!=="workout");
   $("librarySection").classList.toggle("hidden",tab!=="library");
   $("streakSection").classList.toggle("hidden",tab!=="streak");
@@ -1507,6 +1554,10 @@ $("exerciseList").addEventListener("change",event=>{
   const input=event.target.closest("[data-weight]");
   if(!input)return;
   writeWeightDraft(input.dataset.weight,input.value);
+});
+window.addEventListener("pagehide",()=>persistVisibleWeightInputs(selectedDay));
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="hidden")persistVisibleWeightInputs(selectedDay);
 });
 $("exerciseList").addEventListener("click",event=>{
   const complete=event.target.closest("[data-complete]");
@@ -2025,7 +2076,8 @@ async function spotifyLoadPlaylistTracks(playlist,reset=false){
       copy.append(name,artist);
       const playMark=document.createElement("span");playMark.className="spotify-track-play";playMark.textContent="▶";
       row.append(image,copy,playMark);
-      row.addEventListener("click",()=>spotifyPlayPlaylistTrack(playlist,spotifyTrackOffset+index,track,row));
+      const absolutePosition=spotifyTrackOffset+index;
+      row.addEventListener("click",()=>spotifyPlayPlaylistTrack(playlist,absolutePosition,track,row));
       spotifyEls.trackList.append(row);
     });
     spotifyTrackOffset+=entries.length;
@@ -2039,17 +2091,39 @@ async function spotifyLoadPlaylistTracks(playlist,reset=false){
 }
 async function spotifyPlayPlaylistTrack(playlist,position,track,row){
   if(!spotifyDeviceId){spotifyShowLibraryMessage("Conecta primero el reproductor de Spotify.",true);return;}
+  if(!track?.uri){spotifyShowLibraryMessage("Spotify no ha facilitado el identificador de esta canción.",true);return;}
   try{
     await spotifyPlayer?.activateElement();
+    // Desactivar aleatorio antes de iniciar la pista elegida. Esperamos brevemente
+    // porque Spotify no garantiza el orden de ejecución entre comandos del reproductor.
+    await spotifyApi("/me/player/shuffle?state=false&device_id="+encodeURIComponent(spotifyDeviceId),"PUT");
+    await new Promise(resolve=>setTimeout(resolve,350));
+    // La URI exacta evita errores de posición al paginar la lista.
     await spotifyApi("/me/player/play?device_id="+encodeURIComponent(spotifyDeviceId),"PUT",{
-      context_uri:playlist.uri,offset:{position}
+      context_uri:playlist.uri,offset:{uri:track.uri},position_ms:0
     });
     spotifyCurrentTrackUri=track.uri;
-    spotifyEls.trackList?.querySelectorAll(".spotify-track-row").forEach(item=>item.classList.remove("playing"));
-    row?.classList.add("playing");
-    spotifyShowLibraryMessage("Reproduciendo: "+(track.name||"canción"));
-    await new Promise(resolve=>setTimeout(resolve,500));
-    await spotifyRefreshState();
+    spotifyShowLibraryMessage("Solicitud enviada a Spotify. Comprobando la canción…");
+    let confirmed=false;
+    for(let attempt=0;attempt<4;attempt++){
+      await new Promise(resolve=>setTimeout(resolve,450));
+      try{
+        const state=await spotifyApi("/me/player");
+        const currentUri=state?.item?.uri||state?.item?.linked_from?.uri;
+        if(currentUri===track.uri){
+          confirmed=true;
+          spotifyEls.trackList?.querySelectorAll(".spotify-track-row").forEach(item=>item.classList.remove("playing"));
+          row?.classList.add("playing");
+          await spotifyRefreshState();
+          spotifyShowLibraryMessage("Reproduciendo: "+(track.name||"canción"));
+          break;
+        }
+      }catch(checkError){}
+    }
+    if(!confirmed){
+      await spotifyRefreshState();
+      spotifyShowLibraryMessage("Spotify ha recibido la selección, pero no he podido confirmar que esté sonando esa canción. Comprueba el dispositivo activo en Spotify.",true);
+    }
   }catch(error){spotifyShowLibraryMessage(error.message||"No se ha podido reproducir esa canción.",true);}
 }
 spotifyEls.main?.addEventListener("click",()=>spotifySetExpanded(!spotifyEls.panel.classList.contains("is-expanded")));
