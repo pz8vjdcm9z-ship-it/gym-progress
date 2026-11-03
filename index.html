@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v20-navigation">
+<meta name="application-version" content="home-v19-test">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -81,7 +81,7 @@ main{padding-bottom:28px}
 .input-field label{display:block;margin:0 0 4px;color:var(--muted);font-size:8px;font-weight:850;letter-spacing:.45px}
 .input-field input{display:block;width:100%;min-width:0;height:37px;padding:0 8px;border:1px solid rgba(176,198,222,.2);border-radius:8px;background:#0a1726;color:var(--text);font-size:13px}
 .input-field input::placeholder{color:#687d94}
-.exercise-navigation{display:flex;align-items:center;justify-content:center;gap:12px;margin:12px auto 4px}.exercise-nav-btn{border:1px solid rgba(85,223,189,.42);border-radius:9px;padding:8px 13px;background:rgba(85,223,189,.10);color:#baffed;font-size:10px;font-weight:850;letter-spacing:.3px}.exercise-nav-btn:disabled{opacity:.32;cursor:not-allowed}.exercise-nav-count{min-width:42px;text-align:center;color:var(--muted);font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}.exercise-actions{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}.exercise-action{border:1px solid var(--border);border-radius:9px;padding:9px 11px;background:#1b3048;color:var(--soft);font-size:10px;font-weight:850}.exercise-action[data-previous],.exercise-action[data-change]{border-color:rgba(85,223,189,.42);background:rgba(85,223,189,.10);color:#baffed}.exercise-action.complete{border-color:rgba(85,223,189,.4);background:rgba(85,223,189,.12);color:#aaf3df}.exercise-card.is-complete{border-color:rgba(85,223,189,.55);background:linear-gradient(145deg,rgba(25,62,57,.98),rgba(17,43,49,.98))}.exercise-card.is-complete .exercise-name{text-decoration:line-through;text-decoration-color:rgba(85,223,189,.6)}.save-panel{margin-top:18px;padding:15px;border:1px solid rgba(85,223,189,.25);border-radius:17px;background:linear-gradient(145deg,rgba(18,55,55,.72),rgba(20,34,54,.95))}
+.exercise-actions{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}.exercise-action{border:1px solid var(--border);border-radius:9px;padding:9px 11px;background:#1b3048;color:var(--soft);font-size:10px;font-weight:850}.exercise-action[data-previous],.exercise-action[data-change]{border-color:rgba(85,223,189,.42);background:rgba(85,223,189,.10);color:#baffed;padding:7px 10px;font-size:9px;min-width:78px}.exercise-action.complete{border-color:rgba(85,223,189,.4);background:rgba(85,223,189,.12);color:#aaf3df}.exercise-card.is-complete{border-color:rgba(85,223,189,.55);background:linear-gradient(145deg,rgba(25,62,57,.98),rgba(17,43,49,.98))}.exercise-card.is-complete .exercise-name{text-decoration:line-through;text-decoration-color:rgba(85,223,189,.6)}.save-panel{margin-top:18px;padding:15px;border:1px solid rgba(85,223,189,.25);border-radius:17px;background:linear-gradient(145deg,rgba(18,55,55,.72),rgba(20,34,54,.95))}
 .save-panel p{margin:0 0 11px;color:#c1d9d6;font-size:11px;line-height:1.5}
 .save-panel .primary-btn{min-height:49px}
 .note{margin-top:8px;color:var(--muted);font-size:9px;text-align:center;line-height:1.4}
@@ -706,7 +706,6 @@ const swapHistoryKey = day => `gym_progress_swap_history_${day}`;
 let activeRoutine = [];
 let completedIds = new Set();
 let exerciseView = "pending";
-let exercisePosition = 0;
 const latestCacheKey = userId => `gym_progress_latest_${userId}`;
 const weightDraftKey = (userId,day) => `gym_progress_weight_drafts_${userId||"guest"}_${day}`;
 function readWeightDrafts(day=selectedDay){
@@ -949,9 +948,7 @@ function renderWorkout(){
   $("pendingCount").textContent=pendingCount; $("completedCount").textContent=completedIds.size;
   $("pendingTab").classList.toggle("active",exerciseView==="pending"); $("completedTab").classList.toggle("active",exerciseView==="completed");
   const visibleExercises=exercises.map((exercise,index)=>({exercise,index})).filter(({exercise})=>exerciseView==="completed"?completedIds.has(exercise.id):!completedIds.has(exercise.id));
-  if(exercisePosition>=visibleExercises.length)exercisePosition=Math.max(0,visibleExercises.length-1);
-  const currentVisible=visibleExercises.length?[visibleExercises[exercisePosition]]:[];
-  $("exerciseList").innerHTML=currentVisible.map(({exercise,index})=>{
+  $("exerciseList").innerHTML=visibleExercises.map(({exercise,index})=>{
     const previous=latestRecords.get(exercise.id);
     const previousText=previous
       ? `<strong>${Number(previous.weight).toLocaleString("es-ES")} kg</strong> · ${previous.reps} ${exercise.unit||"repeticiones"} · ${prettyDate(previous.performed_at)}`
@@ -979,15 +976,14 @@ function renderWorkout(){
           </div>
           <div class="exercise-actions">
             <button type="button" class="exercise-action complete" data-complete="${escapeHTML(exercise.id)}">${completedIds.has(exercise.id)?"✓ COMPLETADO":"MARCAR COMO COMPLETADO"}</button>
-            <button type="button" class="exercise-action" data-previous="${escapeHTML(exercise.id)}">↶ DESHACER CAMBIO</button>
-            <button type="button" class="exercise-action" data-change="${escapeHTML(exercise.id)}">CAMBIAR VARIANTE ↻</button>
+            <button type="button" class="exercise-action" data-previous="${escapeHTML(exercise.id)}">ANTERIOR</button>
+            <button type="button" class="exercise-action" data-change="${escapeHTML(exercise.id)}">SIGUIENTE</button>
           </div>
         </div>
       </div>
     </article>`;
   }).join("");
   if(!visibleExercises.length) $("exerciseList").innerHTML=`<div class="empty">${exerciseView==="pending"?"¡Todos los ejercicios están completados! Puedes consultarlos en la pestaña Completados.":"Todavía no has completado ningún ejercicio."}</div>`;
-  else $("exerciseList").insertAdjacentHTML("beforeend",`<div class="exercise-navigation" aria-label="Navegación de ejercicios"><button type="button" class="exercise-nav-btn" data-nav="previous" ${exercisePosition===0?"disabled":""}>← ANTERIOR</button><span class="exercise-nav-count">${exercisePosition+1} de ${visibleExercises.length}</span><button type="button" class="exercise-nav-btn" data-nav="next" ${exercisePosition>=visibleExercises.length-1?"disabled":""}>SIGUIENTE →</button></div>`);
   hideStatus($("saveStatus"));
 }
 
@@ -1386,21 +1382,32 @@ function changeExercise(id){
   const choices=catalogAlternatives(current,index);
   const seen=new Set(history.items.slice(0,history.position+1).map(item=>item.repdb));
   let candidate=choices.find(item=>!seen.has(item.id));
+  let fixedAlternative=false;
+  // Si RepDB no ofrece una coincidencia estricta, utiliza la alternativa
+  // equivalente definida para ese ejercicio en la propia rutina.
+  if(!candidate){
+    const fixed=(ALTERNATIVES[current.id]||[]).find(item=>!seen.has(item.repdb));
+    if(fixed){candidate=fixed;fixedAlternative=true;}
+  }
   // Al llegar al final, reinicia el ciclo y vuelve a ofrecer la primera alternativa.
   if(!candidate){
     history.items=[{...current}];
     history.position=0;
     candidate=choices[0];
+    if(!candidate){
+      const fixed=(ALTERNATIVES[current.id]||[])[0];
+      if(fixed){candidate=fixed;fixedAlternative=true;}
+    }
   }
   if(!candidate){showStatus($("saveStatus"),`No se encuentran alternativas compatibles para «${current.name}» en el catálogo cargado.`,true);return;}
-  const equipment=exerciseEquipmentLabel(candidate.equipment);
-  const muscles=[...(candidate.primary_muscles||[])].join(", ")||current.muscle;
+  const equipment=fixedAlternative?candidate.equipment:exerciseEquipmentLabel(candidate.equipment);
+  const muscles=fixedAlternative?candidate.muscle:([...(candidate.primary_muscles||[])].join(", ")||current.muscle);
   const next={
-    id:`repdb_${candidate.id}`,repdb:candidate.id,
-    name:candidate.name_es||candidate.name_en,
+    id:fixedAlternative?candidate.id:`repdb_${candidate.id}`,repdb:candidate.repdb||candidate.id,
+    name:fixedAlternative?candidate.name:(candidate.name_es||candidate.name_en),
     muscle:muscles.replaceAll("-"," "),equipment,
-    instruction:(candidate.instructions_es||candidate.description_es||[]).join?((candidate.instructions_es||[]).slice(0,2).join(" ")||candidate.description_es||"Realiza el movimiento de forma controlada."):(candidate.description_es||"Realiza el movimiento de forma controlada."),
-    reps:current.reps||12,unit:current.unit,bodyweight:!candidate.equipment,
+    instruction:fixedAlternative?candidate.instruction:((candidate.instructions_es||[]).slice(0,2).join(" ")||candidate.description_es||"Realiza el movimiento de forma controlada."),
+    reps:current.reps||candidate.reps||12,unit:candidate.unit||current.unit,bodyweight:fixedAlternative?!!candidate.bodyweight:!candidate.equipment,
     originalId:slot
   };
   history.items=history.items.slice(0,history.position+1);
@@ -1421,8 +1428,8 @@ function previousExercise(id){
   history.position--;
   applyExerciseVersion(index,history.items[history.position]);
 }
-$("pendingTab").addEventListener("click",()=>{exerciseView="pending";exercisePosition=0;renderWorkout();});
-$("completedTab").addEventListener("click",()=>{exerciseView="completed";exercisePosition=0;renderWorkout();});
+$("pendingTab").addEventListener("click",()=>{exerciseView="pending";renderWorkout();});
+$("completedTab").addEventListener("click",()=>{exerciseView="completed";renderWorkout();});
 $("exerciseList").addEventListener("input",event=>{
   const input=event.target.closest("[data-weight]");
   if(!input)return;
@@ -1434,8 +1441,6 @@ $("exerciseList").addEventListener("change",event=>{
   writeWeightDraft(input.dataset.weight,input.value);
 });
 $("exerciseList").addEventListener("click",event=>{
-  const nav=event.target.closest("[data-nav]");
-  if(nav){exercisePosition+=nav.dataset.nav==="next"?1:-1;renderWorkout();return;}
   const complete=event.target.closest("[data-complete]");
   const change=event.target.closest("[data-change]");
   const previous=event.target.closest("[data-previous]");
@@ -1629,7 +1634,7 @@ window.addEventListener("online",()=>{updateConnectionStatus();syncOfflineQueue(
 window.addEventListener("offline",updateConnectionStatus);
 updateConnectionStatus();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  navigator.serviceWorker.register("./sw.js?v=10",{updateViaCache:"none"})
+  navigator.serviceWorker.register("./sw.js?v=9",{updateViaCache:"none"})
     .then(registration=>registration.update())
     .catch(e=>console.warn("Service worker no disponible",e));
 }
