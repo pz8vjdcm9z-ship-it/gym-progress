@@ -1367,6 +1367,14 @@ function backToLibraryGroups(){
 function setMainTab(tab){
   // Cambiar de pestaña no debe descartar los pesos que se hayan escrito.
   persistVisibleWeightInputs(selectedDay);
+  // Al salir de Biblioteca, descarta el grupo abierto para que al regresar
+  // siempre se vea el listado inicial con todos los grupos musculares.
+  if(tab!=="library"){
+    libraryGroup=null;
+    libraryFilter="machines";
+    $("muscleDetail").classList.add("hidden");
+    $("muscleHome").classList.remove("hidden");
+  }
   $("workoutSection").classList.toggle("hidden",tab!=="workout");
   $("librarySection").classList.toggle("hidden",tab!=="library");
   $("streakSection").classList.toggle("hidden",tab!=="streak");
@@ -1377,7 +1385,19 @@ function setMainTab(tab){
 }
 function showLibrary(){
   setMainTab("library");
-  renderMuscleHome();if(libraryGroup){$("muscleHome").classList.add("hidden");$("muscleDetail").classList.remove("hidden");renderLibraryGroup();}
+  // Cada entrada a Biblioteca comienza en su portada, con todos los grupos.
+  libraryGroup=null;
+  libraryFilter="machines";
+  $("muscleDetail").classList.add("hidden");
+  $("muscleHome").classList.remove("hidden");
+  renderMuscleHome();
+  requestAnimationFrame(()=>{
+    const section=$("librarySection");
+    if(section&&!section.classList.contains("hidden")){
+      const top=section.getBoundingClientRect().top+(window.scrollY||0);
+      window.scrollTo({top:Math.max(0,top),behavior:"auto"});
+    }
+  });
 }
 function showWorkout(){setMainTab("workout");}
 $("workoutNav").addEventListener("click",showWorkout);
@@ -1388,7 +1408,9 @@ $("streakNextMonth").addEventListener("click",()=>changeStreakMonth(1));
 $("dashboardLibraryBtn").addEventListener("click",showLibrary);
 
 // Navegación horizontal entre las tres pestañas principales.
-// Deslizar a la izquierda avanza; deslizar a la derecha retrocede.
+// El gesto funciona también desde el detalle de cualquier grupo muscular
+// y desde las categorías Máquinas, Mancuernas y Suelo. Un recorrido largo
+// evita cambios accidentales y permite llegar al Calendario con claridad.
 let mainTabTouchStart=null;
 function currentMainTab(){
   if($("appView").classList.contains("hidden"))return null;
@@ -1398,8 +1420,8 @@ function currentMainTab(){
   return null;
 }
 function navigateMainTabBySwipe(direction){
-  // Dentro de un grupo de músculos se conserva el gesto propio para volver al listado.
-  if(libraryGroup)return;
+  // El gesto horizontal cambia de pestaña principal incluso si hay un grupo abierto.
+  // showLibrary() restablece la portada cuando se vuelve a Biblioteca.
   const order=["workout","library","streak"];
   const current=currentMainTab();
   const index=order.indexOf(current);
@@ -1414,7 +1436,7 @@ function navigateMainTabBySwipe(direction){
 document.addEventListener("touchstart",event=>{
   if(!event.touches||event.touches.length!==1||!currentMainTab())return;
   // Spotify es una zona independiente: sus gestos nunca cambian la pestaña de fondo.
-  if(event.target.closest("#spotifyMini,#spotifyMiniHandle"))return;
+  if(event.target.closest("#spotifyMini,#spotifyMiniHandle,#spotifyExpanded,.spotify-mini,.spotify-expanded,.spotify-mini-handle"))return;
   if(event.target.closest("input,textarea,select,[contenteditable='true']"))return;
   const touch=event.touches[0];
   mainTabTouchStart={x:touch.clientX,y:touch.clientY};
@@ -1425,7 +1447,10 @@ document.addEventListener("touchend",event=>{
   mainTabTouchStart=null;
   const touch=event.changedTouches[0];
   const dx=touch.clientX-start.x,dy=touch.clientY-start.y;
-  if(Math.abs(dx)>=65&&Math.abs(dx)>Math.abs(dy)*1.3)navigateMainTabBySwipe(dx);
+  // Se exige un deslizamiento horizontal amplio. Desde Biblioteca, incluso
+  // dentro de Mancuernas o de cualquier grupo, izquierda = Calendario;
+  // derecha = Inicio/Entrenamiento. No cambia las categorías internas.
+  if(Math.abs(dx)>=110&&Math.abs(dx)>Math.abs(dy)*1.25)navigateMainTabBySwipe(dx);
 },{passive:true});
 document.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:true});
 
@@ -1461,30 +1486,10 @@ $("libraryFilterPills").addEventListener("click",event=>{
   libraryFilter=button.dataset.libraryFilter;
   renderLibraryGroup();
 });
-// Navegación horizontal entre Máquinas, Mancuernas y Suelo dentro del grupo muscular.
-const libraryFilterOrder=["machines","dumbbells","floor"];
-$("muscleDetail").addEventListener("touchstart",event=>{
-  if(!event.touches||event.touches.length!==1)return;
-  if(event.target.closest("button,input,textarea,select,[contenteditable='true']"))return;
-  const t=event.touches[0];libraryTouchStart={x:t.clientX,y:t.clientY};
-},{passive:true});
-$("muscleDetail").addEventListener("touchend",event=>{
-  if(!libraryTouchStart||!event.changedTouches||!event.changedTouches.length)return;
-  const start=libraryTouchStart;
-  const t=event.changedTouches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
-  libraryTouchStart=null;
-  if(Math.abs(dx)<65||Math.abs(dx)<=Math.abs(dy)*1.3)return;
-  const index=libraryFilterOrder.indexOf(libraryFilter);
-  if(dx<0){
-    // Deslizar a la izquierda avanza a la siguiente categoría.
-    if(index>=0&&index<libraryFilterOrder.length-1){libraryFilter=libraryFilterOrder[index+1];renderLibraryGroup();}
-  }else{
-    // Deslizar a la derecha retrocede; desde Máquinas vuelve a los grupos musculares.
-    if(index>0){libraryFilter=libraryFilterOrder[index-1];renderLibraryGroup();}
-    else if(index===0)backToLibraryGroups();
-  }
-},{passive:true});
-$("muscleDetail").addEventListener("touchcancel",()=>{libraryTouchStart=null;},{passive:true});
+// Los gestos horizontales desde cualquier grupo muscular o categoría
+// (incluida Mancuernas) los gestiona la navegación principal: un deslizamiento
+// largo a la izquierda = Calendario; a la derecha = Inicio/Entrenamiento.
+// Máquinas, Mancuernas y Suelo siguen seleccionándose tocando sus botones.
 window.addEventListener("keydown",event=>{if(event.key==="Escape"&&libraryGroup&&!$("librarySection").classList.contains("hidden"))backToLibraryGroups();});
 $("libraryExerciseGrid").addEventListener("click",event=>{
   const button=event.target.closest("[data-rating][data-exercise]");if(!button)return;
