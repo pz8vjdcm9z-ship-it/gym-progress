@@ -1029,6 +1029,7 @@ async function loadRepDB(){
     repdbExercises=new Map((data.exercises||[]).map(item=>[item.id,item]));
     exerciseCatalog=(data.exercises||[]).filter(item=>item && item.id && item.name_es);
     console.info(`Catálogo RepDB cargado: ${exerciseCatalog.length} ejercicios`);
+    auditLibraryEquipment();
   }catch(error){
     console.warn("No se pudo cargar el catálogo RepDB:",error);
     repdbExercises=new Map();
@@ -1310,12 +1311,43 @@ function exerciseMatchesGroup(ex,group){
   return muscles.some(m=>group.aliases.some(alias=>m===alias||m.includes(alias)||alias.includes(m)));
 }
 function exerciseLibraryCategory(ex){
-  const equipment=String(ex.equipment||"").toLowerCase();
-  const name=String(ex.name_es||ex.name_en||"").toLowerCase();
-  if(/máquina|maquina|machine|polea|cable|pulley/.test(equipment+" "+name))return "machines";
-  if(/mancuerna|dumbbell/.test(equipment+" "+name))return "dumbbells";
-  return "floor";
+  // Clasificación basada primero en el equipo declarado por RepDB y después en el nombre.
+  // No se envía automáticamente cualquier equipo desconocido a "suelo".
+  const equipment=String(ex.equipment||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[_-]+/g," ").trim();
+  const name=String(ex.name_es||ex.name_en||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  const source=equipment+" "+name;
+
+  // Máquinas, poleas y sistemas de cable.
+  if(/\b(maquina|machine|cable|polea|pulley|smith|multipower|lever|selectorized|plate loaded)\b/.test(source))return "machines";
+
+  // Mancuernas, incluidas las variantes de peso ajustable.
+  if(/\b(mancuerna|mancuernas|dumbbell|dumbbells)\b/.test(source))return "dumbbells";
+
+  // Trabajo en suelo/peso corporal: no incluye barras, kettlebells ni bandas por defecto.
+  if(/\b(body ?weight|peso corporal|sin equipo|no equipment|none|mat|esterilla|floor|suelo|ab mat|exercise mat)\b/.test(equipment))return "floor";
+  if(ex.bodyweight===true || /\b(plancha|plank|flexion|flexiones|push up|pushup|burpee|mountain climber|crunch sin equipo)\b/.test(name))return "floor";
+
+  // Equipos que no corresponden a ninguno de los tres filtros disponibles.
+  // Se dejan fuera para evitar mostrar una barra o kettlebell como si fuera suelo/mancuerna.
+  return "other";
 }
+function auditLibraryEquipment(){
+  const summary={machines:0,dumbbells:0,floor:0,other:0};
+  const unknown=new Map();
+  for(const ex of exerciseCatalog){
+    if(ex.category!=="strength")continue;
+    const category=exerciseLibraryCategory(ex);
+    summary[category]=(summary[category]||0)+1;
+    if(category==="other"){
+      const key=String(ex.equipment||"Equipo no indicado");
+      unknown.set(key,(unknown.get(key)||0)+1);
+    }
+  }
+  console.info("Auditoría de categorías de biblioteca:",summary);
+  if(unknown.size)console.warn("Ejercicios con equipo fuera de Máquinas/Mancuernas/Suelo; no se clasifican a ciegas:",Array.from(unknown,([equipment,count])=>({equipment,count})));
+  return summary;
+}
+
 function renderMuscleHome(){
   $("muscleGrid").innerHTML=MUSCLE_GROUPS.map(group=>{
     const count=exerciseCatalog.filter(x=>x.category==="strength"&&exerciseMatchesGroup(x,group)).length;
