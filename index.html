@@ -418,6 +418,51 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 @media(max-width:380px){.spotify-mini{left:8px;right:8px;grid-template-columns:46px minmax(0,1fr) auto;gap:9px 10px;padding:11px 10px}.spotify-mini-cover{width:46px;height:46px}.spotify-mini-controls{gap:1px}.spotify-mini-controls button{width:29px}.spotify-mini-controls button#spotifyMiniPlay{width:37px;height:37px}}
 @media(prefers-reduced-motion:reduce){.spotify-mini,.spotify-mini-handle,.spotify-mini-controls button{transition:none}}
 
+
+/* Spotify desplegable: se abre tocando la propia cabecera del reproductor */
+.spotify-mini{max-height: min(82vh,760px);overflow:hidden;display:grid}
+.spotify-mini-main{grid-area:1 / 1 / 2 / 3;display:flex;align-items:center;gap:11px;min-width:0;cursor:pointer;touch-action:manipulation}
+.spotify-mini-main:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:12px}
+.spotify-mini-cover{flex:0 0 54px}
+.spotify-mini-meta{flex:1;min-width:0}
+.spotify-mini-controls{grid-area:1 / 3 / 2 / 4}
+.spotify-mini-note{grid-area:2 / 1 / 3 / 4}
+.spotify-expanded{display:none;grid-column:1 / -1;min-height:0;overflow:hidden;border-top:1px solid rgba(255,255,255,.09);padding-top:15px}
+.spotify-mini.is-expanded{grid-template-rows:auto auto minmax(0,1fr);max-height:min(82vh,760px)}
+.spotify-mini.is-expanded .spotify-expanded{display:flex;flex-direction:column;gap:12px}
+.spotify-mini.is-expanded .spotify-mini-note{display:flex}
+.spotify-expanded-heading,.spotify-track-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.spotify-expanded-heading h3,.spotify-track-heading h3{margin:3px 0 0;font-size:16px;font-weight:900;color:#f4f8fb}
+.spotify-expanded-eyebrow{font-size:9px;font-weight:900;letter-spacing:1.3px;color:#75e8cc}
+.spotify-expanded-brand{font-size:11px;font-weight:850;color:#75e8cc;white-space:nowrap}
+.spotify-playlists{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 7px;scrollbar-width:thin}
+.spotify-playlist-chip{display:flex;align-items:center;gap:8px;flex:0 0 auto;max-width:190px;padding:7px 11px 7px 7px;border:1px solid rgba(255,255,255,.1);border-radius:13px;background:rgba(255,255,255,.045);color:#dce8ef;font-size:11px;font-weight:800}
+.spotify-playlist-chip.active{border-color:rgba(117,232,204,.7);background:rgba(77,205,169,.14);color:#aaf3df}
+.spotify-playlist-chip img{width:32px;height:32px;border-radius:7px;object-fit:cover;background:#183344}
+.spotify-playlist-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.spotify-track-heading{padding-top:2px}
+.spotify-track-count{font-size:10px;color:#a9b9c8;white-space:nowrap}
+.spotify-track-list{display:flex;flex-direction:column;gap:5px;overflow-y:auto;min-height:80px;max-height:32vh;padding:1px 3px 4px 0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.spotify-track-row{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:6px 9px;border:1px solid transparent;border-radius:12px;background:rgba(255,255,255,.035);color:#eef5f8;text-align:left}
+.spotify-track-row:active,.spotify-track-row.playing{border-color:rgba(117,232,204,.45);background:rgba(66,197,163,.12)}
+.spotify-track-row img{width:39px;height:39px;flex:0 0 39px;border-radius:8px;object-fit:cover;background:#183344}
+.spotify-track-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+.spotify-track-name{font-size:11px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spotify-track-artist{font-size:10px;color:#9fb0bf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.spotify-track-play{color:#75e8cc;font-size:14px;font-weight:900}
+.spotify-library-message{padding:10px 4px;color:#a9b9c8;font-size:11px;line-height:1.45}
+.spotify-load-more,.spotify-reconnect{min-height:38px;padding:0 13px;border:1px solid rgba(117,232,204,.35);border-radius:11px;background:rgba(117,232,204,.09);color:#aaf3df;font-size:9px;font-weight:900;letter-spacing:.7px}
+.spotify-reconnect{width:100%}
+.spotify-attribution{padding-top:2px;color:#8295a5;font-size:9px;text-align:center}
+.spotify-mini.is-expanded .spotify-mini-note{padding-top:10px}
+.spotify-mini.is-expanded .spotify-track-list{max-height:32vh}
+@media(max-width:380px){
+  .spotify-mini.is-expanded{left:8px;right:8px;padding:11px 10px}
+  .spotify-mini.is-expanded .spotify-mini-cover{width:46px;height:46px;flex-basis:46px}
+  .spotify-mini.is-expanded .spotify-mini-main{gap:9px}
+  .spotify-mini.is-expanded .spotify-track-list{max-height:29vh}
+}
+
 /* Spotify solo aparece después de entrar en la aplicación */
 body:not(.spotify-visible) #spotifyMini,
 body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
@@ -604,14 +649,16 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
 
 <!-- Spotify mini-player fijo a la ventana; controles visuales hasta completar OAuth -->
 <div class="spotify-mini" id="spotifyMini" aria-label="Panel de música Spotify">
-  <div class="spotify-mini-cover" aria-hidden="true">
-    <img id="spotifyMiniCover" alt="" />
-    <span id="spotifyMiniCoverFallback">♫</span>
-  </div>
-  <div class="spotify-mini-meta">
-    <div class="spotify-mini-title" id="spotifyMiniTitle">Conecta Spotify</div>
-    <div class="spotify-mini-artist" id="spotifyMiniArtist">Tu música, desde GYM PROGRESS</div>
-    <div class="spotify-mini-state" id="spotifyMiniState">LISTO PARA CONFIGURAR</div>
+  <div class="spotify-mini-main" id="spotifyMiniMain" role="button" tabindex="0" aria-label="Abrir biblioteca de Spotify" aria-expanded="false">
+    <div class="spotify-mini-cover" aria-hidden="true">
+      <img id="spotifyMiniCover" alt="" />
+      <span id="spotifyMiniCoverFallback">♫</span>
+    </div>
+    <div class="spotify-mini-meta">
+      <div class="spotify-mini-title" id="spotifyMiniTitle">Conecta Spotify</div>
+      <div class="spotify-mini-artist" id="spotifyMiniArtist">Tu música, desde GYM PROGRESS</div>
+      <div class="spotify-mini-state" id="spotifyMiniState">LISTO PARA CONFIGURAR</div>
+    </div>
   </div>
   <div class="spotify-mini-controls" aria-label="Controles de reproducción">
     <button type="button" id="spotifyMiniPrevious" aria-label="Canción anterior" disabled>
@@ -625,8 +672,29 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
     </button>
   </div>
   <div class="spotify-mini-note visible" id="spotifyMiniNote"><span id="spotifyMiniMessage">Conecta tu cuenta Premium para activar la música.</span> <button type="button" id="spotifyMiniConnect" class="spotify-mini-connect">CONECTAR SPOTIFY</button></div>
+
+  <section class="spotify-expanded" id="spotifyExpanded" aria-label="Biblioteca de Spotify" aria-hidden="true">
+    <div class="spotify-expanded-heading">
+      <div><span class="spotify-expanded-eyebrow">TU MÚSICA</span><h3>Tu biblioteca</h3></div>
+      <span class="spotify-expanded-brand">● Spotify</span>
+    </div>
+    <div class="spotify-playlists" id="spotifyPlaylists">
+      <div class="spotify-library-message">Conecta Spotify para cargar tus listas.</div>
+    </div>
+    <div class="spotify-track-heading">
+      <div><span class="spotify-expanded-eyebrow">LISTA SELECCIONADA</span><h3 id="spotifySelectedPlaylist">Elige una playlist</h3></div>
+      <span class="spotify-track-count" id="spotifyTrackCount"></span>
+    </div>
+    <div class="spotify-track-list" id="spotifyTrackList">
+      <div class="spotify-library-message">Tus canciones aparecerán aquí.</div>
+    </div>
+    <button type="button" class="spotify-load-more" id="spotifyLoadMore" hidden>VER MÁS CANCIONES</button>
+    <div class="spotify-library-message" id="spotifyLibraryMessage" role="status"></div>
+    <button type="button" class="spotify-reconnect" id="spotifyReconnect" hidden>ACTUALIZAR PERMISOS DE SPOTIFY</button>
+    <div class="spotify-attribution">Contenido musical proporcionado por Spotify.</div>
+  </section>
 </div>
-<button type="button" class="spotify-mini-handle" id="spotifyMiniHandle" aria-label="Mostrar panel de música" aria-expanded="true"><span></span></button>
+<button type="button" class="spotify-mini-handle" id="spotifyMiniHandle" aria-label="Mostrar reproductor" aria-expanded="true"><span></span></button>
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -1643,12 +1711,15 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
 // Spotify: OAuth 2.0 Authorization Code con PKCE + Web Playback SDK.
 const SPOTIFY_CLIENT_ID = "f4f7a2fe159e46949e6630d332f4fcd0";
 const SPOTIFY_REDIRECT_URI = "https://pz8vjdcm9z-ship-it.github.io/gym-progress/";
-const SPOTIFY_SCOPES = "streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state";
+const SPOTIFY_SCOPES = "streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative";
 const spotifyEls = {
   panel:$("spotifyMini"), cover:$("spotifyMiniCover"), fallback:$("spotifyMiniCoverFallback"),
   title:$("spotifyMiniTitle"), artist:$("spotifyMiniArtist"), state:$("spotifyMiniState"),
   note:$("spotifyMiniNote"), message:$("spotifyMiniMessage"), connect:$("spotifyMiniConnect"),
-  previous:$("spotifyMiniPrevious"), play:$("spotifyMiniPlay"), next:$("spotifyMiniNext")
+  previous:$("spotifyMiniPrevious"), play:$("spotifyMiniPlay"), next:$("spotifyMiniNext"),
+  expanded:$("spotifyExpanded"), playlists:$("spotifyPlaylists"), selectedPlaylist:$("spotifySelectedPlaylist"),
+  trackCount:$("spotifyTrackCount"), trackList:$("spotifyTrackList"), libraryMessage:$("spotifyLibraryMessage"),
+  loadMore:$("spotifyLoadMore"), reconnect:$("spotifyReconnect"), main:$("spotifyMiniMain")
 };
 let spotifyAccessToken = null;
 let spotifyRefreshToken = null;
@@ -1865,6 +1936,129 @@ async function spotifyControl(action){
     controls.forEach(button=>button.disabled=!ready);
   }
 }
+
+// Biblioteca desplegable: listas y canciones se consultan directamente a Spotify.
+let spotifyPlaylistCache=[];
+let spotifySelectedPlaylistData=null;
+let spotifyTrackOffset=0;
+let spotifyTrackTotal=0;
+let spotifyTrackBusy=false;
+let spotifyExpandedLoaded=false;
+let spotifyCurrentTrackUri=null;
+
+function spotifyEscapeText(value){
+  return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+}
+function spotifyShowLibraryMessage(message,isError=false){
+  if(!spotifyEls.libraryMessage)return;
+  spotifyEls.libraryMessage.textContent=message;
+  spotifyEls.libraryMessage.style.color=isError?"#ffaaaa":"#a9b9c8";
+}
+function spotifySetExpanded(expanded){
+  spotifyEls.panel?.classList.toggle("is-expanded",expanded);
+  if(spotifyEls.expanded)spotifyEls.expanded.setAttribute("aria-hidden",String(!expanded));
+  if(spotifyEls.main){
+    spotifyEls.main.setAttribute("aria-expanded",String(expanded));
+    spotifyEls.main.setAttribute("aria-label",expanded?"Cerrar biblioteca de Spotify":"Abrir biblioteca de Spotify");
+  }
+  if(expanded){
+    if(spotifyEls.panel)spotifyEls.panel.classList.remove("is-hidden");
+    document.getElementById("spotifyMiniHandle")?.classList.remove("is-visible");
+    if(!spotifyExpandedLoaded&&spotifyAccessToken)spotifyLoadPlaylists();
+  }
+}
+function spotifyRenderPlaylists(){
+  if(!spotifyEls.playlists)return;
+  spotifyEls.playlists.replaceChildren();
+  if(!spotifyPlaylistCache.length){
+    const empty=document.createElement("div");empty.className="spotify-library-message";empty.textContent="No se han encontrado playlists disponibles.";spotifyEls.playlists.append(empty);return;
+  }
+  spotifyPlaylistCache.forEach(playlist=>{
+    const button=document.createElement("button");
+    button.type="button";button.className="spotify-playlist-chip"+(spotifySelectedPlaylistData?.id===playlist.id?" active":"");
+    const img=document.createElement("img");img.alt="";img.src=playlist.images?.[0]?.url||"";
+    const label=document.createElement("span");label.textContent=playlist.name||"Playlist";
+    button.append(img,label);
+    button.addEventListener("click",()=>spotifyLoadPlaylistTracks(playlist,true));
+    spotifyEls.playlists.append(button);
+  });
+}
+async function spotifyLoadPlaylists(){
+  if(spotifyExpandedLoaded||!spotifyAccessToken)return;
+  spotifyExpandedLoaded=true;
+  spotifyShowLibraryMessage("Cargando tus listas de Spotify…");
+  try{
+    const data=await spotifyApi("/me/playlists?limit=50&offset=0");
+    spotifyPlaylistCache=Array.isArray(data.items)?data.items:[];
+    spotifyRenderPlaylists();
+    spotifyShowLibraryMessage(spotifyPlaylistCache.length?"Selecciona una lista para ver sus canciones.":"Tu cuenta no tiene listas disponibles.");
+    if(spotifyPlaylistCache.length)await spotifyLoadPlaylistTracks(spotifyPlaylistCache[0],true);
+  }catch(error){
+    spotifyExpandedLoaded=false;
+    spotifyShowLibraryMessage(error.message+" Si acabas de añadir permisos, vuelve a autorizar Spotify.",true);
+    if(spotifyEls.reconnect)spotifyEls.reconnect.hidden=false;
+  }
+}
+async function spotifyLoadPlaylistTracks(playlist,reset=false){
+  if(!playlist||spotifyTrackBusy)return;
+  spotifyTrackBusy=true;
+  if(reset){
+    spotifySelectedPlaylistData=playlist;spotifyTrackOffset=0;spotifyTrackTotal=0;
+    spotifyEls.trackList?.replaceChildren();
+    if(spotifyEls.selectedPlaylist)spotifyEls.selectedPlaylist.textContent=playlist.name||"Playlist";
+    if(spotifyEls.trackCount)spotifyEls.trackCount.textContent="";
+    spotifyRenderPlaylists();
+  }
+  spotifyShowLibraryMessage("Cargando canciones…");
+  try{
+    const data=await spotifyApi("/playlists/"+encodeURIComponent(playlist.id)+"/items?limit=50&offset="+spotifyTrackOffset+"&market=ES");
+    const entries=Array.isArray(data.items)?data.items:[];
+    spotifyTrackTotal=Number(data.total)||entries.length;
+    entries.forEach((entry,index)=>{
+      const track=entry.item||entry.track;
+      if(!track||track.type!=="track"||!track.uri)return;
+      const row=document.createElement("button");row.type="button";row.className="spotify-track-row";
+      const image=document.createElement("img");image.alt="";image.src=track.album?.images?.[2]?.url||track.album?.images?.[0]?.url||"";
+      const copy=document.createElement("span");copy.className="spotify-track-copy";
+      const name=document.createElement("span");name.className="spotify-track-name";name.textContent=track.name||"Canción";
+      const artist=document.createElement("span");artist.className="spotify-track-artist";artist.textContent=(track.artists||[]).map(a=>a.name).join(", ");
+      copy.append(name,artist);
+      const playMark=document.createElement("span");playMark.className="spotify-track-play";playMark.textContent="▶";
+      row.append(image,copy,playMark);
+      row.addEventListener("click",()=>spotifyPlayPlaylistTrack(playlist,spotifyTrackOffset+index,track,row));
+      spotifyEls.trackList.append(row);
+    });
+    spotifyTrackOffset+=entries.length;
+    if(spotifyEls.trackCount)spotifyEls.trackCount.textContent=spotifyTrackTotal+" canciones";
+    if(spotifyEls.loadMore)spotifyEls.loadMore.hidden=spotifyTrackOffset>=spotifyTrackTotal||entries.length===0;
+    spotifyShowLibraryMessage(entries.length?"Toca una canción para reproducirla desde aquí.":"Esta lista no contiene canciones reproducibles.");
+  }catch(error){
+    spotifyShowLibraryMessage(error.message,true);
+    if(spotifyEls.reconnect)spotifyEls.reconnect.hidden=false;
+  }finally{spotifyTrackBusy=false;}
+}
+async function spotifyPlayPlaylistTrack(playlist,position,track,row){
+  if(!spotifyDeviceId){spotifyShowLibraryMessage("Conecta primero el reproductor de Spotify.",true);return;}
+  try{
+    await spotifyPlayer?.activateElement();
+    await spotifyApi("/me/player/play?device_id="+encodeURIComponent(spotifyDeviceId),"PUT",{
+      context_uri:playlist.uri,offset:{position}
+    });
+    spotifyCurrentTrackUri=track.uri;
+    spotifyEls.trackList?.querySelectorAll(".spotify-track-row").forEach(item=>item.classList.remove("playing"));
+    row?.classList.add("playing");
+    spotifyShowLibraryMessage("Reproduciendo: "+(track.name||"canción"));
+    await new Promise(resolve=>setTimeout(resolve,500));
+    await spotifyRefreshState();
+  }catch(error){spotifyShowLibraryMessage(error.message||"No se ha podido reproducir esa canción.",true);}
+}
+spotifyEls.main?.addEventListener("click",()=>spotifySetExpanded(!spotifyEls.panel.classList.contains("is-expanded")));
+spotifyEls.main?.addEventListener("keydown",event=>{
+  if(event.key==="Enter"||event.key===" "){event.preventDefault();spotifySetExpanded(!spotifyEls.panel.classList.contains("is-expanded"));}
+});
+spotifyEls.loadMore?.addEventListener("click",()=>spotifySelectedPlaylistData&&spotifyLoadPlaylistTracks(spotifySelectedPlaylistData,false));
+spotifyEls.reconnect?.addEventListener("click",()=>spotifyAuthorize());
+
 spotifyEls.connect?.addEventListener("click",()=>{
   if(spotifyAccessToken)spotifyConnectPlayer();
   else spotifyAuthorize();
@@ -1894,7 +2088,7 @@ async function initializeSpotifyForApp(){
   const hide=()=>{panel.classList.add("is-hidden");handle.classList.add("is-visible");handle.setAttribute("aria-expanded","false");};
   const show=()=>{panel.classList.remove("is-hidden");handle.classList.remove("is-visible");handle.setAttribute("aria-expanded","true");};
   panel.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
-  panel.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta>45)hide();startY=null;},{passive:true});
+  panel.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta>45&&!panel.classList.contains("is-expanded"))hide();startY=null;},{passive:true});
   handle.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
   handle.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta < -20)show();startY=null;},{passive:true});
   handle.addEventListener("click",show);
