@@ -200,15 +200,21 @@ main{padding-bottom:28px}
 
 /* Navegación cómoda en Biblioteca: barra fija durante el desplazamiento */
 #muscleDetail .library-toolbar{
-  position:sticky;top:0;z-index:40;display:flex;gap:9px;align-items:center;
-  margin:0 -2px 12px;padding:9px 2px;
-  background:rgba(8,17,29,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(176,198,222,.14);
+  position:sticky;top:0;z-index:40;display:flex;justify-content:center;align-items:center;
+  margin:0 -2px 12px;padding:9px 10px;
+  background:rgba(8,17,29,.48);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(176,198,222,.09);
 }
-#muscleDetail .library-back{flex:0 0 auto;min-height:42px;padding:10px 13px;font-size:11px;white-space:nowrap;touch-action:manipulation}
-#muscleDetail .library-search{min-height:42px}
+/* Buscador centrado, discreto y semitransparente mientras acompaña el scroll */
+#muscleDetail .library-search{
+  display:block;width:min(100%,520px);min-width:0;min-height:42px;height:42px;margin:0 auto;
+  border:1px solid rgba(176,198,222,.20);border-radius:999px;padding:0 17px;
+  background:rgba(10,23,38,.58);color:var(--text);text-align:center;
+  box-shadow:0 5px 18px rgba(0,0,0,.12);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+#muscleDetail .library-search::placeholder{color:rgba(210,222,235,.66)}
 #muscleDetail{touch-action:pan-y}
-@media(max-width:360px){#muscleDetail .library-back{padding:9px 10px;font-size:10px}}
 
 /* Botón flotante GRUPOS: solo dentro del detalle de un grupo muscular */
 .library-floating-back{
@@ -647,8 +653,7 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
       </div>
       <div id="muscleDetail" class="hidden" aria-label="Detalle del grupo muscular">
         <div class="library-toolbar">
-          <button type="button" class="library-back" id="libraryBack">← GRUPOS</button>
-          <input class="library-search" id="librarySearch" type="search" placeholder="Buscar ejercicio…">
+          <input class="library-search" id="librarySearch" type="search" placeholder="Buscar ejercicio…" aria-label="Buscar ejercicio">
         </div>
         <h2 class="library-title" id="libraryGroupTitle"></h2>
         <p class="library-subtitle" id="libraryGroupSubtitle"></p>
@@ -1509,7 +1514,6 @@ $("startWorkoutBtn").addEventListener("click",()=>{
   else window.scrollTo({top:0,behavior:"smooth"});
 });
 $("muscleGrid").addEventListener("click",event=>{const tile=event.target.closest("[data-muscle]");if(tile)openLibraryGroup(tile.dataset.muscle);});
-$("libraryBack").addEventListener("click",backToLibraryGroups);
 $("libraryFloatingBack").addEventListener("click",backToLibraryGroups);
 window.addEventListener("resize",updateLibraryFloatingBack,{passive:true});
 window.addEventListener("scroll",updateLibraryFloatingBack,{passive:true});
