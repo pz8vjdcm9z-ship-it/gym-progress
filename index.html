@@ -202,18 +202,24 @@ main{padding-bottom:28px}
 #muscleDetail .library-toolbar{
   position:sticky;top:0;z-index:40;display:flex;justify-content:center;align-items:center;
   margin:0 -2px 12px;padding:9px 10px;
-  background:rgba(8,17,29,.48);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid rgba(176,198,222,.09);
+  /* La barra exterior queda transparente: solo se muestra la cápsula del buscador. */
+  background:transparent;border:0;box-shadow:none;
 }
-/* Buscador centrado, discreto y semitransparente mientras acompaña el scroll */
+/* Buscador centrado: muy discreto al desplazarse y más visible al tocarlo. */
 #muscleDetail .library-search{
   display:block;width:min(100%,520px);min-width:0;min-height:42px;height:42px;margin:0 auto;
-  border:1px solid rgba(176,198,222,.20);border-radius:999px;padding:0 17px;
-  background:rgba(10,23,38,.58);color:var(--text);text-align:center;
-  box-shadow:0 5px 18px rgba(0,0,0,.12);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(176,198,222,.09);border-radius:999px;padding:0 17px;
+  background:rgba(10,23,38,.22);color:var(--text);text-align:center;
+  box-shadow:none;outline:none;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:background .18s ease,border-color .18s ease,box-shadow .18s ease;
 }
-#muscleDetail .library-search::placeholder{color:rgba(210,222,235,.66)}
+#muscleDetail .library-search::placeholder{color:rgba(210,222,235,.48)}
+#muscleDetail .library-search:focus{
+  background:rgba(10,23,38,.88);border-color:rgba(176,198,222,.34);
+  box-shadow:0 5px 18px rgba(0,0,0,.22);
+}
+#muscleDetail .library-search:focus::placeholder{color:rgba(210,222,235,.72)}
 #muscleDetail{touch-action:pan-y}
 
 /* Botón flotante GRUPOS: solo dentro del detalle de un grupo muscular */
