@@ -210,6 +210,21 @@ main{padding-bottom:28px}
 #muscleDetail{touch-action:pan-y}
 @media(max-width:360px){#muscleDetail .library-back{padding:9px 10px;font-size:10px}}
 
+/* Botón flotante GRUPOS: solo dentro del detalle de un grupo muscular */
+.library-floating-back{
+  position:fixed;top:50%;right:15px;z-index:1002;display:inline-flex;align-items:center;justify-content:center;
+  min-height:42px;padding:0 15px;border:1px solid rgba(255,153,82,.58);border-radius:999px;
+  background:rgba(240,120,36,.20);color:#ffd0ad;font-size:10px;font-weight:950;letter-spacing:.45px;
+  -webkit-backdrop-filter:blur(18px) saturate(145%);backdrop-filter:blur(18px) saturate(145%);
+  box-shadow:0 8px 24px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.12);
+  touch-action:manipulation;
+}
+.library-floating-back:active{transform:scale(.96);background:rgba(240,120,36,.32)}
+.library-floating-back:focus-visible{outline:2px solid #ffad75;outline-offset:3px}
+.library-floating-back.hidden{display:none!important}
+@media(max-width:380px){.library-floating-back{right:11px;min-height:40px;padding:0 13px;font-size:9px}}
+
+
 /* Panel de inicio premium */
 .home-dashboard{position:relative;overflow:hidden;margin:16px 0 22px;padding:22px 19px 18px;border:1px solid rgba(85,223,189,.24);border-radius:24px;background:linear-gradient(135deg,rgba(26,53,68,.98),rgba(13,27,43,.98) 58%,rgba(10,20,34,.98));box-shadow:0 18px 42px rgba(0,0,0,.24)}
 .home-dashboard:before{content:"";position:absolute;width:230px;height:230px;right:-84px;top:-105px;border-radius:50%;border:1px solid rgba(85,223,189,.18);box-shadow:0 0 0 22px rgba(85,223,189,.035),0 0 0 46px rgba(85,223,189,.025)}
@@ -713,6 +728,7 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
   </section>
 </div>
 <button type="button" class="spotify-mini-handle" id="spotifyMiniHandle" aria-label="Mostrar reproductor" aria-expanded="true"><span></span></button>
+<button type="button" id="libraryFloatingBack" class="library-floating-back hidden" aria-label="Volver a los grupos musculares">← GRUPOS</button>
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -1347,16 +1363,29 @@ function renderLibraryGroup(){
     button.setAttribute("aria-pressed",String(active));
   });
 }
+function updateLibraryFloatingBack(){
+  const button=$("libraryFloatingBack");
+  const player=$("spotifyMini");
+  const detail=libraryGroup!==null && !$("librarySection").classList.contains("hidden") && !$("muscleDetail").classList.contains("hidden");
+  if(!button)return;
+  button.classList.toggle("hidden",!detail);
+  if(!detail)return;
+  // Mantiene el botón justo por encima del reproductor, también cuando Spotify se expande.
+  const playerTop=player ? player.getBoundingClientRect().top : window.innerHeight-24;
+  const buttonHeight=button.offsetHeight||42;
+  const top=Math.max(8,Math.min(window.innerHeight-buttonHeight-8,playerTop-buttonHeight-10));
+  button.style.top=top+"px";
+}
 function openLibraryGroup(id){
   libraryHomeScrollY=window.scrollY||window.pageYOffset||0;
   libraryGroup=id;libraryFilter="machines";$("muscleHome").classList.add("hidden");$("muscleDetail").classList.remove("hidden");
-  $("librarySearch").value="";renderLibraryGroup();
+  $("librarySearch").value="";renderLibraryGroup();updateLibraryFloatingBack();
   // Al entrar en un grupo, muestra el encabezado y la barra de navegación.
   requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,$("librarySection").getBoundingClientRect().top+(window.scrollY||0)),behavior:"auto"}));
 }
 function backToLibraryGroups(){
   if(!libraryGroup)return;
-  libraryGroup=null;libraryFilter="machines";$("muscleDetail").classList.add("hidden");$("muscleHome").classList.remove("hidden");
+  libraryGroup=null;libraryFilter="machines";$("muscleDetail").classList.add("hidden");$("muscleHome").classList.remove("hidden");updateLibraryFloatingBack();
   // Al volver a los grupos, la biblioteca siempre empieza desde arriba.
   requestAnimationFrame(()=>{
     const section=$("librarySection");
@@ -1375,6 +1404,7 @@ function setMainTab(tab){
     $("muscleDetail").classList.add("hidden");
     $("muscleHome").classList.remove("hidden");
   }
+  updateLibraryFloatingBack();
   $("workoutSection").classList.toggle("hidden",tab!=="workout");
   $("librarySection").classList.toggle("hidden",tab!=="library");
   $("streakSection").classList.toggle("hidden",tab!=="streak");
@@ -1390,6 +1420,7 @@ function showLibrary(){
   libraryFilter="machines";
   $("muscleDetail").classList.add("hidden");
   $("muscleHome").classList.remove("hidden");
+  updateLibraryFloatingBack();
   renderMuscleHome();
   requestAnimationFrame(()=>{
     const section=$("librarySection");
@@ -1479,6 +1510,11 @@ $("startWorkoutBtn").addEventListener("click",()=>{
 });
 $("muscleGrid").addEventListener("click",event=>{const tile=event.target.closest("[data-muscle]");if(tile)openLibraryGroup(tile.dataset.muscle);});
 $("libraryBack").addEventListener("click",backToLibraryGroups);
+$("libraryFloatingBack").addEventListener("click",backToLibraryGroups);
+window.addEventListener("resize",updateLibraryFloatingBack,{passive:true});
+window.addEventListener("scroll",updateLibraryFloatingBack,{passive:true});
+$("spotifyMini").addEventListener("transitionend",updateLibraryFloatingBack);
+new MutationObserver(updateLibraryFloatingBack).observe($("spotifyMini"),{attributes:true,attributeFilter:["class","style"]});
 $("librarySearch").addEventListener("input",renderLibraryGroup);
 $("libraryFilterPills").addEventListener("click",event=>{
   const button=event.target.closest("[data-library-filter]");
