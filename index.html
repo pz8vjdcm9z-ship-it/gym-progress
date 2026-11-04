@@ -522,6 +522,98 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
 .app-main-nav{display:flex;gap:7px;overflow-x:auto}.app-main-nav button{flex:1;min-width:0;white-space:nowrap;font-size:10px;padding-left:8px;padding-right:8px}
 @media(min-width:600px){.streak-panel{max-width:720px;margin:0 auto}.streak-summary{grid-template-columns:1fr}}
 
+
+/* Tema rosa exclusivo de Isabela + selector de sesiones centrado */
+body.is-isabela-theme{
+  color-scheme:light;
+  --bg:#fff4f7;--surface:#fffafd;--surface2:#fcebf1;
+  --border:rgba(174,105,132,.22);--text:#432b38;--soft:#765968;--muted:#9b7d8c;
+  --accent:#e58eae;--accent2:#d96f98;
+  background:radial-gradient(ellipse at 85% -15%,rgba(238,174,197,.34),transparent 44%),linear-gradient(180deg,#fff7fa,#fbeaf1 58%,#fff5f8);
+  color:#432b38;
+}
+body.is-isabela-theme .brand-mark{border-color:rgba(243,169,197,.38);background:rgba(243,169,197,.12);color:#ffc5da}
+body.is-isabela-theme .primary-btn,body.is-isabela-theme .dashboard-start{background:linear-gradient(100deg,#f6bfd3,#e995b7);color:#351b29;box-shadow:0 8px 20px rgba(223,131,170,.18)}
+body.is-isabela-theme .status{background:rgba(243,169,197,.1);color:#ffd9e7}
+body.is-isabela-theme .day-selector{display:flex;justify-content:center;align-items:stretch;gap:12px;width:100%;margin:18px auto 20px}
+body.is-isabela-theme .day-btn{width:min(44%,170px);min-height:66px;padding:12px 10px;border-color:rgba(244,190,211,.2);background:linear-gradient(145deg,#2b202d,#211923);color:#ead9e1}
+body.is-isabela-theme .day-btn small{color:#cbb4c1;font-size:9px}
+body.is-isabela-theme .day-btn.active{border-color:#e99ab9;color:#ffe0eb;background:linear-gradient(145deg,rgba(207,119,157,.3),rgba(111,61,84,.3));box-shadow:0 0 0 1px rgba(243,169,197,.1) inset}
+body.is-isabela-theme .home-dashboard{border-color:rgba(243,169,197,.28);background:radial-gradient(circle at 100% 0%,rgba(243,169,197,.17),transparent 42%),linear-gradient(125deg,#392635,#2a202d 65%,#211923)}
+body.is-isabela-theme .dashboard-kicker,body.is-isabela-theme .dashboard-copy h2 span,body.is-isabela-theme .dashboard-chip b{color:#f6b6ce}
+body.is-isabela-theme .dashboard-kicker:before{background:#f3a9c5;box-shadow:0 0 12px rgba(243,169,197,.7)}
+body.is-isabela-theme .dashboard-art{background:linear-gradient(145deg,rgba(243,169,197,.2),rgba(243,169,197,.04));border-color:rgba(243,169,197,.28)}
+body.is-isabela-theme .dashboard-art svg{filter:drop-shadow(0 5px 10px rgba(243,169,197,.2))}
+body.is-isabela-theme .completion-tab.active{border-color:rgba(243,169,197,.65);background:rgba(243,169,197,.14);color:#ffdce9}
+body.is-isabela-theme .number{background:rgba(243,169,197,.14);color:#f6b6ce}
+body.is-isabela-theme .previous{border-color:rgba(243,169,197,.2)}
+body.is-isabela-theme .previous strong{color:#f6b6ce}
+body.is-isabela-theme .exercise-action[data-previous],body.is-isabela-theme .exercise-action[data-change],body.is-isabela-theme .exercise-action.complete{border-color:rgba(243,169,197,.42);background:rgba(243,169,197,.1);color:#ffdce9}
+body.is-isabela-theme .exercise-card.is-complete{border-color:rgba(243,169,197,.5);background:linear-gradient(145deg,rgba(91,55,74,.98),rgba(47,32,47,.98))}
+body.is-isabela-theme .save-panel{border-color:rgba(243,169,197,.3);background:linear-gradient(145deg,rgba(91,55,74,.55),rgba(36,27,40,.95))}
+body.is-isabela-theme .rest-timer-label,body.is-isabela-theme .stat:has(.bike-timer.running) .bike-timer strong{color:#f6b6ce}
+body.is-isabela-theme .rest-timer-btn.primary{background:linear-gradient(100deg,#f2b8cd,#e58eae);color:#512c3d}
+/* Paleta rosa claro coherente en Inicio, Biblioteca y Calendario */
+body.is-isabela-theme header,
+body.is-isabela-theme .app-main-nav,
+body.is-isabela-theme .library-nav,
+body.is-isabela-theme .library-toolbar,
+body.is-isabela-theme .library-search-wrap{color:#432b38}
+body.is-isabela-theme .app-main-nav button,
+body.is-isabela-theme .library-nav button,
+body.is-isabela-theme .day-btn,
+body.is-isabela-theme .stat,
+body.is-isabela-theme .exercise-action,
+body.is-isabela-theme .rating-btn,
+body.is-isabela-theme .streak-month-controls button{
+  background:#fff8fb!important;color:#765968!important;border-color:#ebd2dc!important;
+}
+body.is-isabela-theme .app-main-nav button.active,
+body.is-isabela-theme .library-nav button.active,
+body.is-isabela-theme .day-btn.active{
+  border-color:#d979a0!important;background:linear-gradient(145deg,#f9dce7,#f4c6d8)!important;color:#713d55!important;
+}
+body.is-isabela-theme .home-dashboard,
+body.is-isabela-theme .hero,
+body.is-isabela-theme .login-card,
+body.is-isabela-theme .exercise-card,
+body.is-isabela-theme .spotify-mini,
+body.is-isabela-theme .streak-calendar-card,
+body.is-isabela-theme .streak-total-card,
+body.is-isabela-theme .save-panel,
+body.is-isabela-theme .library-card,
+body.is-isabela-theme .muscle-card,
+body.is-isabela-theme .exercise-library-card{
+  background:linear-gradient(145deg,#fffafd,#fceef3)!important;border-color:#edcfda!important;color:#432b38;
+}
+body.is-isabela-theme .home-dashboard,
+body.is-isabela-theme .hero{background:linear-gradient(135deg,#f9e2eb,#fff8fb 62%,#f6dce7)!important;border-color:#e9bfd0!important;box-shadow:0 14px 34px rgba(154,91,119,.10)!important;color:#482d3b}
+body.is-isabela-theme .dashboard-copy p,
+body.is-isabela-theme .subtitle,
+body.is-isabela-theme .streak-total-caption,
+body.is-isabela-theme .streak-legend,
+body.is-isabela-theme .streak-week-progress span{color:#8e7180!important}
+body.is-isabela-theme .dashboard-kicker,
+body.is-isabela-theme .dashboard-copy h2 span,
+body.is-isabela-theme .dashboard-chip b,
+body.is-isabela-theme .dashboard-date,
+body.is-isabela-theme .streak-total-number,
+body.is-isabela-theme .streak-month-title{color:#b95780!important}
+body.is-isabela-theme .dashboard-kicker:before{background:#df8eae!important;box-shadow:0 0 12px rgba(223,142,174,.55)}
+body.is-isabela-theme input,
+body.is-isabela-theme select,
+body.is-isabela-theme textarea,
+body.is-isabela-theme .library-search{background:#fff!important;color:#432b38!important;border-color:#e9cbd7!important}
+body.is-isabela-theme .streak-day{background:#f9eaf0;color:#765968}
+body.is-isabela-theme .streak-day.done{background:#f3d5e1;color:#8c4262;border-color:#dfa4bb}
+body.is-isabela-theme .streak-day.missed{background:#fae6e8;color:#a34d5a;border-color:#edc4cb}
+body.is-isabela-theme .streak-day.rest{background:#fff8fb;color:#b49aa7}
+body.is-isabela-theme .streak-day.today{outline-color:#d979a0}
+body.is-isabela-theme .streak-week-progress{background:#fcebf1;color:#432b38}
+body.is-isabela-theme .spotify-mini{border-color:#edcfda!important}
+body.is-isabela-theme .spotify-mini button{color:#765968}
+body.is-isabela-theme .day-selector{justify-content:center}
+body.is-isabela-theme .day-btn{width:min(44%,170px);}
 </style>
 </head>
 <body>
@@ -1150,6 +1242,9 @@ async function loadRepDB(){
 }
 
 function renderDays(){
+  document.body.classList.toggle("is-isabela-theme",isIsabelaAccount());
+  const themeMeta=document.querySelector('meta[name="theme-color"]');
+  if(themeMeta)themeMeta.content=isIsabelaAccount()?"#fff4f7":"#0b1422";
   $("daySelector").innerHTML=workoutDays().map(day=>`
     <button type="button" class="day-btn ${selectedDay===day?"active":""}" data-day="${day}">
       ${dayConfig(day).short}<small>${dayConfig(day).title.replace(" + "," + ")}</small>
