@@ -610,8 +610,43 @@ body.is-isabela-theme .streak-day.missed{background:#fae6e8;color:#a34d5a;border
 body.is-isabela-theme .streak-day.rest{background:#fff8fb;color:#b49aa7}
 body.is-isabela-theme .streak-day.today{outline-color:#d979a0}
 body.is-isabela-theme .streak-week-progress{background:#fcebf1;color:#432b38}
-body.is-isabela-theme .spotify-mini{border-color:#edcfda!important}
-body.is-isabela-theme .spotify-mini button{color:#765968}
+body.is-isabela-theme .spotify-mini{
+  background:linear-gradient(145deg,#fffafd 0%,#f9e8ef 100%)!important;
+  border:1px solid #dfb5c7!important;
+  box-shadow:0 14px 34px rgba(128,67,94,.16)!important;
+  color:#432b38!important;
+  opacity:1!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+body.is-isabela-theme .spotify-mini:before{background:linear-gradient(180deg,#d979a0,#bd5e86)!important;opacity:1!important}
+body.is-isabela-theme .spotify-mini-title,
+body.is-isabela-theme .spotify-expanded-heading h3,
+body.is-isabela-theme .spotify-track-heading h3{color:#432b38!important}
+body.is-isabela-theme .spotify-mini-artist,
+body.is-isabela-theme .spotify-mini-note,
+body.is-isabela-theme .spotify-track-count,
+body.is-isabela-theme .spotify-track-artist{color:#806273!important}
+body.is-isabela-theme .spotify-mini-state,
+body.is-isabela-theme .spotify-expanded-eyebrow,
+body.is-isabela-theme .spotify-expanded-brand,
+body.is-isabela-theme .spotify-track-play{color:#b95780!important}
+body.is-isabela-theme .spotify-mini-state:before{background:#d979a0!important;box-shadow:0 0 8px rgba(217,121,160,.35)!important}
+body.is-isabela-theme .spotify-mini-cover{background:linear-gradient(145deg,#f7d7e4,#eebbd0)!important;border:1px solid #dfa9bf!important;color:#9e4d70!important;box-shadow:0 5px 14px rgba(185,87,128,.14)!important}
+body.is-isabela-theme .spotify-mini-cover span{color:#9e4d70!important}
+body.is-isabela-theme .spotify-mini-controls button{color:#80576a!important}
+body.is-isabela-theme .spotify-mini-controls button#spotifyMiniPlay{background:linear-gradient(145deg,#f2c6d8,#df8eae)!important;color:#512d3d!important;box-shadow:0 5px 15px rgba(185,87,128,.2)!important}
+body.is-isabela-theme .spotify-mini-connect,
+body.is-isabela-theme .spotify-load-more,
+body.is-isabela-theme .spotify-reconnect{background:#f7dce7!important;border:1px solid #d99ab5!important;color:#713d55!important}
+body.is-isabela-theme .spotify-mini-note{border-top-color:#ead0dc!important}
+body.is-isabela-theme .spotify-expanded{border-top-color:#ead0dc!important}
+body.is-isabela-theme .spotify-playlist-chip{background:#fff7fa!important;border-color:#e8cbd8!important;color:#634657!important}
+body.is-isabela-theme .spotify-playlist-chip.active{background:#f5d9e5!important;border-color:#d979a0!important;color:#713d55!important}
+body.is-isabela-theme .spotify-track-row{background:#fff7fa!important;color:#432b38!important}
+body.is-isabela-theme .spotify-track-row:active,body.is-isabela-theme .spotify-track-row.playing{background:#f7e0e9!important;border-color:#d99ab5!important}
+body.is-isabela-theme .spotify-track-artist{color:#806273!important}
+body.is-isabela-theme .spotify-mini-handle{background:#f5dce6!important;border-color:#d9a8bd!important}
+body.is-isabela-theme .spotify-mini-handle span{background:#9e607b!important}
 body.is-isabela-theme .day-selector{justify-content:center}
 body.is-isabela-theme .day-btn{width:min(44%,170px);}
 </style>
@@ -2053,7 +2088,7 @@ async function enterApp(user){
   $("appView").classList.remove("hidden");
   $("logoutBtn").classList.remove("hidden");
   initializeSpotifyForApp().catch(error=>spotifyMessage(error.message||"Error al preparar Spotify.",true));
-  $("mainHeading").textContent="Tu entrenamiento";
+  $("mainHeading").textContent=isIsabelaAccount()?"Entreno de Isabela":"Tu entrenamiento";
   $("mainSubtitle").textContent="Tu rutina diaria y tus últimas cargas.";
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
   try{
