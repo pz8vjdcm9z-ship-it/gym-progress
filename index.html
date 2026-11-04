@@ -871,7 +871,7 @@ const ALTERNATIVES = {
 const $ = id => document.getElementById(id);
 
 const BIKE_TIMER_SECONDS=10;
-let bikeTimerRemaining=BIKE_TIMER_SECONDS,bikeTimerInterval=null,bikeTimerDeadline=0;
+let bikeTimerRemaining=BIKE_TIMER_SECONDS,bikeTimerInterval=null,bikeTimerDeadline=0,bikeTimerNotificationsArmed=false;
 function renderBikeTimer(){
   const button=$("bikeTimer");
   if(!button)return;
@@ -919,7 +919,7 @@ function tickBikeTimer(){
   }
   renderBikeTimer();
 }
-function startBikeTimer(){
+async function startBikeTimer(){
   if(bikeTimerInterval){
     bikeTimerRemaining=Math.max(0,Math.ceil((bikeTimerDeadline-Date.now())/1000));
     clearInterval(bikeTimerInterval);bikeTimerInterval=null;
