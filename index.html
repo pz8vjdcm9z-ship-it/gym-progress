@@ -871,24 +871,51 @@ const ALTERNATIVES = {
 const $ = id => document.getElementById(id);
 
 const BIKE_TIMER_SECONDS=600;
+const BIKE_NOTIFICATION_TEST_SECONDS=1;
 let bikeTimerRemaining=BIKE_TIMER_SECONDS,bikeTimerInterval=null,bikeTimerDeadline=0;
+let bikeTimerPhase="ready"; // ready, test, workout, paused-test, paused-workout
+async function showBikeNotification(title,body,tag){
+  try{
+    if(!("Notification" in window) || Notification.permission!=="granted" || !("serviceWorker" in navigator))return false;
+    const registration=await navigator.serviceWorker.ready;
+    await registration.showNotification(title,{body,icon:"./icon-192.png",badge:"./icon-192.png",tag,renotify:true});
+    return true;
+  }catch(error){console.warn("No se pudo mostrar el aviso de bicicleta:",error);return false;}
+}
 function renderBikeTimer(){
   const button=$("bikeTimer");
   if(!button)return;
   const display=button.querySelector("strong");
   const caption=$("bikeTimerCaption");
   if(display)display.textContent=`${Math.floor(bikeTimerRemaining/60)}:${String(bikeTimerRemaining%60).padStart(2,"0")}`;
-  button.classList.toggle("running",!!bikeTimerInterval);
-  if(caption)caption.textContent=bikeTimerInterval?"Bicicleta inicial · EN MARCHA · TOCA PARA PAUSAR":bikeTimerRemaining<BIKE_TIMER_SECONDS?"Bicicleta inicial · PAUSADO · TOCA PARA SEGUIR":"Bicicleta inicial · TOCA PARA INICIAR";
-  button.setAttribute("aria-label",bikeTimerInterval?"Pausar temporizador de bicicleta":bikeTimerRemaining<BIKE_TIMER_SECONDS?"Reanudar temporizador de bicicleta":"Iniciar temporizador de bicicleta de 10 minutos");
+  const running=!!bikeTimerInterval;
+  button.classList.toggle("running",running);
+  if(caption){
+    if(bikeTimerPhase==="test")caption.textContent="Prueba de aviso · 1 segundo…";
+    else if(bikeTimerPhase==="workout")caption.textContent=running?"Bicicleta inicial · EN MARCHA · TOCA PARA PAUSAR":"Bicicleta inicial · PAUSADO · TOCA PARA SEGUIR";
+    else if(bikeTimerPhase.startsWith("paused"))caption.textContent="Bicicleta inicial · PAUSADO · TOCA PARA SEGUIR";
+    else caption.textContent="Bicicleta inicial · TOCA PARA INICIAR";
+  }
+  button.setAttribute("aria-label",running?"Pausar temporizador de bicicleta":bikeTimerPhase.startsWith("paused")?"Reanudar temporizador de bicicleta":"Iniciar temporizador de bicicleta de 10 minutos");
 }
 function tickBikeTimer(){
   bikeTimerRemaining=Math.max(0,Math.ceil((bikeTimerDeadline-Date.now())/1000));
   if(bikeTimerRemaining<=0){
     clearInterval(bikeTimerInterval);bikeTimerInterval=null;
-    bikeTimerRemaining=BIKE_TIMER_SECONDS;
-    renderBikeTimer();
-    return;
+    if(bikeTimerPhase==="test"){
+      showBikeNotification("GYM PROGRESS · Prueba de aviso","La notificación de prueba de 1 segundo ha terminado.","gym-progress-bike-test").finally(()=>{
+        bikeTimerPhase="workout";
+        bikeTimerRemaining=BIKE_TIMER_SECONDS;
+        bikeTimerDeadline=Date.now()+BIKE_TIMER_SECONDS*1000;
+        bikeTimerInterval=setInterval(tickBikeTimer,250);
+        renderBikeTimer();
+      });
+      return;
+    }
+    if(bikeTimerPhase==="workout"){
+      showBikeNotification("GYM PROGRESS · Bicicleta terminada","Han terminado los 10 minutos de bicicleta.","gym-progress-bike-finished");
+      bikeTimerPhase="ready";bikeTimerRemaining=BIKE_TIMER_SECONDS;renderBikeTimer();return;
+    }
   }
   renderBikeTimer();
 }
@@ -896,12 +923,27 @@ async function startBikeTimer(){
   if(bikeTimerInterval){
     bikeTimerRemaining=Math.max(0,Math.ceil((bikeTimerDeadline-Date.now())/1000));
     clearInterval(bikeTimerInterval);bikeTimerInterval=null;
-    renderBikeTimer();
-    return;
+    bikeTimerPhase=bikeTimerPhase==="test"?"paused-test":"paused-workout";
+    renderBikeTimer();return;
   }
-  if(bikeTimerRemaining<=0)bikeTimerRemaining=BIKE_TIMER_SECONDS;
+  if(bikeTimerPhase.startsWith("paused")){
+    bikeTimerPhase=bikeTimerPhase==="paused-test"?"test":"workout";
+    bikeTimerDeadline=Date.now()+bikeTimerRemaining*1000;
+    bikeTimerInterval=setInterval(tickBikeTimer,250);renderBikeTimer();return;
+  }
+  if(bikeTimerPhase==="ready"){
+    if(!window.isSecureContext || !("Notification" in window) || !("serviceWorker" in navigator)){
+      alert("Este dispositivo no admite notificaciones web en esta instalación.");return;
+    }
+    if(Notification.permission==="default"){
+      const permission=await Notification.requestPermission();
+      if(permission!=="granted"){alert("Activa las notificaciones para realizar la prueba.");return;}
+    }
+    if(Notification.permission!=="granted"){alert("Las notificaciones están bloqueadas. Actívalas en los ajustes del iPhone.");return;}
+    bikeTimerPhase="test";bikeTimerRemaining=BIKE_NOTIFICATION_TEST_SECONDS;
+  }
   bikeTimerDeadline=Date.now()+bikeTimerRemaining*1000;
-  bikeTimerInterval=setInterval(tickBikeTimer,250);
+  bikeTimerInterval=setInterval(tickBikeTimer,100);
   renderBikeTimer();
 }
 let restDuration=30,restRemaining=30,restInterval=null,restDeadline=0,restAlertShown=false,restAudioContext=null;
