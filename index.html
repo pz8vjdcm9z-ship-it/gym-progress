@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v19-test">
+<meta name="application-version" content="home-v21-bike-inline">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="manifest" href="./manifest.webmanifest?v=10">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=11">
+<link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png?v=11">
 <title>GYM PROGRESS</title>
 <style>
 :root{
@@ -276,6 +277,13 @@ main{padding-bottom:28px}
 
 
 /* Cronómetro compacto de descanso */
+.bike-timer{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;width:100%;min-height:58px;padding:0;border:0;border-radius:8px;background:transparent;color:#f2fbff;text-align:left;cursor:pointer;touch-action:manipulation}
+.bike-timer strong{display:block;font-size:18px;font-weight:950;line-height:1.15;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.bike-timer span{display:block;margin:0;color:var(--muted);font-size:9px;line-height:1.25}
+.stat:has(.bike-timer){padding:10px 11px;border-color:rgba(85,223,189,.38);transition:background .2s,border-color .2s,box-shadow .2s}
+.stat:has(.bike-timer.running){border-color:rgba(85,223,189,.95);background:linear-gradient(145deg,rgba(51,205,170,.28),rgba(20,54,65,.94));box-shadow:0 0 0 1px rgba(85,223,189,.12),0 5px 20px rgba(44,214,174,.12)}
+.stat:has(.bike-timer.running) .bike-timer strong{color:#8cebd4}
+.bike-timer:active{transform:scale(.98)}
 .rest-timer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 18px;padding:13px 14px;border:1px solid rgba(85,223,189,.22);border-radius:17px;background:linear-gradient(120deg,rgba(22,52,62,.82),rgba(12,25,40,.94));}
 .rest-timer-info{min-width:0;flex:1}
 .rest-timer-label{display:block;margin-bottom:4px;color:#8cebd4;font-size:9px;font-weight:900;letter-spacing:1.2px}
@@ -597,7 +605,7 @@ body:not(.spotify-visible) #spotifyMiniHandle{display:none!important}
       <div class="hero-meta"><span>Progreso de la sesión</span><span id="routineCount">6 ejercicios</span></div>
     </section>
     <div class="quick-stats">
-      <div class="stat"><strong>10 min</strong><span>Bicicleta inicial</span></div>
+      <div class="stat"><button type="button" id="bikeTimer" class="bike-timer" aria-label="Iniciar temporizador de bicicleta de 10 minutos"><strong>10:00</strong><span id="bikeTimerCaption">Bicicleta inicial · TOCA PARA INICIAR</span></button></div>
       <div class="stat"><strong>3 × 12</strong><span>Series y repeticiones habituales</span></div>
       <div class="stat"><strong>75 s</strong><span>Descanso orientativo</span></div>
     </div>
@@ -862,6 +870,59 @@ const ALTERNATIVES = {
 
 const $ = id => document.getElementById(id);
 
+const BIKE_TIMER_SECONDS=10*60;
+let bikeTimerRemaining=BIKE_TIMER_SECONDS,bikeTimerInterval=null,bikeTimerDeadline=0;
+function renderBikeTimer(){
+  const button=$("bikeTimer");
+  if(!button)return;
+  const display=button.querySelector("strong");
+  const caption=$("bikeTimerCaption");
+  if(display)display.textContent=`${Math.floor(bikeTimerRemaining/60)}:${String(bikeTimerRemaining%60).padStart(2,"0")}`;
+  button.classList.toggle("running",!!bikeTimerInterval);
+  if(caption)caption.textContent=bikeTimerInterval?"Bicicleta inicial · EN MARCHA · TOCA PARA PAUSAR":bikeTimerRemaining<BIKE_TIMER_SECONDS?"Bicicleta inicial · PAUSADO · TOCA PARA SEGUIR":"Bicicleta inicial · TOCA PARA INICIAR";
+  button.setAttribute("aria-label",bikeTimerInterval?"Pausar temporizador de bicicleta":bikeTimerRemaining<BIKE_TIMER_SECONDS?"Reanudar temporizador de bicicleta":"Iniciar temporizador de bicicleta de 10 minutos");
+}
+async function notifyBikeTimerFinished(){
+  if(navigator.vibrate)navigator.vibrate([350,150,350,150,650]);
+  if("Notification" in window&&Notification.permission==="default"){
+    try{await Notification.requestPermission();}catch(e){console.warn("No se pudo solicitar permiso de notificaciones",e);}
+  }
+  if("Notification" in window&&Notification.permission==="granted"){
+    try{
+      const options={body:"Has completado los 10 minutos de bicicleta.",icon:"./icon-192.png?v=11",badge:"./icon-192.png?v=11",tag:"gym-progress-bike-finished",renotify:true};
+      if("serviceWorker" in navigator){
+        const registration=await navigator.serviceWorker.ready;
+        await registration.showNotification("¡Bicicleta completada!",options);
+      }else new Notification("¡Bicicleta completada!",options);
+      return;
+    }catch(e){console.warn("No se pudo mostrar la notificación de bicicleta",e);}
+  }
+  // Aviso visible de respaldo si las notificaciones están bloqueadas o no disponibles.
+  window.alert("¡Has completado los 10 minutos de bicicleta!");
+}
+function tickBikeTimer(){
+  bikeTimerRemaining=Math.max(0,Math.ceil((bikeTimerDeadline-Date.now())/1000));
+  if(bikeTimerRemaining<=0){
+    clearInterval(bikeTimerInterval);bikeTimerInterval=null;
+    bikeTimerRemaining=BIKE_TIMER_SECONDS;
+    renderBikeTimer();
+    notifyBikeTimerFinished();
+    return;
+  }
+  renderBikeTimer();
+}
+function startBikeTimer(){
+  if(bikeTimerInterval){
+    bikeTimerRemaining=Math.max(0,Math.ceil((bikeTimerDeadline-Date.now())/1000));
+    clearInterval(bikeTimerInterval);bikeTimerInterval=null;
+    renderBikeTimer();
+    return;
+  }
+  if(bikeTimerRemaining<=0)bikeTimerRemaining=BIKE_TIMER_SECONDS;
+  bikeTimerDeadline=Date.now()+bikeTimerRemaining*1000;
+  bikeTimerInterval=setInterval(tickBikeTimer,250);
+  renderBikeTimer();
+}
 let restDuration=30,restRemaining=30,restInterval=null,restDeadline=0,restAlertShown=false,restAudioContext=null;
 function renderRestTimer(){
   const display=$("restTimerDisplay");
@@ -1528,6 +1589,9 @@ document.addEventListener("touchend",event=>{
 },{passive:true});
 document.addEventListener("touchcancel",()=>{mainTabTouchStart=null;},{passive:true});
 
+$("bikeTimer").addEventListener("click",startBikeTimer);
+renderBikeTimer();
+renderBikeTimer();
 $("restTimerStart").addEventListener("click",startRestTimer);
 $("restTimerReset").addEventListener("click",resetRestTimer);
 $("restNotifyEnable").addEventListener("click",enableRestNotifications);
@@ -1894,7 +1958,7 @@ window.addEventListener("online",()=>{updateConnectionStatus();syncOfflineQueue(
 window.addEventListener("offline",updateConnectionStatus);
 updateConnectionStatus();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  navigator.serviceWorker.register("./sw.js?v=9",{updateViaCache:"none"})
+  navigator.serviceWorker.register("./sw.js?v=11",{updateViaCache:"none"})
     .then(registration=>registration.update())
     .catch(e=>console.warn("Service worker no disponible",e));
 }
