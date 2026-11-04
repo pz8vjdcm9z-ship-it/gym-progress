@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v21-bike-inline">
+<meta name="application-version" content="home-v22-user-isolation">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="./manifest.webmanifest?v=10">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=11">
@@ -759,6 +759,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth:{persistSes
 const REPDB_JSON = "https://raw.githubusercontent.com/RepDB/exercise-dataset/main/exercises.json";
 const REPDB_ASSETS = "https://raw.githubusercontent.com/RepDB/exercise-dataset/main/";
 const LEGACY_STORAGE_KEY = "gym_progress_pro_v5";
+const LEGACY_IMPORT_CLAIM_KEY = "gym_progress_legacy_import_claimed_v1";
 const INITIAL_SESSIONS = [{
   date:"2026-10-27",
   items:{
@@ -821,9 +822,9 @@ let recentlyRejected = new Set();
 let exerciseSwapHistory = {};
 let latestRecords = new Map();
 let saving = false;
-const completionKey = day => `gym_progress_completed_${day}_${localDate()}`;
-const routineKey = day => `gym_progress_routine_${day}`;
-const swapHistoryKey = day => `gym_progress_swap_history_${day}`;
+const completionKey = day => `gym_progress_completed_${currentUser?.id || "guest"}_${day}_${localDate()}`;
+const routineKey = day => `gym_progress_routine_${currentUser?.id || "guest"}_${day}`;
+const swapHistoryKey = day => `gym_progress_swap_history_${currentUser?.id || "guest"}_${day}`;
 let activeRoutine = [];
 let completedIds = new Set();
 let exerciseView = "pending";
@@ -1816,7 +1817,19 @@ async function migrateOldLocalRecords(){
   if(localStorage.getItem(flag)==="1")return;
   const {count,error}=await supabase.from("workout_weights").select("id",{count:"exact",head:true}).eq("user_id",currentUser.id);
   if(error)throw error;
-  if((count||0)>0){localStorage.setItem(flag,"1");return;}
+  // Si esta cuenta ya tiene registros, no se vuelve a importar el histórico local compartido.
+  if((count||0)>0){
+    localStorage.setItem(flag,"1");
+    localStorage.setItem(LEGACY_IMPORT_CLAIM_KEY,currentUser.id);
+    return;
+  }
+  // El histórico antiguo no tenía propietario. Solo la primera cuenta que lo reclame
+  // puede importarlo; así no se copia el mismo histórico a las otras cuentas.
+  const legacyOwner=localStorage.getItem(LEGACY_IMPORT_CLAIM_KEY);
+  if(legacyOwner && legacyOwner!==currentUser.id){
+    localStorage.setItem(flag,"1");
+    return;
+  }
 
   let sessions=[];
   try{
@@ -1849,6 +1862,7 @@ async function migrateOldLocalRecords(){
     if(insertError)throw insertError;
   }
   localStorage.setItem(flag,"1");
+  localStorage.setItem(LEGACY_IMPORT_CLAIM_KEY,currentUser.id);
 }
 
 async function saveWeights(){
@@ -1955,6 +1969,11 @@ $("loginForm").addEventListener("submit",async event=>{
 $("logoutBtn").addEventListener("click",async()=>{
   await supabase.auth.signOut();
   currentUser=null;
+  activeRoutine=[];
+  completedIds=new Set();
+  exerciseSwapHistory={};
+  exerciseRatings={};
+  latestRecords=new Map();
   document.body.classList.remove("spotify-visible");
   $("appView").classList.add("hidden");
   $("loginView").classList.remove("hidden");
@@ -1981,7 +2000,7 @@ window.addEventListener("online",()=>{updateConnectionStatus();syncOfflineQueue(
 window.addEventListener("offline",updateConnectionStatus);
 updateConnectionStatus();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  navigator.serviceWorker.register("./sw.js?v=11",{updateViaCache:"none"})
+  navigator.serviceWorker.register("./sw.js?v=12",{updateViaCache:"none"})
     .then(registration=>registration.update())
     .catch(e=>console.warn("Service worker no disponible",e));
 }
@@ -2020,15 +2039,15 @@ function spotifySaveTokens(data){
   spotifyAccessToken=data.access_token;
   spotifyRefreshToken=data.refresh_token||spotifyRefreshToken;
   spotifyTokenExpiresAt=Date.now()+(Number(data.expires_in||3600)*1000)-60000;
-  localStorage.setItem("gym_spotify_tokens",JSON.stringify({
+  localStorage.setItem(`gym_spotify_tokens_${currentUser?.id || "guest"}`,JSON.stringify({
     access_token:spotifyAccessToken,refresh_token:spotifyRefreshToken,expires_at:spotifyTokenExpiresAt
   }));
 }
 function spotifyLoadTokens(){
   try{
-    const saved=JSON.parse(localStorage.getItem("gym_spotify_tokens")||"null");
+    const saved=JSON.parse(localStorage.getItem(`gym_spotify_tokens_${currentUser?.id || "guest"}`)||"null");
     if(saved){spotifyAccessToken=saved.access_token;spotifyRefreshToken=saved.refresh_token;spotifyTokenExpiresAt=Number(saved.expires_at)||0;}
-  }catch(e){localStorage.removeItem("gym_spotify_tokens");}
+  }catch(e){localStorage.removeItem(`gym_spotify_tokens_${currentUser?.id || "guest"}`);}
 }
 async function spotifyGetToken(){
   if(spotifyAccessToken && Date.now()<spotifyTokenExpiresAt) return spotifyAccessToken;
