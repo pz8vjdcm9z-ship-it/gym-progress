@@ -1012,6 +1012,102 @@ body.is-arniforcamp-theme .spotify-mini-handle{border-color:rgba(255,211,35,.35)
 body.is-arniforcamp-theme .spotify-mini-handle span{background:#ffd323}
 @media(max-width:390px){body.is-arniforcamp-theme #routineDetails>.hero{padding:19px 15px 16px}body.is-arniforcamp-theme #routineDetails .hero h2{font-size:22px}}
 
+
+/* Ajustes visuales exclusivos de arniforcamp@gmail.com */
+body.is-arniforcamp-theme .dashboard-art{
+  background:radial-gradient(circle,rgba(255,211,35,.16),rgba(255,211,35,.035) 58%,transparent 72%)!important;
+  border-color:rgba(255,211,35,.35)!important;
+  box-shadow:inset 0 0 24px rgba(255,211,35,.06),0 10px 30px rgba(0,0,0,.28)!important;
+}
+body.is-arniforcamp-theme .dashboard-art svg{width:74%;height:74%}
+body.is-arniforcamp-theme .dashboard-art svg circle,
+body.is-arniforcamp-theme .dashboard-art svg path{stroke:#ffd323!important}
+body.is-arniforcamp-theme .dashboard-art svg circle:nth-of-type(3){fill:rgba(255,211,35,.18)!important}
+
+/* Spotify: negro translúcido, sin dominantes azules y acentos amarillo eléctrico. */
+body.is-arniforcamp-theme .spotify-mini{
+  background:rgba(7,9,10,.91)!important;
+  background-image:linear-gradient(145deg,rgba(17,19,20,.94),rgba(5,7,8,.91))!important;
+  border:1px solid rgba(255,211,35,.38)!important;
+  color:#f5f5f2!important;
+  -webkit-backdrop-filter:blur(22px) saturate(125%)!important;
+  backdrop-filter:blur(22px) saturate(125%)!important;
+  box-shadow:0 18px 55px rgba(0,0,0,.58),inset 0 1px rgba(255,255,255,.045)!important;
+}
+body.is-arniforcamp-theme .spotify-mini:before{
+  background:linear-gradient(180deg,#ffe45c,#ffb800)!important;opacity:1!important;
+}
+body.is-arniforcamp-theme .spotify-mini-title,
+body.is-arniforcamp-theme .spotify-expanded-heading h3,
+body.is-arniforcamp-theme .spotify-track-heading h3,
+body.is-arniforcamp-theme .spotify-expanded-brand,
+body.is-arniforcamp-theme .spotify-expanded-eyebrow,
+body.is-arniforcamp-theme .spotify-mini-state,
+body.is-arniforcamp-theme .spotify-track-play{
+  color:#ffdc43!important;
+}
+body.is-arniforcamp-theme .spotify-mini-artist,
+body.is-arniforcamp-theme .spotify-mini-note,
+body.is-arniforcamp-theme .spotify-track-artist,
+body.is-arniforcamp-theme .spotify-attribution{color:#b9bec2!important}
+body.is-arniforcamp-theme .spotify-mini-state:before{
+  background:#ffd323!important;box-shadow:0 0 9px rgba(255,211,35,.6)!important;
+}
+body.is-arniforcamp-theme .spotify-mini-cover{
+  background:linear-gradient(145deg,#292516,#11110d)!important;
+  border-color:rgba(255,211,35,.32)!important;color:#ffdc43!important;
+}
+body.is-arniforcamp-theme .spotify-mini-controls button#spotifyMiniPlay{
+  background:linear-gradient(145deg,#ffe45c,#ffb800)!important;color:#171300!important;
+}
+body.is-arniforcamp-theme .spotify-expanded{
+  border-top-color:rgba(255,211,35,.2)!important;
+}
+body.is-arniforcamp-theme .spotify-playlists button,
+body.is-arniforcamp-theme .spotify-playlist,
+body.is-arniforcamp-theme .spotify-track,
+body.is-arniforcamp-theme .spotify-track-row{
+  background:rgba(255,255,255,.045)!important;
+  border-color:rgba(255,255,255,.075)!important;
+  color:#ecece8!important;
+}
+body.is-arniforcamp-theme .spotify-playlists button.active,
+body.is-arniforcamp-theme .spotify-playlist.active{
+  background:rgba(255,211,35,.12)!important;
+  border-color:#ffd323!important;color:#ffe45c!important;
+}
+body.is-arniforcamp-theme .spotify-load-more,
+body.is-arniforcamp-theme .spotify-reconnect,
+body.is-arniforcamp-theme .spotify-mini-connect{
+  background:rgba(255,211,35,.10)!important;
+  border-color:rgba(255,211,35,.45)!important;color:#ffe45c!important;
+}
+
+/* Imágenes de ejercicios y sus contenedores: negro real, sin fondo azul. */
+body.is-arniforcamp-theme .exercise-card{
+  background:linear-gradient(145deg,#151617,#0b0c0d)!important;
+  border-color:rgba(255,211,35,.15)!important;
+}
+body.is-arniforcamp-theme .exercise-media,
+body.is-arniforcamp-theme .exercise-media img,
+body.is-arniforcamp-theme .media-empty{
+  background:#050606!important;
+  border-color:rgba(255,211,35,.16)!important;
+}
+body.is-arniforcamp-theme .exercise-media img{object-fit:contain!important}
+
+/* Biblioteca: borde amarillo eléctrico en todas las tarjetas musculares. */
+body.is-arniforcamp-theme .muscle-tile{
+  border:1.5px solid rgba(255,211,35,.82)!important;
+  background:linear-gradient(150deg,#111213,#050606)!important;
+  box-shadow:0 7px 22px rgba(0,0,0,.34),0 0 12px rgba(255,211,35,.055)!important;
+}
+body.is-arniforcamp-theme .muscle-art.actual-reference{
+  background:#030404!important;border-bottom-color:rgba(255,211,35,.35)!important;
+}
+body.is-arniforcamp-theme .muscle-art.actual-reference img{background:#030404!important}
+body.is-arniforcamp-theme .muscle-tile-copy small{color:#ffdc43!important}
+
 </style>
 </head>
 <body>
@@ -1074,9 +1170,11 @@ body.is-arniforcamp-theme .spotify-mini-handle span{background:#ffd323}
         </div>
         <div class="dashboard-art" aria-hidden="true">
           <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11 25v14M18 19v26M46 19v26M53 25v14M18 32h28" stroke="#75E8CC" stroke-width="5" stroke-linecap="round"/>
-            <path d="M24 32h16" stroke="#D4FFF3" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="32" cy="32" r="27" stroke="#75E8CC" stroke-opacity=".18" stroke-width="1.5"/>
+            <circle cx="32" cy="32" r="25" stroke="#FFD323" stroke-opacity=".28" stroke-width="1.6"/>
+            <circle cx="32" cy="32" r="17" stroke="#FFD323" stroke-opacity=".58" stroke-width="2"/>
+            <circle cx="32" cy="32" r="8" fill="#FFD323" fill-opacity=".16" stroke="#FFE45C" stroke-width="2.5"/>
+            <path d="M32 19v13l9-6" stroke="#FFE45C" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M47 12l5 0 0 5" stroke="#FFD323" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
       </div>
@@ -1896,8 +1994,11 @@ function renderStreakCalendar(){
       html+=`<div class="${cls}" title="${dates.has(key)?"Entrenamiento completado":!trainingDay?"Día de descanso":future?"Pendiente":"Entrenamiento no realizado"}">${day}</div>`;
     }
     $("streakCalendarGrid").innerHTML=html;
-    const monday=new Date(now);monday.setDate(now.getDate()-((now.getDay()+6)%7));
-    const weekCount=records.filter(x=>{const d=new Date(`${x.date}T12:00:00`);return d>=new Date(monday.getFullYear(),monday.getMonth(),monday.getDate())&&d<=new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()+3);}).length;
+    const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7));
+    const sunday=new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()+6);
+    const dateKey=date=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+    const weekStartKey=dateKey(monday),weekEndKey=dateKey(sunday);
+    const weekCount=new Set(records.filter(x=>x.date>=weekStartKey&&x.date<=weekEndKey).map(x=>x.date)).size;
     $("streakWeekTotal").textContent=`${Math.min(weekCount,4)} / 4`;
     $("streakStatus").classList.add("hidden");
   }catch(error){console.warn("Error al mostrar el calendario:",error);const status=$("streakStatus");if(status){status.textContent="No se ha podido mostrar el calendario. El resto de la aplicación sigue funcionando.";status.classList.remove("hidden");}}
