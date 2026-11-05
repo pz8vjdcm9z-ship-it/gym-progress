@@ -852,6 +852,15 @@ body.is-jordi-theme .auth-switch button{color:#e0b85e}
 body.admin-preview-mode [data-weight],body.admin-preview-mode #saveWeightsBtn,body.admin-preview-mode [data-complete],body.admin-preview-mode [data-change],body.admin-preview-mode [data-previous]{pointer-events:none;opacity:.55}
 body.admin-preview-mode #saveWeightsBtn{display:none}
 
+
+.user-management-row{display:flex;gap:10px;align-items:stretch;margin:8px 0}
+.user-management-row .user-row{flex:1;min-width:0}
+.user-state{display:inline-block;margin-top:7px;padding:5px 8px;border-radius:7px;background:rgba(85,223,189,.12);color:#8df0d6;font-size:10px;font-weight:900;letter-spacing:.04em}
+.user-state.blocked{background:rgba(255,95,95,.13);color:#ff9b9b}
+.user-block-btn{flex:0 0 auto;min-width:104px;border:1px solid rgba(255,120,120,.38);border-radius:10px;padding:9px;background:rgba(255,95,95,.10);color:#ffaaaa;font-size:10px;font-weight:900}
+.user-block-btn.is-blocked{border-color:rgba(85,223,189,.4);background:rgba(85,223,189,.10);color:#9af0d9}
+.user-block-btn:disabled{opacity:.5}
+
 </style>
 </head>
 <body>
@@ -1255,6 +1264,10 @@ let adminPreviewAppData = null;
 let adminPreviewDay = 1;
 let adminPreviewMode = false;
 let adminPreviewAdminState = null;
+let accountBlockCheckTimer = null;
+let accountBlockChannel = null;
+let accountBlockCheckBusy = false;
+let blockedLogoutInProgress = false;
 
 let selectedDay = new Date().getDay();
 if(selectedDay < 1 || selectedDay > 4) selectedDay = 1;
@@ -2425,20 +2438,41 @@ async function loadUsers(){
   button.disabled=true;button.textContent="CARGANDO…";hideStatus(status);
   list.innerHTML='<div class="empty">Cargando usuarios…</div>';
   try{
-    const {data,error}=await supabase.from("profiles").select("id,email,full_name,created_at").order("created_at",{ascending:false});
+    const {data,error}=await supabase.from("profiles").select("id,email,full_name,created_at,is_active").order("created_at",{ascending:false});
     if(error)throw error;
     const users=data||[];
     $("usersCount").textContent=`${users.length} ${users.length===1?"usuario registrado":"usuarios registrados"}`;
     if(!users.length){list.innerHTML='<div class="empty">Todavía no hay cuentas registradas.</div>';return;}
     list.replaceChildren(...users.map(user=>{
-      const row=document.createElement("button");row.type="button";row.className="user-row";row.style.width="100%";row.style.textAlign="left";row.setAttribute("aria-label",`Ver ficha de ${user.full_name||user.email||"usuario"}`);
+      const wrap=document.createElement("div");wrap.className="user-management-row";
+      const row=document.createElement("button");row.type="button";row.className="user-row";row.setAttribute("aria-label",`Ver ficha de ${user.full_name||user.email||"usuario"}`);
       const info=document.createElement("div");
       const name=document.createElement("strong");name.textContent=user.full_name||"Sin nombre";
       const email=document.createElement("small");email.textContent=user.email||"Correo no disponible";
       const date=document.createElement("small");date.textContent=user.created_at?`Registro: ${new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at))}`:"";
-      info.append(name,email,date);
+      const active=user.is_active!==false;
+      const state=document.createElement("span");state.className="user-state"+(active?"":" blocked");state.textContent=active?"CUENTA ACTIVA":"CUENTA BLOQUEADA";
+      info.append(name,email,date,state);
       const role=document.createElement("span");role.className="user-role";role.textContent=(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"VER FICHA";
-      row.append(info,role);row.addEventListener("click",()=>loadAdminUserDetail(user));return row;
+      row.append(info,role);row.addEventListener("click",()=>loadAdminUserDetail(user));wrap.append(row);
+      const action=document.createElement("button");action.type="button";action.className="user-block-btn"+(active?"":" is-blocked");action.textContent=active?"BLOQUEAR":"DESBLOQUEAR";
+      const isSelf=user.id===currentUser.id;const isProtectedAdmin=(user.email||"").toLowerCase()==="admin@gmail.com";
+      if(isSelf||isProtectedAdmin){action.disabled=true;action.title=isSelf?"No puedes bloquear tu propia cuenta":"La cuenta administradora principal está protegida";action.textContent=isSelf?"TU CUENTA":"ADMIN";}
+      action.addEventListener("click",async event=>{
+        event.stopPropagation();if(action.disabled)return;
+        const verb=active?"bloquear":"desbloquear";
+        const confirmed=window.confirm(`¿Quieres ${verb} la cuenta de ${user.full_name||user.email||"este usuario"}?${active?" Se impedirá el acceso y la aplicación cerrará la sesión abierta al detectar el bloqueo.":" El usuario podrá volver a iniciar sesión. Sus entrenamientos e historial se conservarán."}`);
+        if(!confirmed)return;
+        action.disabled=true;action.textContent="PROCESANDO…";hideStatus(status);
+        try{
+          const {data,error}=await supabase.functions.invoke("account-admin",{body:{action:active?"block":"unblock",userId:user.id}});
+          if(error)throw error;if(!data?.ok)throw new Error(data?.message||"La función administrativa no ha confirmado el cambio.");
+          showStatus(status,data.message||`Cuenta ${active?"bloqueada":"desbloqueada"} correctamente.`);
+          if(adminPreviewUser?.id===user.id)adminPreviewUser={...adminPreviewUser,is_active:!active};
+          await loadUsers();
+        }catch(error){console.error("No se pudo cambiar el estado de la cuenta:",error);showStatus(status,error.message||"No se ha podido modificar la cuenta. Comprueba la función account-admin.",true);action.disabled=false;action.textContent=active?"BLOQUEAR":"DESBLOQUEAR";}
+      });
+      wrap.append(action);return wrap;
     }));
   }catch(error){list.innerHTML='<div class="empty">No se ha podido cargar la lista de usuarios.</div>';showStatus(status,error.message||"Comprueba las políticas y permisos de Supabase.",true);}
   finally{button.disabled=false;button.textContent="ACTUALIZAR";}
@@ -2614,8 +2648,50 @@ function renderAdminAppPreview(){
 }
 
 
+function stopAccountBlockWatcher(){
+  if(accountBlockCheckTimer){clearInterval(accountBlockCheckTimer);accountBlockCheckTimer=null;}
+  if(accountBlockChannel){supabase.removeChannel(accountBlockChannel);accountBlockChannel=null;}
+  accountBlockCheckBusy=false;
+}
+async function handleBlockedAccount(user){
+  if(blockedLogoutInProgress||adminPreviewMode||!currentUser||currentUser.id!==user.id)return;
+  blockedLogoutInProgress=true;stopAccountBlockWatcher();
+  try{await supabase.auth.signOut({scope:"local"});}catch(error){console.warn("No se pudo cerrar localmente la sesión bloqueada:",error);}
+  currentUser=null;currentIsAdmin=false;
+  $("usersNav").classList.add("hidden");$("usersSection").classList.add("hidden");
+  $("appView").classList.add("hidden");$("loginView").classList.remove("hidden");$("logoutBtn").classList.add("hidden");
+  document.body.classList.remove("spotify-visible","is-isabela-theme","is-jordi-theme");
+  showStatus($("loginStatus"),"Esta cuenta ha sido bloqueada por el administrador. Contacta con él para recuperar el acceso.",true);
+  blockedLogoutInProgress=false;
+}
+async function checkCurrentAccountActive(){
+  if(!currentUser||adminPreviewMode||accountBlockCheckBusy)return true;
+  accountBlockCheckBusy=true;const checkedUser=currentUser;
+  try{
+    const {data,error}=await supabase.rpc("gym_progress_account_is_active",{check_user_id:checkedUser.id});
+    if(error){console.warn("No se pudo comprobar el estado de la cuenta:",error.message||error);return true;}
+    if(data===false){await handleBlockedAccount(checkedUser);return false;}
+    return true;
+  }finally{accountBlockCheckBusy=false;}
+}
+function startAccountBlockWatcher(user){
+  stopAccountBlockWatcher();if(!user?.id||adminPreviewMode)return;
+  accountBlockChannel=supabase.channel(`account-block-${user.id}`)
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"profiles",filter:`id=eq.${user.id}`},payload=>{
+      if(payload?.new?.is_active===false)handleBlockedAccount(user);
+    }).subscribe();
+  accountBlockCheckTimer=setInterval(()=>checkCurrentAccountActive(),5000);
+}
+
+
 async function enterApp(user){
   currentUser=user;
+  if(!adminPreviewMode){
+    const {data:accountActive,error:accountStateError}=await supabase.rpc("gym_progress_account_is_active",{check_user_id:user.id});
+    if(accountStateError){currentUser=null;throw new Error("No se ha podido comprobar el estado de la cuenta. Comprueba la configuración SQL de bloqueo.");}
+    if(accountActive===false){await handleBlockedAccount(user);throw new Error("Esta cuenta está bloqueada por el administrador.");}
+    startAccountBlockWatcher(user);
+  }
   await refreshAdminAccess();
   if(isIsabelaAccount() && selectedDay>2)selectedDay=1;
   document.body.classList.add("spotify-visible");
@@ -2678,6 +2754,7 @@ $("loginForm").addEventListener("submit",async event=>{
 });
 
 $("logoutBtn").addEventListener("click",async()=>{
+  stopAccountBlockWatcher();
   await supabase.auth.signOut();
   currentUser=null;
   currentIsAdmin=false;
