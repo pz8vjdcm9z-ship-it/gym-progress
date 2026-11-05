@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v24-admin-user-access-blocking">
+<meta name="application-version" content="home-v23-signup-admin-users">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
-<link rel="manifest" href="./manifest.webmanifest?v=11">
-<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=12">
-<link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png?v=12">
+<link rel="manifest" href="./manifest.webmanifest?v=10">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=11">
+<link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png?v=11">
 <title>GYM PROGRESS</title>
 <style>
 :root{
@@ -824,9 +824,6 @@ body.is-jordi-theme .spotify-mini-handle span{background:#e0b85e!important}
 .user-row strong{display:block;font-size:12px;overflow-wrap:anywhere}
 .user-row small{display:block;margin-top:4px;color:var(--muted);font-size:9px}
 .user-role{flex:0 0 auto;padding:5px 7px;border:1px solid rgba(85,223,189,.25);border-radius:7px;color:#aaf3df;font-size:8px;font-weight:900}
-.user-row-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}.user-open-btn{border:1px solid rgba(85,223,189,.25);border-radius:8px;padding:8px 9px;background:rgba(85,223,189,.09);color:#aaf3df;font-size:9px;font-weight:900}.user-block-btn{border:1px solid rgba(255,153,153,.3);border-radius:8px;padding:8px 9px;background:rgba(255,90,90,.1);color:#ffb0b0;font-size:9px;font-weight:950}.user-block-btn.unblock{border-color:rgba(85,223,189,.3);background:rgba(85,223,189,.1);color:#aaf3df}.user-block-btn:disabled{opacity:.4}
-.user-status{display:inline-block;margin-top:5px;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:900}.user-status.active{background:rgba(85,223,189,.1);color:#aaf3df}.user-status.blocked{background:rgba(255,90,90,.13);color:#ffb0b0}
-@media(max-width:430px){.user-row{align-items:flex-start;flex-wrap:wrap}.user-row-actions{width:100%;justify-content:flex-end}.user-open-btn,.user-block-btn{flex:1}}
 body.is-jordi-theme .users-panel,body.is-jordi-theme .user-row{background:#17191d!important;border-color:rgba(214,173,85,.25)!important}
 body.is-jordi-theme .auth-switch button{color:#e0b85e}
 
@@ -2428,55 +2425,23 @@ async function loadUsers(){
   button.disabled=true;button.textContent="CARGANDO…";hideStatus(status);
   list.innerHTML='<div class="empty">Cargando usuarios…</div>';
   try{
-    const {data,error}=await supabase.from("profiles").select("id,email,full_name,created_at,is_blocked").order("created_at",{ascending:false});
+    const {data,error}=await supabase.from("profiles").select("id,email,full_name,created_at").order("created_at",{ascending:false});
     if(error)throw error;
     const users=data||[];
     $("usersCount").textContent=`${users.length} ${users.length===1?"usuario registrado":"usuarios registrados"}`;
     if(!users.length){list.innerHTML='<div class="empty">Todavía no hay cuentas registradas.</div>';return;}
     list.replaceChildren(...users.map(user=>{
-      const row=document.createElement("div");row.className="user-row";
-      const info=document.createElement("div");info.style.minWidth="0";
+      const row=document.createElement("button");row.type="button";row.className="user-row";row.style.width="100%";row.style.textAlign="left";row.setAttribute("aria-label",`Ver ficha de ${user.full_name||user.email||"usuario"}`);
+      const info=document.createElement("div");
       const name=document.createElement("strong");name.textContent=user.full_name||"Sin nombre";
       const email=document.createElement("small");email.textContent=user.email||"Correo no disponible";
       const date=document.createElement("small");date.textContent=user.created_at?`Registro: ${new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at))}`:"";
-      const state=document.createElement("span");state.className=`user-status ${user.is_blocked?"blocked":"active"}`;state.textContent=user.is_blocked?"ACCESO BLOQUEADO":"ACCESO ACTIVO";
-      info.append(name,email,date,state);
-      const actions=document.createElement("div");actions.className="user-row-actions";
-      const open=document.createElement("button");open.type="button";open.className="user-open-btn";open.textContent="VER FICHA";open.addEventListener("click",()=>loadAdminUserDetail(user));
-      const isAdminAccount=(user.email||"").toLowerCase()==="admin@gmail.com";
-      const block=document.createElement("button");block.type="button";block.className=`user-block-btn${user.is_blocked?" unblock":""}`;block.textContent=user.is_blocked?"ACTIVAR":"ELIMINAR";block.disabled=isAdminAccount;block.title=isAdminAccount?"La cuenta administradora no se puede bloquear":(user.is_blocked?"Restaurar acceso":"Bloquear acceso conservando sus datos");
-      block.addEventListener("click",()=>changeUserBlockState(user,!user.is_blocked,block));
-      actions.append(open,block);row.append(info,actions);return row;
+      info.append(name,email,date);
+      const role=document.createElement("span");role.className="user-role";role.textContent=(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"VER FICHA";
+      row.append(info,role);row.addEventListener("click",()=>loadAdminUserDetail(user));return row;
     }));
   }catch(error){list.innerHTML='<div class="empty">No se ha podido cargar la lista de usuarios.</div>';showStatus(status,error.message||"Comprueba las políticas y permisos de Supabase.",true);}
   finally{button.disabled=false;button.textContent="ACTUALIZAR";}
-}
-
-async function changeUserBlockState(user,shouldBlock,button){
-  if(!currentUser||!currentIsAdmin||!user?.id)return;
-  if((user.email||"").toLowerCase()==="admin@gmail.com")return;
-  const action=shouldBlock?"bloquear":"reactivar";
-  const confirmation=shouldBlock
-    ?"¿Quieres confirmar el bloqueo de acceso de este usuario? Sus rutinas, pesos e historial se conservarán."
-    :"¿Quieres volver a activar el acceso de este usuario? Sus datos conservados seguirán disponibles.";
-  if(!window.confirm(confirmation))return;
-  const previous=button.textContent;button.disabled=true;button.textContent=shouldBlock?"BLOQUEANDO…":"ACTIVANDO…";
-  try{
-    const {data,error}=await supabase.rpc("admin_set_user_blocked",{p_user_id:user.id,p_blocked:shouldBlock});
-    if(error)throw error;
-    if(data!==true)throw new Error("Supabase no ha confirmado el cambio de acceso.");
-    user.is_blocked=shouldBlock;
-    showStatus($("usersStatus"),shouldBlock?"Acceso bloqueado. Los datos del usuario se han conservado.":"Acceso reactivado. El usuario puede volver a entrar.");
-    if(adminPreviewUser?.id===user.id){adminPreviewUser.is_blocked=shouldBlock;}
-    await loadUsers();
-    if(adminPreviewUser?.id===user.id){
-      $("adminDetailStats").replaceChildren(adminStat("CUENTA","USUARIO"),adminStat("REGISTRO",user.created_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at)):"—"),adminStat("ACCESO",shouldBlock?"BLOQUEADO":"ACTIVO"));
-    }
-  }catch(error){
-    console.error("No se pudo cambiar el acceso del usuario",error);
-    showStatus($("usersStatus"),error.message||`No se ha podido ${action} el acceso. Comprueba que has ejecutado el SQL de administración.`,true);
-    button.disabled=false;button.textContent=previous;
-  }
 }
 
 function adminStat(label,value){
@@ -2493,7 +2458,7 @@ async function loadAdminUserDetail(user){
   $("adminAppPreview").classList.add("hidden");
   $("adminOpenPreview").disabled=false;
   panel.classList.remove("hidden");hideStatus(status);$("adminDetailName").textContent=user.full_name||"Sin nombre";$("adminDetailEmail").textContent=user.email||"Correo no disponible";
-  $("adminDetailStats").replaceChildren(adminStat("CUENTA",(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"USUARIO"),adminStat("REGISTRO",user.created_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at)):"—"),adminStat("ACCESO",user.is_blocked?"BLOQUEADO":"ACTIVO"));
+  $("adminDetailStats").replaceChildren(adminStat("CUENTA",(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"USUARIO"),adminStat("REGISTRO",user.created_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at)):"—"));
   adminEmpty(weights,"Cargando historial de pesos…");adminEmpty(appData,"Consultando datos guardados…");
   panel.scrollIntoView({behavior:"smooth",block:"start"});
   try{
@@ -2649,75 +2614,9 @@ function renderAdminAppPreview(){
 }
 
 
-let accountAccessCheckTimer = null;
-let accountAccessCheckBusy = false;
-
-async function checkCurrentAccountAccess(){
-  // No comprobar la cuenta seleccionada durante la vista administrativa:
-  // currentUser se sustituye temporalmente por el usuario consultado, pero
-  // la sesión real de Supabase sigue siendo la del administrador.
-  if(!currentUser || currentIsAdmin && adminPreviewMode || adminPreviewMode || accountAccessCheckBusy || !navigator.onLine)return;
-  accountAccessCheckBusy = true;
-  try{
-    const checkedUserId = currentUser.id;
-    const {data,error}=await supabase.from("profiles").select("is_blocked").eq("id",checkedUserId).maybeSingle();
-    if(error)throw error;
-    if(data?.is_blocked===true && currentUser?.id===checkedUserId){
-      clearInterval(accountAccessCheckTimer);
-      accountAccessCheckTimer=null;
-      // Cierra únicamente la sesión de este dispositivo/navegador.
-      await supabase.auth.signOut({scope:"local"});
-      currentUser=null;currentIsAdmin=false;
-      adminPreviewMode=false;adminPreviewUser=null;adminPreviewAdminState=null;
-      document.body.classList.remove("admin-preview-mode","spotify-visible","is-isabela-theme","is-jordi-theme");
-      $("adminPreviewBanner").classList.remove("active");
-      $("usersNav").classList.add("hidden");
-      $("usersSection").classList.add("hidden");
-      $("appView").classList.add("hidden");
-      $("loginView").classList.remove("hidden");
-      $("logoutBtn").classList.add("hidden");
-      $("mainHeading").textContent="Tu entrenamiento";
-      $("mainSubtitle").textContent="Tu rutina diaria y tus últimas cargas.";
-      showStatus($("loginStatus"),"Tu acceso a GYM PROGRESS ha sido bloqueado por el administrador. Se ha cerrado tu sesión en este dispositivo. Tus rutinas, pesos e historial se conservan.",true);
-    }
-  }catch(error){
-    // Un fallo temporal de red no debe cerrar una sesión válida.
-    console.warn("No se ha podido comprobar temporalmente el acceso de la cuenta:",error.message||error);
-  }finally{accountAccessCheckBusy=false;}
-}
-
-function startAccountAccessMonitoring(){
-  clearInterval(accountAccessCheckTimer);
-  accountAccessCheckTimer=setInterval(checkCurrentAccountAccess,10000);
-  checkCurrentAccountAccess();
-}
-
-document.addEventListener("visibilitychange",()=>{
-  if(!document.hidden)checkCurrentAccountAccess();
-});
-window.addEventListener("online",checkCurrentAccountAccess);
-
 async function enterApp(user){
   currentUser=user;
-  try{
-    const {data:accountProfile,error:profileError}=await supabase.from("profiles").select("is_blocked").eq("id",user.id).maybeSingle();
-    if(profileError)throw profileError;
-    if(accountProfile?.is_blocked===true){
-      await supabase.auth.signOut({scope:"local"});currentUser=null;currentIsAdmin=false;
-      $("appView").classList.add("hidden");$("loginView").classList.remove("hidden");$("logoutBtn").classList.add("hidden");
-      showStatus($("loginStatus"),"Tu acceso a GYM PROGRESS está bloqueado. Tus datos se conservan. Contacta con el administrador para reactivar tu cuenta.",true);
-      return;
-    }
-  }catch(profileError){
-    // IMPORTANTE: un error al leer el campo is_blocked NO significa que
-    // la cuenta esté bloqueada. No cerrar sesiones válidas por errores de
-    // esquema, permisos o conexión. El bloqueo se aplica solo cuando
-    // Supabase devuelve explícitamente is_blocked === true.
-    console.warn("No se pudo comprobar el estado de bloqueo; se permite continuar para no bloquear cuentas activas:",profileError?.message||profileError);
-    showStatus($("loginStatus"),"Aviso: no se ha podido verificar el estado de bloqueo. Si el administrador te ha bloqueado, vuelve a intentarlo cuando se recupere la conexión.",true);
-  }
   await refreshAdminAccess();
-  startAccountAccessMonitoring();
   if(isIsabelaAccount() && selectedDay>2)selectedDay=1;
   document.body.classList.add("spotify-visible");
   $("loginView").classList.add("hidden");
@@ -3087,4 +2986,147 @@ function spotifyRenderPlaylists(){
     spotifyEls.playlists.append(button);
   });
 }
-async function spotifyLoadPlaylists
+async function spotifyLoadPlaylists(){
+  if(spotifyExpandedLoaded||!spotifyAccessToken)return;
+  spotifyExpandedLoaded=true;
+  spotifyShowLibraryMessage("Cargando tus listas de Spotify…");
+  try{
+    const data=await spotifyApi("/me/playlists?limit=50&offset=0");
+    spotifyPlaylistCache=Array.isArray(data.items)?data.items:[];
+    spotifyRenderPlaylists();
+    spotifyShowLibraryMessage(spotifyPlaylistCache.length?"Selecciona una lista para ver sus canciones.":"Tu cuenta no tiene listas disponibles.");
+    if(spotifyPlaylistCache.length)await spotifyLoadPlaylistTracks(spotifyPlaylistCache[0],true);
+  }catch(error){
+    spotifyExpandedLoaded=false;
+    spotifyShowLibraryMessage(error.message+" Si acabas de añadir permisos, vuelve a autorizar Spotify.",true);
+    if(spotifyEls.reconnect)spotifyEls.reconnect.hidden=false;
+  }
+}
+async function spotifyLoadPlaylistTracks(playlist,reset=false){
+  if(!playlist||spotifyTrackBusy)return;
+  spotifyTrackBusy=true;
+  if(reset){
+    spotifySelectedPlaylistData=playlist;spotifyTrackOffset=0;spotifyTrackTotal=0;
+    spotifyEls.trackList?.replaceChildren();
+    if(spotifyEls.selectedPlaylist)spotifyEls.selectedPlaylist.textContent=playlist.name||"Playlist";
+    if(spotifyEls.trackCount)spotifyEls.trackCount.textContent="";
+    spotifyRenderPlaylists();
+  }
+  spotifyShowLibraryMessage("Cargando canciones…");
+  try{
+    const data=await spotifyApi("/playlists/"+encodeURIComponent(playlist.id)+"/items?limit=50&offset="+spotifyTrackOffset+"&market=ES");
+    const entries=Array.isArray(data.items)?data.items:[];
+    spotifyTrackTotal=Number(data.total)||entries.length;
+    entries.forEach((entry,index)=>{
+      const track=entry.item||entry.track;
+      if(!track||track.type!=="track"||!track.uri)return;
+      const row=document.createElement("button");row.type="button";row.className="spotify-track-row";
+      const image=document.createElement("img");image.alt="";image.src=track.album?.images?.[2]?.url||track.album?.images?.[0]?.url||"";
+      const copy=document.createElement("span");copy.className="spotify-track-copy";
+      const name=document.createElement("span");name.className="spotify-track-name";name.textContent=track.name||"Canción";
+      const artist=document.createElement("span");artist.className="spotify-track-artist";artist.textContent=(track.artists||[]).map(a=>a.name).join(", ");
+      copy.append(name,artist);
+      const playMark=document.createElement("span");playMark.className="spotify-track-play";playMark.textContent="▶";
+      row.append(image,copy,playMark);
+      const absolutePosition=spotifyTrackOffset+index;
+      row.addEventListener("click",()=>spotifyPlayPlaylistTrack(playlist,absolutePosition,track,row));
+      spotifyEls.trackList.append(row);
+    });
+    spotifyTrackOffset+=entries.length;
+    if(spotifyEls.trackCount)spotifyEls.trackCount.textContent=spotifyTrackTotal+" canciones";
+    if(spotifyEls.loadMore)spotifyEls.loadMore.hidden=spotifyTrackOffset>=spotifyTrackTotal||entries.length===0;
+    spotifyShowLibraryMessage(entries.length?"Toca una canción para reproducirla desde aquí.":"Esta lista no contiene canciones reproducibles.");
+  }catch(error){
+    spotifyShowLibraryMessage(error.message,true);
+    if(spotifyEls.reconnect)spotifyEls.reconnect.hidden=false;
+  }finally{spotifyTrackBusy=false;}
+}
+async function spotifyPlayPlaylistTrack(playlist,position,track,row){
+  if(!spotifyDeviceId){spotifyShowLibraryMessage("Conecta primero el reproductor de Spotify.",true);return;}
+  if(!track?.uri){spotifyShowLibraryMessage("Spotify no ha facilitado el identificador de esta canción.",true);return;}
+  try{
+    await spotifyPlayer?.activateElement();
+    // Desactivar aleatorio antes de iniciar la pista elegida. Esperamos brevemente
+    // porque Spotify no garantiza el orden de ejecución entre comandos del reproductor.
+    await spotifyApi("/me/player/shuffle?state=false&device_id="+encodeURIComponent(spotifyDeviceId),"PUT");
+    await new Promise(resolve=>setTimeout(resolve,350));
+    // La URI exacta evita errores de posición al paginar la lista.
+    await spotifyApi("/me/player/play?device_id="+encodeURIComponent(spotifyDeviceId),"PUT",{
+      context_uri:playlist.uri,offset:{uri:track.uri},position_ms:0
+    });
+    spotifyCurrentTrackUri=track.uri;
+    spotifyShowLibraryMessage("Solicitud enviada a Spotify. Comprobando la canción…");
+    let confirmed=false;
+    for(let attempt=0;attempt<4;attempt++){
+      await new Promise(resolve=>setTimeout(resolve,450));
+      try{
+        const state=await spotifyApi("/me/player");
+        const currentUri=state?.item?.uri||state?.item?.linked_from?.uri;
+        if(currentUri===track.uri){
+          confirmed=true;
+          spotifyEls.trackList?.querySelectorAll(".spotify-track-row").forEach(item=>item.classList.remove("playing"));
+          row?.classList.add("playing");
+          await spotifyRefreshState();
+          spotifyShowLibraryMessage("Reproduciendo: "+(track.name||"canción"));
+          break;
+        }
+      }catch(checkError){}
+    }
+    if(!confirmed){
+      await spotifyRefreshState();
+      spotifyShowLibraryMessage("Spotify ha recibido la selección, pero no he podido confirmar que esté sonando esa canción. Comprueba el dispositivo activo en Spotify.",true);
+    }
+  }catch(error){spotifyShowLibraryMessage(error.message||"No se ha podido reproducir esa canción.",true);}
+}
+spotifyEls.main?.addEventListener("click",()=>spotifySetExpanded(!spotifyEls.panel.classList.contains("is-expanded")));
+spotifyEls.main?.addEventListener("keydown",event=>{
+  if(event.key==="Enter"||event.key===" "){event.preventDefault();spotifySetExpanded(!spotifyEls.panel.classList.contains("is-expanded"));}
+});
+spotifyEls.loadMore?.addEventListener("click",()=>spotifySelectedPlaylistData&&spotifyLoadPlaylistTracks(spotifySelectedPlaylistData,false));
+spotifyEls.reconnect?.addEventListener("click",()=>spotifyAuthorize());
+
+spotifyEls.connect?.addEventListener("click",()=>{
+  if(spotifyAccessToken)spotifyConnectPlayer();
+  else spotifyAuthorize();
+});
+spotifyEls.play?.addEventListener("click",()=>spotifyControl("toggle"));
+spotifyEls.next?.addEventListener("click",()=>spotifyControl("next"));
+spotifyEls.previous?.addEventListener("click",()=>spotifyControl("previous"));
+spotifySetConnected(false);
+let spotifyInitializedForApp=false;
+async function initializeSpotifyForApp(){
+  if(spotifyInitializedForApp)return;
+  spotifyInitializedForApp=true;
+  spotifyLoadTokens();
+  await spotifyHandleCallback();
+  if(spotifyAccessToken&&!spotifyPlayer){
+    try{await spotifyLoadSdk();await spotifyConnectPlayer();}
+    catch(error){spotifyMessage(error.message||"No se ha podido iniciar Spotify.",true);}
+  }
+}
+
+// Panel fijo al viewport y ocultable/recuperable mediante gestos verticales.
+(()=>{
+  const panel=document.getElementById("spotifyMini");
+  const handle=document.getElementById("spotifyMiniHandle");
+  if(!panel||!handle)return;
+  let startY=null;
+  const hide=()=>{panel.classList.add("is-hidden");handle.classList.add("is-visible");handle.setAttribute("aria-expanded","false");};
+  const show=()=>{panel.classList.remove("is-hidden");handle.classList.remove("is-visible");handle.setAttribute("aria-expanded","true");};
+  panel.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
+  panel.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta>45&&!panel.classList.contains("is-expanded"))hide();startY=null;},{passive:true});
+  handle.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
+  handle.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta < -20)show();startY=null;},{passive:true});
+  handle.addEventListener("click",show);
+  let edgeStart=null;
+  document.addEventListener("touchstart",e=>{if(!panel.classList.contains("is-hidden")||e.touches.length!==1)return;const y=e.touches[0].clientY;if(y>window.innerHeight-70)edgeStart=y;},{passive:true});
+  document.addEventListener("touchend",e=>{if(edgeStart===null)return;const delta=e.changedTouches[0].clientY-edgeStart;if(delta < -35)show();edgeStart=null;},{passive:true});
+})();
+(async function init(){
+  $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
+  const {data:{session}}=await supabase.auth.getSession();
+  if(session?.user)await enterApp(session.user);
+})();
+</script>
+</body>
+</html>
