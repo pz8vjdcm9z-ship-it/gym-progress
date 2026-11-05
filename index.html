@@ -2703,17 +2703,18 @@ async function enterApp(user){
     const {data:accountProfile,error:profileError}=await supabase.from("profiles").select("is_blocked").eq("id",user.id).maybeSingle();
     if(profileError)throw profileError;
     if(accountProfile?.is_blocked===true){
-      await supabase.auth.signOut();currentUser=null;currentIsAdmin=false;
+      await supabase.auth.signOut({scope:"local"});currentUser=null;currentIsAdmin=false;
       $("appView").classList.add("hidden");$("loginView").classList.remove("hidden");$("logoutBtn").classList.add("hidden");
       showStatus($("loginStatus"),"Tu acceso a GYM PROGRESS está bloqueado. Tus datos se conservan. Contacta con el administrador para reactivar tu cuenta.",true);
       return;
     }
   }catch(profileError){
-    console.error("No se pudo comprobar el estado de la cuenta",profileError);
-    await supabase.auth.signOut();currentUser=null;currentIsAdmin=false;
-    $("appView").classList.add("hidden");$("loginView").classList.remove("hidden");$("logoutBtn").classList.add("hidden");
-    showStatus($("loginStatus"),"No se ha podido comprobar si tu cuenta está activa. El administrador debe aplicar la actualización SQL de GYM PROGRESS y volver a intentarlo.",true);
-    return;
+    // IMPORTANTE: un error al leer el campo is_blocked NO significa que
+    // la cuenta esté bloqueada. No cerrar sesiones válidas por errores de
+    // esquema, permisos o conexión. El bloqueo se aplica solo cuando
+    // Supabase devuelve explícitamente is_blocked === true.
+    console.warn("No se pudo comprobar el estado de bloqueo; se permite continuar para no bloquear cuentas activas:",profileError?.message||profileError);
+    showStatus($("loginStatus"),"Aviso: no se ha podido verificar el estado de bloqueo. Si el administrador te ha bloqueado, vuelve a intentarlo cuando se recupere la conexión.",true);
   }
   await refreshAdminAccess();
   startAccountAccessMonitoring();
@@ -3086,147 +3087,4 @@ function spotifyRenderPlaylists(){
     spotifyEls.playlists.append(button);
   });
 }
-async function spotifyLoadPlaylists(){
-  if(spotifyExpandedLoaded||!spotifyAccessToken)return;
-  spotifyExpandedLoaded=true;
-  spotifyShowLibraryMessage("Cargando tus listas de Spotify…");
-  try{
-    const data=await spotifyApi("/me/playlists?limit=50&offset=0");
-    spotifyPlaylistCache=Array.isArray(data.items)?data.items:[];
-    spotifyRenderPlaylists();
-    spotifyShowLibraryMessage(spotifyPlaylistCache.length?"Selecciona una lista para ver sus canciones.":"Tu cuenta no tiene listas disponibles.");
-    if(spotifyPlaylistCache.length)await spotifyLoadPlaylistTracks(spotifyPlaylistCache[0],true);
-  }catch(error){
-    spotifyExpandedLoaded=false;
-    spotifyShowLibraryMessage(error.message+" Si acabas de añadir permisos, vuelve a autorizar Spotify.",true);
-    if(spotifyEls.reconnect)spotifyEls.reconnect.hidden=false;
-  }
-}
-async function spotifyLoadPlaylistTracks(playlist,reset=false){
-  if(!playlist||spotifyTrackBusy)return;
-  spotifyTrackBusy=true;
-  if(reset){
-    spotifySelectedPlaylistData=playlist;spotifyTrackOffset=0;spotifyTrackTotal=0;
-    spotifyEls.trackList?.replaceChildren();
-    if(spotifyEls.selectedPlaylist)spotifyEls.selectedPlaylist.textContent=playlist.name||"Playlist";
-    if(spotifyEls.trackCount)spotifyEls.trackCount.textContent="";
-    spotifyRenderPlaylists();
-  }
-  spotifyShowLibraryMessage("Cargando canciones…");
-  try{
-    const data=await spotifyApi("/playlists/"+encodeURIComponent(playlist.id)+"/items?limit=50&offset="+spotifyTrackOffset+"&market=ES");
-    const entries=Array.isArray(data.items)?data.items:[];
-    spotifyTrackTotal=Number(data.total)||entries.length;
-    entries.forEach((entry,index)=>{
-      const track=entry.item||entry.track;
-      if(!track||track.type!=="track"||!track.uri)return;
-      const row=document.createElement("button");row.type="button";row.className="spotify-track-row";
-      const image=document.createElement("img");image.alt="";image.src=track.album?.images?.[2]?.url||track.album?.images?.[0]?.url||"";
-      const copy=document.createElement("span");copy.className="spotify-track-copy";
-      const name=document.createElement("span");name.className="spotify-track-name";name.textContent=track.name||"Canción";
-      const artist=document.createElement("span");artist.className="spotify-track-artist";artist.textContent=(track.artists||[]).map(a=>a.name).join(", ");
-      copy.append(name,artist);
-      const playMark=document.createElement("span");playMark.className="spotify-track-play";playMark.textContent="▶";
-      row.append(image,copy,playMark);
-      const absolutePosition=spotifyTrackOffset+index;
-      row.addEventListener("click",()=>spotifyPlayPlaylistTrack(playlist,absolutePosition,track,row));
-      spotifyEls.trackList.append(row);
-    });
-    spotifyTrackOffset+=entries.length;
-    if(spotifyEls.trackCount)spotifyEls.trackCount.textContent=spotifyTrackTotal+" canciones";
-    if(spotifyEls.loadMore)spotifyEls.loadMore.hidden=spotifyTrackOffset>=spotifyTrackTotal||entries.length===0;
-    spotifyShowLibraryMessage(entries.length?"Toca una canción para reproducirla desde aquí.":"Esta lista no contiene canciones reproducibles.");
-  }catch(error){
-    spotifyShowLibraryMessage(error.message,true);
-    if(spotifyEls.reconnect)spotifyEls.reconnect.hidden=false;
-  }finally{spotifyTrackBusy=false;}
-}
-async function spotifyPlayPlaylistTrack(playlist,position,track,row){
-  if(!spotifyDeviceId){spotifyShowLibraryMessage("Conecta primero el reproductor de Spotify.",true);return;}
-  if(!track?.uri){spotifyShowLibraryMessage("Spotify no ha facilitado el identificador de esta canción.",true);return;}
-  try{
-    await spotifyPlayer?.activateElement();
-    // Desactivar aleatorio antes de iniciar la pista elegida. Esperamos brevemente
-    // porque Spotify no garantiza el orden de ejecución entre comandos del reproductor.
-    await spotifyApi("/me/player/shuffle?state=false&device_id="+encodeURIComponent(spotifyDeviceId),"PUT");
-    await new Promise(resolve=>setTimeout(resolve,350));
-    // La URI exacta evita errores de posición al paginar la lista.
-    await spotifyApi("/me/player/play?device_id="+encodeURIComponent(spotifyDeviceId),"PUT",{
-      context_uri:playlist.uri,offset:{uri:track.uri},position_ms:0
-    });
-    spotifyCurrentTrackUri=track.uri;
-    spotifyShowLibraryMessage("Solicitud enviada a Spotify. Comprobando la canción…");
-    let confirmed=false;
-    for(let attempt=0;attempt<4;attempt++){
-      await new Promise(resolve=>setTimeout(resolve,450));
-      try{
-        const state=await spotifyApi("/me/player");
-        const currentUri=state?.item?.uri||state?.item?.linked_from?.uri;
-        if(currentUri===track.uri){
-          confirmed=true;
-          spotifyEls.trackList?.querySelectorAll(".spotify-track-row").forEach(item=>item.classList.remove("playing"));
-          row?.classList.add("playing");
-          await spotifyRefreshState();
-          spotifyShowLibraryMessage("Reproduciendo: "+(track.name||"canción"));
-          break;
-        }
-      }catch(checkError){}
-    }
-    if(!confirmed){
-      await spotifyRefreshState();
-      spotifyShowLibraryMessage("Spotify ha recibido la selección, pero no he podido confirmar que esté sonando esa canción. Comprueba el dispositivo activo en Spotify.",true);
-    }
-  }catch(error){spotifyShowLibraryMessage(error.message||"No se ha podido reproducir esa canción.",true);}
-}
-spotifyEls.main?.addEventListener("click",()=>spotifySetExpanded(!spotifyEls.panel.classList.contains("is-expanded")));
-spotifyEls.main?.addEventListener("keydown",event=>{
-  if(event.key==="Enter"||event.key===" "){event.preventDefault();spotifySetExpanded(!spotifyEls.panel.classList.contains("is-expanded"));}
-});
-spotifyEls.loadMore?.addEventListener("click",()=>spotifySelectedPlaylistData&&spotifyLoadPlaylistTracks(spotifySelectedPlaylistData,false));
-spotifyEls.reconnect?.addEventListener("click",()=>spotifyAuthorize());
-
-spotifyEls.connect?.addEventListener("click",()=>{
-  if(spotifyAccessToken)spotifyConnectPlayer();
-  else spotifyAuthorize();
-});
-spotifyEls.play?.addEventListener("click",()=>spotifyControl("toggle"));
-spotifyEls.next?.addEventListener("click",()=>spotifyControl("next"));
-spotifyEls.previous?.addEventListener("click",()=>spotifyControl("previous"));
-spotifySetConnected(false);
-let spotifyInitializedForApp=false;
-async function initializeSpotifyForApp(){
-  if(spotifyInitializedForApp)return;
-  spotifyInitializedForApp=true;
-  spotifyLoadTokens();
-  await spotifyHandleCallback();
-  if(spotifyAccessToken&&!spotifyPlayer){
-    try{await spotifyLoadSdk();await spotifyConnectPlayer();}
-    catch(error){spotifyMessage(error.message||"No se ha podido iniciar Spotify.",true);}
-  }
-}
-
-// Panel fijo al viewport y ocultable/recuperable mediante gestos verticales.
-(()=>{
-  const panel=document.getElementById("spotifyMini");
-  const handle=document.getElementById("spotifyMiniHandle");
-  if(!panel||!handle)return;
-  let startY=null;
-  const hide=()=>{panel.classList.add("is-hidden");handle.classList.add("is-visible");handle.setAttribute("aria-expanded","false");};
-  const show=()=>{panel.classList.remove("is-hidden");handle.classList.remove("is-visible");handle.setAttribute("aria-expanded","true");};
-  panel.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
-  panel.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta>45&&!panel.classList.contains("is-expanded"))hide();startY=null;},{passive:true});
-  handle.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
-  handle.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta < -20)show();startY=null;},{passive:true});
-  handle.addEventListener("click",show);
-  let edgeStart=null;
-  document.addEventListener("touchstart",e=>{if(!panel.classList.contains("is-hidden")||e.touches.length!==1)return;const y=e.touches[0].clientY;if(y>window.innerHeight-70)edgeStart=y;},{passive:true});
-  document.addEventListener("touchend",e=>{if(edgeStart===null)return;const delta=e.changedTouches[0].clientY-edgeStart;if(delta < -35)show();edgeStart=null;},{passive:true});
-})();
-(async function init(){
-  $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
-  const {data:{session}}=await supabase.auth.getSession();
-  if(session?.user)await enterApp(session.user);
-})();
-</script>
-</body>
-</html>
+async function spotifyLoadPlaylists
