@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1422">
-<meta name="application-version" content="home-v24-admin-account-toggle">
+<meta name="application-version" content="home-v23-signup-admin-users">
 <meta name="description" content="GYM PROGRESS: rutina diaria y registro privado de cargas.">
 <link rel="manifest" href="./manifest.webmanifest?v=10">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=11">
@@ -820,19 +820,6 @@ body.is-jordi-theme .spotify-mini-handle span{background:#e0b85e!important}
 .users-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0}
 .users-refresh{border:1px solid var(--border);border-radius:9px;padding:9px 12px;background:#1b3048;color:var(--soft);font-size:10px;font-weight:850}
 .users-list{display:grid;gap:8px}
-
-.user-row{cursor:default}
-.user-row-main{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;flex:1}
-.user-row-info{min-width:0;flex:1}
-.user-row-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.user-action-btn{border:1px solid var(--border);border-radius:8px;padding:8px 9px;background:#1b3048;color:var(--soft);font-size:9px;font-weight:900;white-space:nowrap}
-.user-action-btn.danger{border-color:rgba(255,153,153,.4);background:rgba(255,90,90,.1);color:#ffc0c0}
-.user-action-btn.activate{border-color:rgba(85,223,189,.4);background:rgba(85,223,189,.1);color:#baffed}
-.user-state{display:inline-block;margin-top:5px;padding:4px 6px;border-radius:6px;font-size:8px;font-weight:900;letter-spacing:.4px}
-.user-state.active{background:rgba(85,223,189,.1);color:#aaf3df}
-.user-state.inactive{background:rgba(255,153,153,.12);color:#ffc0c0}
-@media(max-width:430px){.user-row{align-items:flex-start;flex-direction:column}.user-row-actions{width:100%;justify-content:flex-start}.user-action-btn{flex:1}}
-
 .user-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--border);border-radius:11px;background:#0c1928}
 .user-row strong{display:block;font-size:12px;overflow-wrap:anywhere}
 .user-row small{display:block;margin-top:4px;color:var(--muted);font-size:9px}
@@ -2420,89 +2407,6 @@ $("signupBtn").addEventListener("click",async()=>{
   finally{button.disabled=false;button.textContent="CREAR MI CUENTA";}
 });
 
-let accountAccessCheckBusy=false;
-let accountAccessTimer=null;
-
-async function getAccountAccessStatus(){
-  const {data:{session}}=await supabase.auth.getSession();
-  if(!session?.access_token)return {active:false};
-  const {data,error}=await supabase.functions.invoke("account-admin",{body:{action:"status"}});
-  if(error)throw error;
-  return {active:data?.active===true};
-}
-async function forceLocalSignOut(){
-  if(accountAccessTimer){clearInterval(accountAccessTimer);accountAccessTimer=null;}
-  currentUser=null;
-  currentIsAdmin=false;
-  adminPreviewMode=false;
-  adminPreviewUser=null;
-  try{await supabase.auth.signOut({scope:"local"});}
-  catch(error){console.warn("No se pudo cerrar la sesión local:",error);}
-  $("usersNav").classList.add("hidden");
-  $("usersSection").classList.add("hidden");
-  $("adminUserDetail").classList.add("hidden");
-  $("adminAppPreview").classList.add("hidden");
-  $("adminPreviewBanner").classList.remove("active");
-  $("logoutBtn").classList.add("hidden");
-  $("appView").classList.add("hidden");
-  $("loginView").classList.remove("hidden");
-  showStatus($("loginStatus"),"Esta cuenta ha sido desactivada por el administrador. Ya no puedes utilizar GYM PROGRESS.",true);
-  document.body.classList.remove("spotify-visible","is-isabela-theme","is-jordi-theme","admin-preview-mode");
-}
-async function enforceCurrentAccountAccess(){
-  if(accountAccessCheckBusy||!currentUser||adminPreviewMode)return;
-  accountAccessCheckBusy=true;
-  try{
-    const status=await getAccountAccessStatus();
-    if(!status.active)await forceLocalSignOut();
-  }catch(error){
-    // Un fallo temporal de red no cierra la sesión. Las políticas RLS de Supabase
-    // deben impedir las operaciones de una cuenta que ya esté desactivada.
-    console.warn("No se pudo comprobar el estado de la cuenta:",error.message||error);
-  }finally{accountAccessCheckBusy=false;}
-}
-function startAccountAccessMonitor(){
-  if(accountAccessTimer)clearInterval(accountAccessTimer);
-  accountAccessTimer=setInterval(enforceCurrentAccountAccess,10000);
-}
-async function setUserAccountState(user,active,button){
-  if(!currentUser||!currentIsAdmin||!user?.id)return;
-  if(user.id===currentUser.id){
-    showStatus($("usersStatus"),"No puedes desactivar la cuenta de administrador con la que has iniciado sesión.",true);
-    return;
-  }
-  const displayName=user.full_name||user.email||"este usuario";
-  const confirmed=window.confirm(active
-    ?`¿Quieres volver a ACTIVAR la cuenta de ${displayName}?`
-    :`¿Quieres DESACTIVAR la cuenta de ${displayName}? Se cerrará su acceso y conservará sus datos.`);
-  if(!confirmed)return;
-  const original=button.textContent;
-  button.disabled=true;
-  button.textContent=active?"ACTIVANDO…":"DESACTIVANDO…";
-  hideStatus($("usersStatus"));
-  try{
-    const {data,error}=await supabase.functions.invoke("account-admin",{
-      body:{action:active?"activate":"deactivate",user_id:user.id}
-    });
-    if(error)throw error;
-    if(!data?.success)throw new Error(data?.error||"Supabase no ha confirmado el cambio.");
-    showStatus($("usersStatus"),active
-      ?"Cuenta activada. El usuario ya puede volver a iniciar sesión."
-      :"Cuenta desactivada. Se ha bloqueado el acceso y se conservarán sus datos.");
-    await loadUsers();
-    if(!active&&adminPreviewUser?.id===user.id){
-      $("adminUserDetail").classList.add("hidden");
-      $("adminAppPreview").classList.add("hidden");
-      adminPreviewUser=null;
-    }
-  }catch(error){
-    console.error("No se pudo cambiar el estado de la cuenta:",error);
-    showStatus($("usersStatus"),error.message||"No se ha podido cambiar el estado de la cuenta.",true);
-    button.disabled=false;
-    button.textContent=original;
-  }
-}
-
 async function refreshAdminAccess(){
   currentIsAdmin=false;
   $("usersNav").classList.add("hidden");
@@ -2521,46 +2425,25 @@ async function loadUsers(){
   button.disabled=true;button.textContent="CARGANDO…";hideStatus(status);
   list.innerHTML='<div class="empty">Cargando usuarios…</div>';
   try{
-    const {data,error}=await supabase.from("profiles")
-      .select("id,email,full_name,created_at,is_active")
-      .order("created_at",{ascending:false});
+    const {data,error}=await supabase.from("profiles").select("id,email,full_name,created_at").order("created_at",{ascending:false});
     if(error)throw error;
     const users=data||[];
     $("usersCount").textContent=`${users.length} ${users.length===1?"usuario registrado":"usuarios registrados"}`;
     if(!users.length){list.innerHTML='<div class="empty">Todavía no hay cuentas registradas.</div>';return;}
     list.replaceChildren(...users.map(user=>{
-      const row=document.createElement("div");row.className="user-row";
-      const info=document.createElement("div");info.className="user-row-info";
+      const row=document.createElement("button");row.type="button";row.className="user-row";row.style.width="100%";row.style.textAlign="left";row.setAttribute("aria-label",`Ver ficha de ${user.full_name||user.email||"usuario"}`);
+      const info=document.createElement("div");
       const name=document.createElement("strong");name.textContent=user.full_name||"Sin nombre";
       const email=document.createElement("small");email.textContent=user.email||"Correo no disponible";
-      const date=document.createElement("small");
-      date.textContent=user.created_at?`Registro: ${new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at))}`:"";
-      const state=document.createElement("span");
-      const isActive=user.is_active!==false;
-      state.className=`user-state ${isActive?"active":"inactive"}`;
-      state.textContent=isActive?"CUENTA ACTIVA":"CUENTA DESACTIVADA";
-      info.append(name,email,date,state);
-      const actions=document.createElement("div");actions.className="user-row-actions";
-      const details=document.createElement("button");details.type="button";details.className="user-action-btn";details.textContent="VER FICHA";
-      details.addEventListener("click",()=>loadAdminUserDetail(user));
-      actions.append(details);
-      if(user.id!==currentUser.id){
-        const toggle=document.createElement("button");toggle.type="button";
-        toggle.className=`user-action-btn ${isActive?"danger":"activate"}`;
-        toggle.textContent=isActive?"DESACTIVAR":"ACTIVAR";
-        toggle.addEventListener("click",()=>setUserAccountState(user,!isActive,toggle));
-        actions.append(toggle);
-      }else{
-        const role=document.createElement("span");role.className="user-role";role.textContent="TU CUENTA ADMIN";actions.append(role);
-      }
-      row.append(info,actions);
-      return row;
+      const date=document.createElement("small");date.textContent=user.created_at?`Registro: ${new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at))}`:"";
+      info.append(name,email,date);
+      const role=document.createElement("span");role.className="user-role";role.textContent=(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"VER FICHA";
+      row.append(info,role);row.addEventListener("click",()=>loadAdminUserDetail(user));return row;
     }));
-  }catch(error){
-    list.innerHTML='<div class="empty">No se ha podido cargar la lista de usuarios.</div>';
-    showStatus(status,error.message||"Comprueba las políticas y permisos de Supabase.",true);
-  }finally{button.disabled=false;button.textContent="ACTUALIZAR";}
+  }catch(error){list.innerHTML='<div class="empty">No se ha podido cargar la lista de usuarios.</div>';showStatus(status,error.message||"Comprueba las políticas y permisos de Supabase.",true);}
+  finally{button.disabled=false;button.textContent="ACTUALIZAR";}
 }
+
 function adminStat(label,value){
   const card=document.createElement("div");card.className="admin-detail-stat";
   const caption=document.createElement("span");caption.textContent=label;
@@ -2733,17 +2616,6 @@ function renderAdminAppPreview(){
 
 async function enterApp(user){
   currentUser=user;
-  try{
-    const accountStatus=await getAccountAccessStatus();
-    if(!accountStatus.active){await forceLocalSignOut();return;}
-  }catch(error){
-    console.error("No se pudo comprobar el estado de la cuenta:",error);
-    currentUser=null;
-    await supabase.auth.signOut({scope:"local"});
-    showStatus($("loginStatus"),"No se ha podido verificar tu cuenta. Comprueba la conexión e inténtalo de nuevo.",true);
-    return;
-  }
-  startAccountAccessMonitor();
   await refreshAdminAccess();
   if(isIsabelaAccount() && selectedDay>2)selectedDay=1;
   document.body.classList.add("spotify-visible");
@@ -2789,7 +2661,6 @@ $("loginForm").addEventListener("submit",async event=>{
 });
 
 $("logoutBtn").addEventListener("click",async()=>{
-  if(accountAccessTimer){clearInterval(accountAccessTimer);accountAccessTimer=null;}
   await supabase.auth.signOut();
   currentUser=null;
   currentIsAdmin=false;
@@ -2815,10 +2686,6 @@ function updateConnectionStatus(){
   el.textContent=navigator.onLine?"● Con conexión · sincronización disponible":"● Sin conexión · modo local activo";
   el.classList.toggle("online",navigator.onLine);
 }
-document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="visible")enforceCurrentAccountAccess();
-});
-
 async function syncOfflineQueue(){
   if(!navigator.onLine||!currentUser)return;
   const queue=JSON.parse(localStorage.getItem(queueKey(currentUser.id))||"[]");
@@ -3257,9 +3124,3 @@ async function initializeSpotifyForApp(){
 })();
 (async function init(){
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
-  const {data:{session}}=await supabase.auth.getSession();
-  if(session?.user)await enterApp(session.user);
-})();
-</script>
-</body>
-</html>
