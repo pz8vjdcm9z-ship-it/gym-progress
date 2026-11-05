@@ -2513,6 +2513,14 @@ async function spotifyConnectPlayer(){
       try{
         await spotifyApi("/me/player","PUT",{device_ids:[device_id],play:false});
       }catch(e){
+        // Corrección exclusiva de Jordi: no declarar conectado si Spotify
+        // no confirma que ha transferido la reproducción a este dispositivo.
+        if(isJordiAccount()){
+          spotifyDeviceId=null;
+          spotifySetConnected(false);
+          spotifyMessage("Spotify ha iniciado el reproductor, pero no ha podido activar este dispositivo. Abre Spotify, selecciona GYM PROGRESS en Dispositivos y vuelve a intentarlo. Detalle: "+(e.message||"transferencia no completada"),true);
+          return;
+        }
         spotifyMessage("Reproductor conectado. Selecciónalo en Spotify si no aparece activo.");
       }
       await spotifyRefreshState();
