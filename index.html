@@ -2733,4 +2733,57 @@ async function spotifyPlayPlaylistTrack(playlist,position,track,row){
       await spotifyRefreshState();
       spotifyShowLibraryMessage("Spotify ha recibido la selección, pero no he podido confirmar que esté sonando esa canción. Comprueba el dispositivo activo en Spotify.",true);
     }
-  }catch(error){spotifyShowLibraryMessage(error.mes
+  }catch(error){spotifyShowLibraryMessage(error.message||"No se ha podido reproducir esa canción.",true);}
+}
+spotifyEls.main?.addEventListener("click",()=>spotifySetExpanded(!spotifyEls.panel.classList.contains("is-expanded")));
+spotifyEls.main?.addEventListener("keydown",event=>{
+  if(event.key==="Enter"||event.key===" "){event.preventDefault();spotifySetExpanded(!spotifyEls.panel.classList.contains("is-expanded"));}
+});
+spotifyEls.loadMore?.addEventListener("click",()=>spotifySelectedPlaylistData&&spotifyLoadPlaylistTracks(spotifySelectedPlaylistData,false));
+spotifyEls.reconnect?.addEventListener("click",()=>spotifyAuthorize());
+
+spotifyEls.connect?.addEventListener("click",()=>{
+  if(spotifyAccessToken)spotifyConnectPlayer();
+  else spotifyAuthorize();
+});
+spotifyEls.play?.addEventListener("click",()=>spotifyControl("toggle"));
+spotifyEls.next?.addEventListener("click",()=>spotifyControl("next"));
+spotifyEls.previous?.addEventListener("click",()=>spotifyControl("previous"));
+spotifySetConnected(false);
+let spotifyInitializedForApp=false;
+async function initializeSpotifyForApp(){
+  if(spotifyInitializedForApp)return;
+  spotifyInitializedForApp=true;
+  spotifyLoadTokens();
+  await spotifyHandleCallback();
+  if(spotifyAccessToken&&!spotifyPlayer){
+    try{await spotifyLoadSdk();await spotifyConnectPlayer();}
+    catch(error){spotifyMessage(error.message||"No se ha podido iniciar Spotify.",true);}
+  }
+}
+
+// Panel fijo al viewport y ocultable/recuperable mediante gestos verticales.
+(()=>{
+  const panel=document.getElementById("spotifyMini");
+  const handle=document.getElementById("spotifyMiniHandle");
+  if(!panel||!handle)return;
+  let startY=null;
+  const hide=()=>{panel.classList.add("is-hidden");handle.classList.add("is-visible");handle.setAttribute("aria-expanded","false");};
+  const show=()=>{panel.classList.remove("is-hidden");handle.classList.remove("is-visible");handle.setAttribute("aria-expanded","true");};
+  panel.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
+  panel.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta>45&&!panel.classList.contains("is-expanded"))hide();startY=null;},{passive:true});
+  handle.addEventListener("touchstart",e=>{if(e.touches.length===1)startY=e.touches[0].clientY;},{passive:true});
+  handle.addEventListener("touchend",e=>{if(startY===null)return;const delta=e.changedTouches[0].clientY-startY;if(delta < -20)show();startY=null;},{passive:true});
+  handle.addEventListener("click",show);
+  let edgeStart=null;
+  document.addEventListener("touchstart",e=>{if(!panel.classList.contains("is-hidden")||e.touches.length!==1)return;const y=e.touches[0].clientY;if(y>window.innerHeight-70)edgeStart=y;},{passive:true});
+  document.addEventListener("touchend",e=>{if(edgeStart===null)return;const delta=e.changedTouches[0].clientY-edgeStart;if(delta < -35)show();edgeStart=null;},{passive:true});
+})();
+(async function init(){
+  $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
+  const {data:{session}}=await supabase.auth.getSession();
+  if(session?.user)await enterApp(session.user);
+})();
+</script>
+</body>
+</html>
