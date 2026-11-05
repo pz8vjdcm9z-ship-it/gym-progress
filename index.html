@@ -884,6 +884,38 @@ body.admin-preview-mode #saveWeightsBtn{display:none}
 .user-block-btn:not(:disabled):active{transform:scale(.98)}
 @media(max-width:420px){.user-management-row{gap:7px}.user-management-row .user-row{padding:11px;min-height:88px}.user-block-btn{min-width:94px;padding:8px 6px;font-size:8px}}
 
+
+/* Directorio USERS: diseño limpio, sin métricas de entrenamiento */
+.users-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 0 16px}
+.users-eyebrow{font-size:9px;font-weight:900;letter-spacing:.16em;color:var(--accent)}
+.users-admin-mark{padding:7px 10px;border:1px solid rgba(117,232,204,.28);border-radius:9px;color:#9cebd9;font-size:9px;font-weight:900;letter-spacing:.1em}
+.users-panel{padding:16px;border:1px solid var(--border);border-radius:18px;background:linear-gradient(145deg,#152438,#101c2c)}
+.users-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.users-list{display:grid;gap:10px}
+.user-management-row{display:flex;gap:10px;align-items:stretch;margin:0}
+.user-management-row .user-row{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(145deg,rgba(24,43,64,.96),rgba(12,25,40,.98));text-align:left;cursor:pointer;min-height:86px}
+.user-row strong{display:block;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+.user-row small{display:block;margin-top:4px;color:var(--muted);font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+.user-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.user-row-meta{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex:0 0 auto}
+.user-role{padding:5px 8px;border:1px solid rgba(117,232,204,.25);border-radius:7px;color:#aaf3df;font-size:8px;font-weight:900;letter-spacing:.08em}
+.user-state{display:inline-flex;margin-top:8px;padding:5px 8px;border-radius:7px;background:rgba(85,223,189,.12);color:#8df0d6;font-size:9px;font-weight:900;letter-spacing:.05em}
+.user-state.blocked{background:rgba(255,95,95,.13);color:#ff9b9b}
+.user-block-btn{flex:0 0 auto;min-width:105px;border:1px solid rgba(255,120,120,.35);border-radius:11px;padding:10px 9px;background:rgba(255,95,95,.09);color:#ffaaaa;font-size:9px;font-weight:900;letter-spacing:.04em}
+.user-block-btn.is-blocked{border-color:rgba(85,223,189,.4);background:rgba(85,223,189,.10);color:#9af0d9}
+.user-block-btn:disabled{opacity:.45}
+.admin-user-detail{margin-top:16px;padding:16px;border:1px solid rgba(117,232,204,.25);border-radius:16px;background:rgba(5,17,29,.48)}
+.admin-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.admin-detail-kicker{font-size:9px;font-weight:900;letter-spacing:1.2px;color:#75e8cc}
+.admin-detail-head h3{margin:5px 0;font-size:20px}
+.admin-detail-head p{margin:0;color:var(--muted);font-size:11px;overflow-wrap:anywhere}
+.admin-detail-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}
+.admin-detail-stat{padding:12px;border:1px solid var(--border);border-radius:11px;background:rgba(255,255,255,.035)}
+.admin-detail-stat span{display:block;color:var(--muted);font-size:9px}
+.admin-detail-stat strong{display:block;margin-top:4px;font-size:14px}
+body.is-jordi-theme .users-panel,body.is-jordi-theme .user-management-row .user-row{background:#17191d!important;border-color:rgba(214,173,85,.25)!important}
+@media(max-width:420px){.users-panel{padding:12px}.user-management-row{gap:7px}.user-management-row .user-row{padding:11px;min-height:80px}.user-block-btn{min-width:84px;padding:8px 6px;font-size:8px}.users-heading{align-items:flex-start}}
+
 </style>
 </head>
 <body>
@@ -1053,28 +1085,30 @@ body.admin-preview-mode #saveWeightsBtn{display:none}
       </div>
     </section>
     <section id="usersSection" class="hidden" aria-label="Administración de usuarios">
-      <h2 class="library-title">USERS</h2>
-      <p class="library-intro">Cuentas registradas en GYM PROGRESS. Este apartado solo está disponible para el administrador.</p>
+      <div class="users-heading">
+        <div><span class="users-eyebrow">PANEL DE ADMINISTRACIÓN</span><h2 class="library-title">USERS</h2><p class="library-intro">Gestiona las cuentas y accede a la pantalla de cada usuario.</p></div>
+        <span class="users-admin-mark">ADMIN</span>
+      </div>
       <div class="users-panel">
         <div class="users-toolbar"><strong id="usersCount">Usuarios registrados</strong><button type="button" class="users-refresh" id="usersRefresh">ACTUALIZAR</button></div>
         <div id="usersList" class="users-list"><div class="empty">Cargando usuarios…</div></div>
         <div id="usersStatus" class="status hidden" role="status"></div>
         <section id="adminUserDetail" class="admin-user-detail hidden" aria-live="polite">
-          <div class="admin-detail-head"><div><span class="admin-detail-kicker">FICHA DE USUARIO</span><h3 id="adminDetailName">Usuario</h3><p id="adminDetailEmail"></p></div><button type="button" class="users-refresh" id="adminDetailClose">CERRAR</button></div>
+          <div class="admin-detail-head"><div><span class="admin-detail-kicker">PERFIL DE USUARIO</span><h3 id="adminDetailName">Usuario</h3><p id="adminDetailEmail"></p></div><button type="button" class="users-refresh" id="adminDetailClose">CERRAR</button></div>
           <div class="admin-detail-stats" id="adminDetailStats"></div>
-          <button type="button" class="primary-btn" id="adminOpenPreview" style="margin:12px 0 2px">ENTRAR EN SU APLICACIÓN COMPLETA</button>
+          <button type="button" class="primary-btn" id="adminOpenPreview" style="margin:12px 0 2px">ABRIR SU PANTALLA</button>
           <section id="adminAppPreview" class="admin-preview hidden" aria-label="Vista de la aplicación del usuario">
-            <div class="admin-preview-top"><div><h3 class="admin-preview-title">GYM PROGRESS · VISTA DEL USUARIO</h3><p class="admin-preview-sub" id="adminPreviewIdentity"></p></div><button type="button" class="users-refresh" id="adminPreviewClose">VOLVER A LA FICHA</button></div>
-            <p class="admin-preview-notice">Vista administrativa de solo lectura. No cambia tu sesión ni permite guardar entrenamientos como si fueras este usuario.</p>
+            <div class="admin-preview-top"><div><h3 class="admin-preview-title">GYM PROGRESS · PANTALLA DEL USUARIO</h3><p class="admin-preview-sub" id="adminPreviewIdentity"></p></div><button type="button" class="users-refresh" id="adminPreviewClose">VOLVER AL PERFIL</button></div>
+            <p class="admin-preview-notice">Vista de consulta. Los datos se muestran desde la cuenta seleccionada.</p>
             <div class="admin-preview-days" id="adminPreviewDays"></div>
             <div id="adminPreviewRoutine" class="admin-preview-exercises"></div>
-            <h4>Últimos pesos guardados</h4><div id="adminPreviewHistory" class="admin-detail-weights"></div>
-            <h4>Datos personales guardados en la nube</h4><div id="adminPreviewCloudData" class="admin-detail-weights"></div>
+            <div id="adminPreviewCloudData" class="admin-detail-weights"></div>
           </section>
-          <h4>Historial de pesos</h4><div id="adminDetailWeights" class="admin-detail-weights"><div class="empty">Selecciona un usuario.</div></div>
-          <h4>Datos de la aplicación</h4><div id="adminDetailAppData" class="admin-detail-weights"><div class="empty">Selecciona un usuario.</div></div>
+          <div id="adminDetailAppData" class="admin-detail-weights"><div class="empty">Selecciona un usuario.</div></div>
           <div id="adminDetailStatus" class="status hidden" role="status"></div>
         </section>
+      </div>
+    </section>
       </div>
     </section>
     <section id="streakSection" class="streak-panel hidden" aria-label="Calendario de entrenamientos">
@@ -2072,22 +2106,22 @@ $("streakPrevMonth").addEventListener("click",()=>changeStreakMonth(-1));
 $("streakNextMonth").addEventListener("click",()=>changeStreakMonth(1));
 $("dashboardLibraryBtn").addEventListener("click",showLibrary);
 
-// Navegación horizontal entre las tres pestañas principales.
+// Navegación horizontal entre pantallas principales, incluyendo USERS para el administrador.
 // El gesto funciona también desde el detalle de cualquier grupo muscular
 // y desde las categorías Máquinas, Mancuernas y Suelo. Un recorrido largo
 // evita cambios accidentales y permite llegar al Calendario con claridad.
 let mainTabTouchStart=null;
 function currentMainTab(){
   if($("appView").classList.contains("hidden"))return null;
+  if(!$("usersSection").classList.contains("hidden")&&currentIsAdmin)return "users";
   if(!$("librarySection").classList.contains("hidden"))return "library";
   if(!$("streakSection").classList.contains("hidden"))return "streak";
   if(!$("workoutSection").classList.contains("hidden"))return "workout";
   return null;
 }
 function navigateMainTabBySwipe(direction){
-  // El gesto horizontal cambia de pestaña principal incluso si hay un grupo abierto.
-  // showLibrary() restablece la portada cuando se vuelve a Biblioteca.
-  const order=["workout","library","streak"];
+  // El recorrido horizontal incluye USERS como última pantalla, solo para admin.
+  const order=currentIsAdmin?["workout","library","streak","users"]:["workout","library","streak"];
   const current=currentMainTab();
   const index=order.indexOf(current);
   if(index<0)return;
@@ -2096,7 +2130,7 @@ function navigateMainTabBySwipe(direction){
   const tab=order[next];
   if(tab==="workout")showWorkout();
   else if(tab==="library")showLibrary();
-  else setMainTab("streak");
+  else setMainTab(tab);
 }
 document.addEventListener("touchstart",event=>{
   if(!event.touches||event.touches.length!==1||!currentMainTab())return;
@@ -2525,38 +2559,25 @@ function adminStat(label,value){
 function adminEmpty(container,message){container.replaceChildren();const el=document.createElement("div");el.className="empty";el.textContent=message;container.append(el);}
 async function loadAdminUserDetail(user){
   if(!currentUser||!currentIsAdmin)return;
-  const panel=$("adminUserDetail"),weights=$("adminDetailWeights"),appData=$("adminDetailAppData"),status=$("adminDetailStatus");
+  const panel=$("adminUserDetail"),appData=$("adminDetailAppData"),status=$("adminDetailStatus");
   adminPreviewUser=user;adminPreviewRecords=[];adminPreviewAppData=null;adminPreviewDay=1;
   $("adminAppPreview").classList.add("hidden");
   $("adminOpenPreview").disabled=false;
   panel.classList.remove("hidden");hideStatus(status);$("adminDetailName").textContent=user.full_name||"Sin nombre";$("adminDetailEmail").textContent=user.email||"Correo no disponible";
   $("adminDetailStats").replaceChildren(adminStat("CUENTA",(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"USUARIO"),adminStat("REGISTRO",user.created_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at)):"—"));
-  adminEmpty(weights,"Cargando historial de pesos…");adminEmpty(appData,"Consultando datos guardados…");
+  adminPreviewRecords=[];
+  adminEmpty(appData,"Consultando la información de la cuenta…");
   panel.scrollIntoView({behavior:"smooth",block:"start"});
   try{
-    const [weightResult,appResult]=await Promise.all([
-      supabase.from("workout_weights").select("exercise_id,exercise_name,performed_at,weight,sets,reps").eq("user_id",user.id).order("performed_at",{ascending:false}).limit(100),
-      supabase.from("gym_user_app_data").select("app_data,updated_at").eq("user_id",user.id).maybeSingle()
-    ]);
-    if(weightResult.error)throw weightResult.error;
+    const appResult=await supabase.from("gym_user_app_data").select("app_data,updated_at").eq("user_id",user.id).maybeSingle();
     if(appResult.error && appResult.error.code!=="42P01")throw appResult.error;
-    const records=weightResult.data||[];
-    adminPreviewRecords=records;
     adminPreviewAppData=appResult.data?.app_data||null;
-    $("adminDetailStats").append(adminStat("REGISTROS DE PESO",records.length));
-    if(!records.length)adminEmpty(weights,"Este usuario todavía no tiene pesos guardados en Supabase.");
-    else weights.replaceChildren(...records.map(record=>{
-      const row=document.createElement("div");row.className="admin-weight-row";
-      const name=document.createElement("strong");name.textContent=record.exercise_name||"Ejercicio";
-      const detail=document.createElement("span");const date=record.performed_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(record.performed_at)):"Fecha no disponible";detail.textContent=`${record.weight} kg · ${record.sets||3}×${record.reps||12} · ${date}`;
-      row.append(name,detail);return row;
-    }));
     const saved=appResult.data;
     if(saved&&saved.app_data&&Object.keys(saved.app_data).length){
       const pre=document.createElement("pre");pre.style.cssText="white-space:pre-wrap;overflow-wrap:anywhere;font-size:10px;color:var(--soft);padding:10px;border:1px solid var(--border);border-radius:9px;max-height:260px;overflow:auto";pre.textContent=JSON.stringify(saved.app_data,null,2);appData.replaceChildren(pre);
       if(saved.updated_at){const note=document.createElement("small");note.textContent=`Actualizado: ${new Intl.DateTimeFormat("es-ES",{dateStyle:"medium",timeStyle:"short"}).format(new Date(saved.updated_at))}`;appData.append(note);}
-    }else adminEmpty(appData,"No hay un documento de datos de aplicación guardado para esta cuenta. Los pesos sí se consultan en el historial anterior.");
-  }catch(error){adminEmpty(weights,"No se ha podido cargar el historial.");adminEmpty(appData,"No se han podido consultar los datos.");showStatus(status,error.message||"Comprueba las políticas administrativas de Supabase.",true);}
+    }else adminEmpty(appData,"Esta cuenta todavía no tiene datos de aplicación guardados en la nube.");
+  }catch(error){adminEmpty(appData,"No se han podido consultar los datos.");showStatus(status,error.message||"Comprueba las políticas administrativas de Supabase.",true);}
 }
 $("adminDetailClose").addEventListener("click",()=>$("adminUserDetail").classList.add("hidden"));
 $("adminOpenPreview").addEventListener("click",()=>openAdminUserApp());
@@ -2665,24 +2686,12 @@ function renderAdminAppPreview(){
     const details=document.createElement("p");details.textContent=exercise.instruction||"";
     const meta=document.createElement("div");meta.className="admin-preview-meta";
     const prescription=document.createElement("span");prescription.textContent=`${exercise.sets||3} series · ${exercise.reps||12} ${exercise.unit||"repeticiones"}`;
-    const saved=latest.get(exercise.id);
-    const weight=document.createElement("span");weight.textContent=saved?`Último peso: ${saved.weight} kg`:"Sin peso guardado";
-    meta.append(prescription,weight);card.append(name,details,meta);return card;
-  }));
-  const history=$("adminPreviewHistory");
-  if(!adminPreviewRecords.length)adminEmpty(history,"Todavía no hay registros de peso guardados para esta cuenta.");
-  else history.replaceChildren(...adminPreviewRecords.slice(0,20).map(record=>{
-    const row=document.createElement("div");row.className="admin-weight-row";
-    const name=document.createElement("strong");name.textContent=record.exercise_name||"Ejercicio";
-    const value=document.createElement("span");
-    const date=record.performed_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(record.performed_at)):"Fecha no disponible";
-    value.textContent=`${record.weight} kg · ${record.sets||3}×${record.reps||12} · ${date}`;
-    row.append(name,value);return row;
+    meta.append(prescription);card.append(name,details,meta);return card;
   }));
   const cloud=$("adminPreviewCloudData");
   if(adminPreviewAppData&&Object.keys(adminPreviewAppData).length){
     const pre=document.createElement("pre");pre.style.cssText="white-space:pre-wrap;overflow-wrap:anywhere;font-size:10px;color:var(--soft);padding:10px;border:1px solid var(--border);border-radius:9px;max-height:220px;overflow:auto";pre.textContent=JSON.stringify(adminPreviewAppData,null,2);cloud.replaceChildren(pre);
-  }else adminEmpty(cloud,"Esta cuenta todavía no tiene una copia de sus rutinas/configuración guardada en la nube. Se muestra la rutina definida en GYM PROGRESS y su historial real de pesos.");
+  }else adminEmpty(cloud,"Esta cuenta todavía no tiene una copia de sus rutinas/configuración guardada en la nube.");
 }
 
 
