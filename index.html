@@ -826,6 +826,11 @@ body.is-jordi-theme .spotify-mini-handle span{background:#e0b85e!important}
 .user-role{flex:0 0 auto;padding:5px 7px;border:1px solid rgba(85,223,189,.25);border-radius:7px;color:#aaf3df;font-size:8px;font-weight:900}
 body.is-jordi-theme .users-panel,body.is-jordi-theme .user-row{background:#17191d!important;border-color:rgba(214,173,85,.25)!important}
 body.is-jordi-theme .auth-switch button{color:#e0b85e}
+
+.admin-user-detail{margin-top:16px;padding:14px;border:1px solid rgba(117,232,204,.25);border-radius:15px;background:rgba(5,17,29,.48)}
+.admin-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.admin-detail-kicker{font-size:9px;font-weight:900;letter-spacing:1.2px;color:#75e8cc}.admin-detail-head h3{margin:5px 0;font-size:19px}.admin-detail-head p{margin:0;color:var(--muted);font-size:11px;overflow-wrap:anywhere}
+.admin-detail-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}.admin-detail-stat{padding:11px;border:1px solid var(--border);border-radius:11px;background:rgba(255,255,255,.035)}.admin-detail-stat span{display:block;color:var(--muted);font-size:9px}.admin-detail-stat strong{display:block;margin-top:4px;font-size:18px}
+.admin-user-detail h4{margin:17px 0 8px;font-size:12px}.admin-detail-weights{display:grid;gap:7px}.admin-weight-row{display:flex;justify-content:space-between;gap:10px;padding:9px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.025);font-size:10px}.admin-weight-row span:last-child{text-align:right;color:var(--soft);white-space:nowrap}.user-row{cursor:pointer}.user-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -1000,6 +1005,13 @@ body.is-jordi-theme .auth-switch button{color:#e0b85e}
         <div class="users-toolbar"><strong id="usersCount">Usuarios registrados</strong><button type="button" class="users-refresh" id="usersRefresh">ACTUALIZAR</button></div>
         <div id="usersList" class="users-list"><div class="empty">Cargando usuarios…</div></div>
         <div id="usersStatus" class="status hidden" role="status"></div>
+        <section id="adminUserDetail" class="admin-user-detail hidden" aria-live="polite">
+          <div class="admin-detail-head"><div><span class="admin-detail-kicker">FICHA DE USUARIO</span><h3 id="adminDetailName">Usuario</h3><p id="adminDetailEmail"></p></div><button type="button" class="users-refresh" id="adminDetailClose">CERRAR</button></div>
+          <div class="admin-detail-stats" id="adminDetailStats"></div>
+          <h4>Historial de pesos</h4><div id="adminDetailWeights" class="admin-detail-weights"><div class="empty">Selecciona un usuario.</div></div>
+          <h4>Datos de la aplicación</h4><div id="adminDetailAppData" class="admin-detail-weights"><div class="empty">Selecciona un usuario.</div></div>
+          <div id="adminDetailStatus" class="status hidden" role="status"></div>
+        </section>
       </div>
     </section>
     <section id="streakSection" class="streak-panel hidden" aria-label="Calendario de entrenamientos">
@@ -2371,21 +2383,61 @@ async function loadUsers(){
   try{
     const {data,error}=await supabase.from("profiles").select("id,email,full_name,created_at").order("created_at",{ascending:false});
     if(error)throw error;
-    $("usersCount").textContent=`${data.length} ${data.length===1?"usuario registrado":"usuarios registrados"}`;
-    if(!data.length){list.innerHTML='<div class="empty">Todavía no hay cuentas registradas.</div>';return;}
-    list.replaceChildren(...data.map(user=>{
-      const row=document.createElement("div");row.className="user-row";
+    const users=data||[];
+    $("usersCount").textContent=`${users.length} ${users.length===1?"usuario registrado":"usuarios registrados"}`;
+    if(!users.length){list.innerHTML='<div class="empty">Todavía no hay cuentas registradas.</div>';return;}
+    list.replaceChildren(...users.map(user=>{
+      const row=document.createElement("button");row.type="button";row.className="user-row";row.style.width="100%";row.style.textAlign="left";row.setAttribute("aria-label",`Ver ficha de ${user.full_name||user.email||"usuario"}`);
       const info=document.createElement("div");
       const name=document.createElement("strong");name.textContent=user.full_name||"Sin nombre";
       const email=document.createElement("small");email.textContent=user.email||"Correo no disponible";
       const date=document.createElement("small");date.textContent=user.created_at?`Registro: ${new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at))}`:"";
       info.append(name,email,date);
-      const role=document.createElement("span");role.className="user-role";role.textContent=(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"USUARIO";
-      row.append(info,role);return row;
+      const role=document.createElement("span");role.className="user-role";role.textContent=(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"VER FICHA";
+      row.append(info,role);row.addEventListener("click",()=>loadAdminUserDetail(user));return row;
     }));
   }catch(error){list.innerHTML='<div class="empty">No se ha podido cargar la lista de usuarios.</div>';showStatus(status,error.message||"Comprueba las políticas y permisos de Supabase.",true);}
   finally{button.disabled=false;button.textContent="ACTUALIZAR";}
 }
+
+function adminStat(label,value){
+  const card=document.createElement("div");card.className="admin-detail-stat";
+  const caption=document.createElement("span");caption.textContent=label;
+  const number=document.createElement("strong");number.textContent=String(value);
+  card.append(caption,number);return card;
+}
+function adminEmpty(container,message){container.replaceChildren();const el=document.createElement("div");el.className="empty";el.textContent=message;container.append(el);}
+async function loadAdminUserDetail(user){
+  if(!currentUser||!currentIsAdmin)return;
+  const panel=$("adminUserDetail"),weights=$("adminDetailWeights"),appData=$("adminDetailAppData"),status=$("adminDetailStatus");
+  panel.classList.remove("hidden");hideStatus(status);$("adminDetailName").textContent=user.full_name||"Sin nombre";$("adminDetailEmail").textContent=user.email||"Correo no disponible";
+  $("adminDetailStats").replaceChildren(adminStat("CUENTA",(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"USUARIO"),adminStat("REGISTRO",user.created_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at)):"—"));
+  adminEmpty(weights,"Cargando historial de pesos…");adminEmpty(appData,"Consultando datos guardados…");
+  panel.scrollIntoView({behavior:"smooth",block:"start"});
+  try{
+    const [weightResult,appResult]=await Promise.all([
+      supabase.from("workout_weights").select("exercise_name,performed_at,weight,sets,reps").eq("user_id",user.id).order("performed_at",{ascending:false}).limit(100),
+      supabase.from("gym_user_app_data").select("app_data,updated_at").eq("user_id",user.id).maybeSingle()
+    ]);
+    if(weightResult.error)throw weightResult.error;
+    if(appResult.error && appResult.error.code!=="42P01")throw appResult.error;
+    const records=weightResult.data||[];
+    $("adminDetailStats").append(adminStat("REGISTROS DE PESO",records.length));
+    if(!records.length)adminEmpty(weights,"Este usuario todavía no tiene pesos guardados en Supabase.");
+    else weights.replaceChildren(...records.map(record=>{
+      const row=document.createElement("div");row.className="admin-weight-row";
+      const name=document.createElement("strong");name.textContent=record.exercise_name||"Ejercicio";
+      const detail=document.createElement("span");const date=record.performed_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(record.performed_at)):"Fecha no disponible";detail.textContent=`${record.weight} kg · ${record.sets||3}×${record.reps||12} · ${date}`;
+      row.append(name,detail);return row;
+    }));
+    const saved=appResult.data;
+    if(saved&&saved.app_data&&Object.keys(saved.app_data).length){
+      const pre=document.createElement("pre");pre.style.cssText="white-space:pre-wrap;overflow-wrap:anywhere;font-size:10px;color:var(--soft);padding:10px;border:1px solid var(--border);border-radius:9px;max-height:260px;overflow:auto";pre.textContent=JSON.stringify(saved.app_data,null,2);appData.replaceChildren(pre);
+      if(saved.updated_at){const note=document.createElement("small");note.textContent=`Actualizado: ${new Intl.DateTimeFormat("es-ES",{dateStyle:"medium",timeStyle:"short"}).format(new Date(saved.updated_at))}`;appData.append(note);}
+    }else adminEmpty(appData,"No hay un documento de datos de aplicación guardado para esta cuenta. Los pesos sí se consultan en el historial anterior.");
+  }catch(error){adminEmpty(weights,"No se ha podido cargar el historial.");adminEmpty(appData,"No se han podido consultar los datos.");showStatus(status,error.message||"Comprueba las políticas administrativas de Supabase.",true);}
+}
+$("adminDetailClose").addEventListener("click",()=>$("adminUserDetail").classList.add("hidden"));
 
 async function enterApp(user){
   currentUser=user;
