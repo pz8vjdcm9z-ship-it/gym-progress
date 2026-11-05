@@ -3246,36 +3246,47 @@ async function initializeSpotifyForApp(){
   }
 }
 
-// Spotify: compacto al entrar; deslizar hacia arriba despliega la biblioteca
-// y deslizar hacia abajo vuelve al reproductor compacto.
+// Spotify oculto por defecto. Desliza hacia arriba desde la pestaña inferior
+// para mostrar el reproductor compacto y hacia abajo sobre él para ocultarlo.
 (()=>{
   const panel=document.getElementById("spotifyMini");
   const handle=document.getElementById("spotifyMiniHandle");
   if(!panel||!handle)return;
   let startY=null;
-  const setCompact=()=>{spotifySetExpanded(false);panel.classList.remove("is-hidden");handle.classList.remove("is-visible");handle.setAttribute("aria-expanded","false");};
-  const setOpen=()=>{panel.classList.remove("is-hidden");handle.classList.remove("is-visible");spotifySetExpanded(true);handle.setAttribute("aria-expanded","true");};
-  // Estado inicial explícito: reproductor compacto, nunca biblioteca desplegada.
-  setCompact();
+  const hidePlayer=()=>{
+    spotifySetExpanded(false);
+    panel.classList.add("is-hidden");
+    handle.classList.add("is-visible");
+    handle.setAttribute("aria-expanded","false");
+    handle.setAttribute("aria-label","Mostrar reproductor");
+  };
+  const showPlayer=()=>{
+    panel.classList.remove("is-hidden");
+    handle.classList.remove("is-visible");
+    // Mostrar solo la barra compacta; la biblioteca requiere una acción aparte.
+    spotifySetExpanded(false);
+    handle.setAttribute("aria-expanded","true");
+    handle.setAttribute("aria-label","Reproductor visible");
+  };
+  // Estado inicial correcto: Spotify no ocupa pantalla hasta que el usuario lo muestra.
+  hidePlayer();
   panel.addEventListener("touchstart",e=>{
     if(e.touches.length===1)startY=e.touches[0].clientY;
   },{passive:true});
   panel.addEventListener("touchend",e=>{
     if(startY===null||!e.changedTouches.length)return;
     const delta=e.changedTouches[0].clientY-startY;
-    if(delta < -35)setOpen();
-    else if(delta > 35)setCompact();
+    if(delta>35)hidePlayer();
     startY=null;
   },{passive:true});
-  handle.addEventListener("click",()=>panel.classList.contains("is-expanded")?setCompact():setOpen());
+  handle.addEventListener("click",showPlayer);
   handle.addEventListener("touchstart",e=>{
     if(e.touches.length===1)startY=e.touches[0].clientY;
   },{passive:true});
   handle.addEventListener("touchend",e=>{
     if(startY===null||!e.changedTouches.length)return;
     const delta=e.changedTouches[0].clientY-startY;
-    if(delta < -20)setOpen();
-    else if(delta > 20)setCompact();
+    if(delta < -20)showPlayer();
     startY=null;
   },{passive:true});
 })();
