@@ -831,6 +831,18 @@ body.is-jordi-theme .auth-switch button{color:#e0b85e}
 .admin-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.admin-detail-kicker{font-size:9px;font-weight:900;letter-spacing:1.2px;color:#75e8cc}.admin-detail-head h3{margin:5px 0;font-size:19px}.admin-detail-head p{margin:0;color:var(--muted);font-size:11px;overflow-wrap:anywhere}
 .admin-detail-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}.admin-detail-stat{padding:11px;border:1px solid var(--border);border-radius:11px;background:rgba(255,255,255,.035)}.admin-detail-stat span{display:block;color:var(--muted);font-size:9px}.admin-detail-stat strong{display:block;margin-top:4px;font-size:18px}
 .admin-user-detail h4{margin:17px 0 8px;font-size:12px}.admin-detail-weights{display:grid;gap:7px}.admin-weight-row{display:flex;justify-content:space-between;gap:10px;padding:9px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.025);font-size:10px}.admin-weight-row span:last-child{text-align:right;color:var(--soft);white-space:nowrap}.user-row{cursor:pointer}.user-row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.admin-preview{margin-top:14px;padding:14px;border:1px solid rgba(85,223,189,.3);border-radius:15px;background:linear-gradient(145deg,rgba(20,44,59,.95),rgba(12,27,43,.98))}
+.admin-preview-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.admin-preview-title{margin:0;font-size:16px}.admin-preview-sub{margin:5px 0 0;color:var(--muted);font-size:10px;line-height:1.5}
+.admin-preview-days{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0}
+.admin-preview-day{border:1px solid var(--border);border-radius:9px;padding:8px 11px;background:var(--surface);color:var(--soft);font-size:10px;font-weight:850}
+.admin-preview-day.active{border-color:rgba(85,223,189,.55);background:rgba(85,223,189,.12);color:#baffed}
+.admin-preview-exercises{display:grid;gap:8px}
+.admin-preview-exercise{padding:11px;border:1px solid var(--border);border-radius:11px;background:rgba(255,255,255,.025)}
+.admin-preview-exercise strong{display:block;font-size:12px}.admin-preview-exercise p{margin:5px 0 0;color:var(--muted);font-size:10px;line-height:1.45}
+.admin-preview-exercise .admin-preview-meta{display:flex;justify-content:space-between;gap:8px;margin-top:7px;color:var(--soft);font-size:10px;flex-wrap:wrap}
+.admin-preview-notice{margin:10px 0 0;padding:9px;border-radius:9px;background:rgba(246,199,121,.09);color:#f6d9a7;font-size:10px;line-height:1.5}
+
 </style>
 </head>
 <body>
@@ -1008,6 +1020,15 @@ body.is-jordi-theme .auth-switch button{color:#e0b85e}
         <section id="adminUserDetail" class="admin-user-detail hidden" aria-live="polite">
           <div class="admin-detail-head"><div><span class="admin-detail-kicker">FICHA DE USUARIO</span><h3 id="adminDetailName">Usuario</h3><p id="adminDetailEmail"></p></div><button type="button" class="users-refresh" id="adminDetailClose">CERRAR</button></div>
           <div class="admin-detail-stats" id="adminDetailStats"></div>
+          <button type="button" class="primary-btn" id="adminOpenPreview" style="margin:12px 0 2px">ENTRAR EN SU APLICACIÓN</button>
+          <section id="adminAppPreview" class="admin-preview hidden" aria-label="Vista de la aplicación del usuario">
+            <div class="admin-preview-top"><div><h3 class="admin-preview-title">GYM PROGRESS · VISTA DEL USUARIO</h3><p class="admin-preview-sub" id="adminPreviewIdentity"></p></div><button type="button" class="users-refresh" id="adminPreviewClose">VOLVER A LA FICHA</button></div>
+            <p class="admin-preview-notice">Vista administrativa de solo lectura. No cambia tu sesión ni permite guardar entrenamientos como si fueras este usuario.</p>
+            <div class="admin-preview-days" id="adminPreviewDays"></div>
+            <div id="adminPreviewRoutine" class="admin-preview-exercises"></div>
+            <h4>Últimos pesos guardados</h4><div id="adminPreviewHistory" class="admin-detail-weights"></div>
+            <h4>Datos personales guardados en la nube</h4><div id="adminPreviewCloudData" class="admin-detail-weights"></div>
+          </section>
           <h4>Historial de pesos</h4><div id="adminDetailWeights" class="admin-detail-weights"><div class="empty">Selecciona un usuario.</div></div>
           <h4>Datos de la aplicación</h4><div id="adminDetailAppData" class="admin-detail-weights"><div class="empty">Selecciona un usuario.</div></div>
           <div id="adminDetailStatus" class="status hidden" role="status"></div>
@@ -1218,6 +1239,11 @@ const JORDI_ROUTINES = {
 
 let currentUser = null;
 let currentIsAdmin = false;
+let adminPreviewUser = null;
+let adminPreviewRecords = [];
+let adminPreviewAppData = null;
+let adminPreviewDay = 1;
+
 let selectedDay = new Date().getDay();
 if(selectedDay < 1 || selectedDay > 4) selectedDay = 1;
 let repdbExercises = new Map();
@@ -2410,18 +2436,23 @@ function adminEmpty(container,message){container.replaceChildren();const el=docu
 async function loadAdminUserDetail(user){
   if(!currentUser||!currentIsAdmin)return;
   const panel=$("adminUserDetail"),weights=$("adminDetailWeights"),appData=$("adminDetailAppData"),status=$("adminDetailStatus");
+  adminPreviewUser=user;adminPreviewRecords=[];adminPreviewAppData=null;adminPreviewDay=1;
+  $("adminAppPreview").classList.add("hidden");
+  $("adminOpenPreview").disabled=false;
   panel.classList.remove("hidden");hideStatus(status);$("adminDetailName").textContent=user.full_name||"Sin nombre";$("adminDetailEmail").textContent=user.email||"Correo no disponible";
   $("adminDetailStats").replaceChildren(adminStat("CUENTA",(user.email||"").toLowerCase()==="admin@gmail.com"?"ADMIN":"USUARIO"),adminStat("REGISTRO",user.created_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(user.created_at)):"—"));
   adminEmpty(weights,"Cargando historial de pesos…");adminEmpty(appData,"Consultando datos guardados…");
   panel.scrollIntoView({behavior:"smooth",block:"start"});
   try{
     const [weightResult,appResult]=await Promise.all([
-      supabase.from("workout_weights").select("exercise_name,performed_at,weight,sets,reps").eq("user_id",user.id).order("performed_at",{ascending:false}).limit(100),
+      supabase.from("workout_weights").select("exercise_id,exercise_name,performed_at,weight,sets,reps").eq("user_id",user.id).order("performed_at",{ascending:false}).limit(100),
       supabase.from("gym_user_app_data").select("app_data,updated_at").eq("user_id",user.id).maybeSingle()
     ]);
     if(weightResult.error)throw weightResult.error;
     if(appResult.error && appResult.error.code!=="42P01")throw appResult.error;
     const records=weightResult.data||[];
+    adminPreviewRecords=records;
+    adminPreviewAppData=appResult.data?.app_data||null;
     $("adminDetailStats").append(adminStat("REGISTROS DE PESO",records.length));
     if(!records.length)adminEmpty(weights,"Este usuario todavía no tiene pesos guardados en Supabase.");
     else weights.replaceChildren(...records.map(record=>{
@@ -2438,6 +2469,78 @@ async function loadAdminUserDetail(user){
   }catch(error){adminEmpty(weights,"No se ha podido cargar el historial.");adminEmpty(appData,"No se han podido consultar los datos.");showStatus(status,error.message||"Comprueba las políticas administrativas de Supabase.",true);}
 }
 $("adminDetailClose").addEventListener("click",()=>$("adminUserDetail").classList.add("hidden"));
+$("adminOpenPreview").addEventListener("click",()=>{
+  if(!adminPreviewUser)return;
+  $("adminAppPreview").classList.remove("hidden");
+  $("adminPreviewIdentity").textContent=`${adminPreviewUser.full_name||"Sin nombre"} · ${adminPreviewUser.email||"Correo no disponible"}`;
+  $("adminAppPreview").scrollIntoView({behavior:"smooth",block:"start"});
+  renderAdminAppPreview();
+});
+$("adminPreviewClose").addEventListener("click",()=>{
+  $("adminAppPreview").classList.add("hidden");
+  $("adminUserDetail").scrollIntoView({behavior:"smooth",block:"start"});
+});
+function adminPreviewDaysFor(user){
+  const email=(user?.email||"").trim().toLowerCase();
+  return email==="isabela@gmail.com"?ISABELA_DAYS:(email==="jordi@gmail.com"?JORDI_DAYS:DAYS);
+}
+function adminPreviewRoutineFor(user,day){
+  const email=(user?.email||"").trim().toLowerCase();
+  if(email==="isabela@gmail.com")return (ISABELA_ROUTINES[day]||[]).map(x=>({...x}));
+  if(email==="jordi@gmail.com")return (JORDI_ROUTINES[day]||[]).map(x=>({...x}));
+  return (ROUTINES[day]||[]).map(x=>({...x}));
+}
+function renderAdminAppPreview(){
+  const user=adminPreviewUser;
+  if(!user)return;
+  const days=adminPreviewDaysFor(user);
+  if(!days[adminPreviewDay])adminPreviewDay=Number(Object.keys(days)[0]||1);
+  const dayBar=$("adminPreviewDays");
+  dayBar.replaceChildren(...Object.entries(days).map(([key,config])=>{
+    const button=document.createElement("button");
+    button.type="button";button.className="admin-preview-day"+(Number(key)===adminPreviewDay?" active":"");
+    button.textContent=config.short||config.name;
+    button.addEventListener("click",()=>{adminPreviewDay=Number(key);renderAdminAppPreview();});
+    return button;
+  }));
+  const config=days[adminPreviewDay];
+  const routine=adminPreviewRoutineFor(user,adminPreviewDay);
+  const latest=new Map();
+  for(const record of adminPreviewRecords){
+    if(!latest.has(record.exercise_id))latest.set(record.exercise_id,record);
+  }
+  const heading=document.createElement("div");
+  heading.className="admin-preview-exercise";
+  const title=document.createElement("strong");title.textContent=config.title||config.name;
+  const desc=document.createElement("p");desc.textContent=config.desc||"Rutina de entrenamiento";
+  heading.append(title,desc);
+  const list=$("adminPreviewRoutine");
+  list.replaceChildren(heading,...routine.map(exercise=>{
+    const card=document.createElement("article");card.className="admin-preview-exercise";
+    const name=document.createElement("strong");name.textContent=exercise.name;
+    const details=document.createElement("p");details.textContent=exercise.instruction||"";
+    const meta=document.createElement("div");meta.className="admin-preview-meta";
+    const prescription=document.createElement("span");prescription.textContent=`${exercise.sets||3} series · ${exercise.reps||12} ${exercise.unit||"repeticiones"}`;
+    const saved=latest.get(exercise.id);
+    const weight=document.createElement("span");weight.textContent=saved?`Último peso: ${saved.weight} kg`:"Sin peso guardado";
+    meta.append(prescription,weight);card.append(name,details,meta);return card;
+  }));
+  const history=$("adminPreviewHistory");
+  if(!adminPreviewRecords.length)adminEmpty(history,"Todavía no hay registros de peso guardados para esta cuenta.");
+  else history.replaceChildren(...adminPreviewRecords.slice(0,20).map(record=>{
+    const row=document.createElement("div");row.className="admin-weight-row";
+    const name=document.createElement("strong");name.textContent=record.exercise_name||"Ejercicio";
+    const value=document.createElement("span");
+    const date=record.performed_at?new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(record.performed_at)):"Fecha no disponible";
+    value.textContent=`${record.weight} kg · ${record.sets||3}×${record.reps||12} · ${date}`;
+    row.append(name,value);return row;
+  }));
+  const cloud=$("adminPreviewCloudData");
+  if(adminPreviewAppData&&Object.keys(adminPreviewAppData).length){
+    const pre=document.createElement("pre");pre.style.cssText="white-space:pre-wrap;overflow-wrap:anywhere;font-size:10px;color:var(--soft);padding:10px;border:1px solid var(--border);border-radius:9px;max-height:220px;overflow:auto";pre.textContent=JSON.stringify(adminPreviewAppData,null,2);cloud.replaceChildren(pre);
+  }else adminEmpty(cloud,"Esta cuenta todavía no tiene una copia de sus rutinas/configuración guardada en la nube. Se muestra la rutina definida en GYM PROGRESS y su historial real de pesos.");
+}
+
 
 async function enterApp(user){
   currentUser=user;
