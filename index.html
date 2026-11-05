@@ -843,6 +843,15 @@ body.is-jordi-theme .auth-switch button{color:#e0b85e}
 .admin-preview-exercise .admin-preview-meta{display:flex;justify-content:space-between;gap:8px;margin-top:7px;color:var(--soft);font-size:10px;flex-wrap:wrap}
 .admin-preview-notice{margin:10px 0 0;padding:9px;border-radius:9px;background:rgba(246,199,121,.09);color:#f6d9a7;font-size:10px;line-height:1.5}
 
+
+.admin-preview-banner{display:none;position:sticky;top:0;z-index:90;margin:0 0 12px;padding:10px 12px;border:1px solid rgba(85,223,189,.4);border-radius:12px;background:rgba(8,25,37,.97);backdrop-filter:blur(12px);align-items:center;justify-content:space-between;gap:10px}
+.admin-preview-banner.active{display:flex}
+.admin-preview-banner strong{display:block;font-size:11px;color:#baffed;letter-spacing:.08em}
+.admin-preview-banner small{display:block;margin-top:3px;color:var(--muted);font-size:10px}
+.admin-preview-banner button{border:1px solid rgba(85,223,189,.45);border-radius:9px;padding:9px 11px;background:rgba(85,223,189,.12);color:#baffed;font-size:10px;font-weight:900}
+body.admin-preview-mode [data-weight],body.admin-preview-mode #saveWeightsBtn,body.admin-preview-mode [data-complete],body.admin-preview-mode [data-change],body.admin-preview-mode [data-previous]{pointer-events:none;opacity:.55}
+body.admin-preview-mode #saveWeightsBtn{display:none}
+
 </style>
 </head>
 <body>
@@ -885,6 +894,7 @@ body.is-jordi-theme .auth-switch button{color:#e0b85e}
   </section>
 
   <section id="appView" class="hidden">
+    <div id="adminPreviewBanner" class="admin-preview-banner" role="status"><div><strong>VISTA DE ADMINISTRADOR · SOLO LECTURA</strong><small id="adminPreviewBannerName">Vista de usuario</small></div><button type="button" id="adminExitAppPreview">VOLVER A USERS</button></div>
     <div class="library-nav app-main-nav">
       <button type="button" id="workoutNav" class="active">MI RUTINA</button>
       <button type="button" id="libraryNav">BIBLIOTECA</button>
@@ -1020,7 +1030,7 @@ body.is-jordi-theme .auth-switch button{color:#e0b85e}
         <section id="adminUserDetail" class="admin-user-detail hidden" aria-live="polite">
           <div class="admin-detail-head"><div><span class="admin-detail-kicker">FICHA DE USUARIO</span><h3 id="adminDetailName">Usuario</h3><p id="adminDetailEmail"></p></div><button type="button" class="users-refresh" id="adminDetailClose">CERRAR</button></div>
           <div class="admin-detail-stats" id="adminDetailStats"></div>
-          <button type="button" class="primary-btn" id="adminOpenPreview" style="margin:12px 0 2px">ENTRAR EN SU APLICACIÓN</button>
+          <button type="button" class="primary-btn" id="adminOpenPreview" style="margin:12px 0 2px">ENTRAR EN SU APLICACIÓN COMPLETA</button>
           <section id="adminAppPreview" class="admin-preview hidden" aria-label="Vista de la aplicación del usuario">
             <div class="admin-preview-top"><div><h3 class="admin-preview-title">GYM PROGRESS · VISTA DEL USUARIO</h3><p class="admin-preview-sub" id="adminPreviewIdentity"></p></div><button type="button" class="users-refresh" id="adminPreviewClose">VOLVER A LA FICHA</button></div>
             <p class="admin-preview-notice">Vista administrativa de solo lectura. No cambia tu sesión ni permite guardar entrenamientos como si fueras este usuario.</p>
@@ -1243,6 +1253,8 @@ let adminPreviewUser = null;
 let adminPreviewRecords = [];
 let adminPreviewAppData = null;
 let adminPreviewDay = 1;
+let adminPreviewMode = false;
+let adminPreviewAdminState = null;
 
 let selectedDay = new Date().getDay();
 if(selectedDay < 1 || selectedDay > 4) selectedDay = 1;
@@ -1265,6 +1277,7 @@ function readWeightDrafts(day=selectedDay){
   catch(e){return {};}
 }
 function writeWeightDraft(exerciseId,value,day=selectedDay){
+  if(adminPreviewMode)return;
   const drafts=readWeightDrafts(day);
   drafts[exerciseId]=value;
   localStorage.setItem(weightDraftKey(currentUser?.id,day),JSON.stringify(drafts));
@@ -1663,7 +1676,7 @@ function loadActiveRoutine(day){
   }catch(e){}
   return base;
 }
-function persistRoutine(){localStorage.setItem(routineKey(selectedDay),JSON.stringify(activeRoutine));}
+function persistRoutine(){if(adminPreviewMode)return;localStorage.setItem(routineKey(selectedDay),JSON.stringify(activeRoutine));}
 // El calendario usa almacenamiento local independiente: nunca bloquea el login ni el guardado de pesos.
 let streakViewDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 const streakStorageKey = () => `gym_progress_completed_days_${currentUser?.id || "guest"}`;
@@ -1671,6 +1684,7 @@ function readWorkoutDays(){
   try{const data=JSON.parse(localStorage.getItem(streakStorageKey())||"[]");return Array.isArray(data)?data.filter(x=>x&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)):[];}catch(e){return [];}
 }
 function registerWorkoutDay(){
+  if(adminPreviewMode)return;
   try{
     const key=localDate();
     const records=readWorkoutDays();
@@ -1708,6 +1722,7 @@ function renderStreakCalendar(){
 function changeStreakMonth(delta){const next=new Date(streakViewDate.getFullYear(),streakViewDate.getMonth()+delta,1);const now=new Date();if(next>new Date(now.getFullYear(),now.getMonth(),1))return;streakViewDate=next;renderStreakCalendar();}
 
 function toggleComplete(id){
+  if(adminPreviewMode)return;
   const wasComplete=completedIds.has(id);
   if(wasComplete){
     completedIds.delete(id);
@@ -1817,6 +1832,7 @@ function loadExerciseRatings(){
   }catch(e){exerciseRatings={};}
 }
 async function saveExerciseRatings(){
+  if(adminPreviewMode)return;
   localStorage.setItem(ratingStorageKey(),JSON.stringify(exerciseRatings));
   if(!currentUser||!navigator.onLine)return;
   try{
@@ -2228,6 +2244,7 @@ document.addEventListener("visibilitychange",()=>{
   if(document.visibilityState==="hidden")persistVisibleWeightInputs(selectedDay);
 });
 $("exerciseList").addEventListener("click",event=>{
+  if(adminPreviewMode && event.target.closest("[data-complete],[data-change],[data-previous]"))return;
   const complete=event.target.closest("[data-complete]");
   const change=event.target.closest("[data-change]");
   const previous=event.target.closest("[data-previous]");
@@ -2305,6 +2322,7 @@ async function migrateOldLocalRecords(){
 }
 
 async function saveWeights(){
+  if(adminPreviewMode){showStatus($("saveStatus"),"La vista administrativa es de solo lectura.",true);return;}
   if(saving)return;
   const exercises=activeRoutine.length===6?activeRoutine:baseRoutine(selectedDay);
   const rows=[];
@@ -2469,17 +2487,71 @@ async function loadAdminUserDetail(user){
   }catch(error){adminEmpty(weights,"No se ha podido cargar el historial.");adminEmpty(appData,"No se han podido consultar los datos.");showStatus(status,error.message||"Comprueba las políticas administrativas de Supabase.",true);}
 }
 $("adminDetailClose").addEventListener("click",()=>$("adminUserDetail").classList.add("hidden"));
-$("adminOpenPreview").addEventListener("click",()=>{
-  if(!adminPreviewUser)return;
-  $("adminAppPreview").classList.remove("hidden");
-  $("adminPreviewIdentity").textContent=`${adminPreviewUser.full_name||"Sin nombre"} · ${adminPreviewUser.email||"Correo no disponible"}`;
-  $("adminAppPreview").scrollIntoView({behavior:"smooth",block:"start"});
-  renderAdminAppPreview();
-});
-$("adminPreviewClose").addEventListener("click",()=>{
-  $("adminAppPreview").classList.add("hidden");
+$("adminOpenPreview").addEventListener("click",()=>openAdminUserApp());
+$("adminPreviewClose").addEventListener("click",()=>$("adminAppPreview").classList.add("hidden"));
+$("adminExitAppPreview").addEventListener("click",closeAdminUserApp);
+async function openAdminUserApp(){
+  if(!adminPreviewUser||adminPreviewMode)return;
+  adminPreviewAdminState={
+    user:currentUser,isAdmin:currentIsAdmin,selectedDay,activeRoutine,completedIds,exerciseView,
+    latestRecords,exerciseSwapHistory,exerciseRatings,libraryGroup,libraryFilter,streakViewDate
+  };
+  adminPreviewMode=true;
+  currentUser=adminPreviewUser;
+  currentIsAdmin=false;
+  document.body.classList.add("admin-preview-mode");
+  $("adminPreviewBanner").classList.add("active");
+  $("adminPreviewBannerName").textContent=`${adminPreviewUser.full_name||"Sin nombre"} · ${adminPreviewUser.email||""}`;
+  $("usersNav").classList.add("hidden");
+  $("usersSection").classList.add("hidden");
+  $("appView").classList.remove("hidden");
+  $("mainHeading").textContent=isIsabelaAccount()?"Entreno de Isabela":(isJordiAccount()?"Entreno de Jordi":(adminPreviewUser.full_name||"Entrenamiento"));
+  $("mainSubtitle").textContent="Vista administrativa de la aplicación completa.";
+  $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
+  selectedDay=workoutDays()[0]||1;
+  exerciseView="pending";
+  libraryGroup=null;libraryFilter="machines";
+  completedIds=new Set();exerciseSwapHistory={};
+  try{
+    await loadRepDB();
+    loadExerciseRatings();
+    activeRoutine=loadActiveRoutine(selectedDay);
+    await loadLatestRecords();
+    renderMuscleHome();
+    renderWorkout();
+    renderStreakCalendar();
+    setMainTab("workout");
+    $("adminAppPreview").classList.add("hidden");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(error){
+    console.error("No se pudo abrir la vista completa del usuario",error);
+    showStatus($("usersStatus"),`No se ha podido abrir la aplicación de este usuario: ${error.message||"error de carga"}`,true);
+    closeAdminUserApp();
+  }
+}
+function closeAdminUserApp(){
+  if(!adminPreviewMode||!adminPreviewAdminState)return;
+  const saved=adminPreviewAdminState;
+  currentUser=saved.user;currentIsAdmin=saved.isAdmin;selectedDay=saved.selectedDay;
+  activeRoutine=saved.activeRoutine;completedIds=saved.completedIds;exerciseView=saved.exerciseView;
+  latestRecords=saved.latestRecords;exerciseSwapHistory=saved.exerciseSwapHistory;exerciseRatings=saved.exerciseRatings;
+  libraryGroup=saved.libraryGroup;libraryFilter=saved.libraryFilter;streakViewDate=saved.streakViewDate;
+  adminPreviewAdminState=null;
+  document.body.classList.remove("admin-preview-mode","is-isabela-theme","is-jordi-theme");
+  $("adminPreviewBanner").classList.remove("active");
+  $("appView").classList.remove("hidden");
+  $("usersNav").classList.remove("hidden");
+  setMainTab("users");
+  adminPreviewMode=false;
+  $("adminUserDetail").classList.remove("hidden");
   $("adminUserDetail").scrollIntoView({behavior:"smooth",block:"start"});
-});
+  renderUsersThemeReset();
+}
+function renderUsersThemeReset(){
+  const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content="#0b1422";
+  if(currentUser){document.body.classList.toggle("is-isabela-theme",isIsabelaAccount());document.body.classList.toggle("is-jordi-theme",isJordiAccount());}
+}
+
 function adminPreviewDaysFor(user){
   const email=(user?.email||"").trim().toLowerCase();
   return email==="isabela@gmail.com"?ISABELA_DAYS:(email==="jordi@gmail.com"?JORDI_DAYS:DAYS);
