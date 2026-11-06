@@ -1573,7 +1573,7 @@ function updateNewUserPlanView(){
     document.querySelector(".plan-launch")?.classList.remove("hidden");
   }
 }
-async function loadTrainingPlan(){customTrainingPlan=null;if(!currentUser||adminPreviewMode||!canConfigurePersonalPlan())return;try{const {data,error}=await supabase.from("user_training_plans").select("plan").eq("user_id",currentUser.id).maybeSingle();if(error)throw error;if(data?.plan&&data.plan.days){customTrainingPlan=data.plan;}}catch(error){console.warn("No se pudo cargar el plan personalizado desde Supabase:",error);const cached=localStorage.getItem(`gym_progress_plan_${currentUser.id}`);if(cached){try{customTrainingPlan=JSON.parse(cached);}catch(e){}}}}
+async function loadTrainingPlan(user=currentUser){customTrainingPlan=null;if(!user||(!adminPreviewMode&&!canConfigurePersonalPlan(user)))return;try{const {data,error}=await supabase.from("user_training_plans").select("plan").eq("user_id",user.id).maybeSingle();if(error)throw error;if(data?.plan&&data.plan.days){customTrainingPlan=data.plan;}}catch(error){console.warn("No se pudo cargar el plan personalizado desde Supabase:",error);if(adminPreviewMode)throw new Error(`No se ha podido leer el plan personalizado de esta cuenta. Comprueba que ADMIN tenga permiso de lectura en user_training_plans. ${error.message||""}`);const cached=localStorage.getItem(`gym_progress_plan_${user.id}`);if(cached){try{customTrainingPlan=JSON.parse(cached);}catch(e){}}}}
 function dayConfig(day){if(customTrainingPlan?.days?.[day]?.enabled)return customDayConfig(day);return isIsabelaAccount()?(ISABELA_DAYS[day]||ISABELA_DAYS[1]):(isJordiAccount()?(JORDI_DAYS[day]||JORDI_DAYS[1]):DAYS[day]||{short:"DÍA",name:"Día",title:"Descanso",desc:"Día sin entrenamiento configurado."});}
 function baseRoutine(day){if(customTrainingPlan?.days?.[day]?.enabled)return generatePlanExercises(day);if(isIsabelaAccount())return ISABELA_ROUTINES[day].map(x=>({...x}));if(isJordiAccount())return JORDI_ROUTINES[day].map(x=>({...x}));return ROUTINES[day].map(x=>({...x}));}
 
@@ -2983,7 +2983,8 @@ async function openAdminUserApp(){
   if(!adminPreviewUser||adminPreviewMode)return;
   adminPreviewAdminState={
     user:currentUser,isAdmin:currentIsAdmin,selectedDay,activeRoutine,completedIds,exerciseView,
-    latestRecords,exerciseSwapHistory,exerciseRatings,libraryGroup,libraryFilter,streakViewDate
+    latestRecords,exerciseSwapHistory,exerciseRatings,libraryGroup,libraryFilter,streakViewDate,
+    customTrainingPlan
   };
   adminPreviewMode=true;
   currentUser=adminPreviewUser;
@@ -3018,6 +3019,7 @@ async function openAdminUserApp(){
     await loadLatestRecords();
     renderMuscleHome();
     renderWorkout();
+    setupPlanCardio();
     renderStreakCalendar();
     setMainTab("workout");
     $("adminAppPreview").classList.add("hidden");
@@ -3035,6 +3037,7 @@ function closeAdminUserApp(){
   activeRoutine=saved.activeRoutine;completedIds=saved.completedIds;exerciseView=saved.exerciseView;
   latestRecords=saved.latestRecords;exerciseSwapHistory=saved.exerciseSwapHistory;exerciseRatings=saved.exerciseRatings;
   libraryGroup=saved.libraryGroup;libraryFilter=saved.libraryFilter;streakViewDate=saved.streakViewDate;
+  customTrainingPlan=saved.customTrainingPlan;
   adminPreviewAdminState=null;
   document.body.classList.remove("admin-preview-mode","is-isabela-theme","is-jordi-theme","is-arniforcamp-theme");
   $("adminPreviewBanner").classList.remove("active");
