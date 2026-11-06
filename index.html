@@ -1537,7 +1537,217 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 }
 @media(prefers-reduced-motion:reduce){.warrior-record{transition:none}}
 
+
+
+/* REDISEÑO DEFINITIVO DE TROFEOS — ilustración integrada, sin recortes ni textos desbordados */
+.warrior-record-figure{
+  height:174px!important;min-height:174px;display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:10px 6px 8px!important;overflow:hidden!important;isolation:isolate;
+  background:radial-gradient(ellipse at 50% 55%,rgba(224,190,116,.17),transparent 66%),linear-gradient(145deg,rgba(255,255,255,.055),rgba(0,0,0,.24))!important;
+  border:1px solid rgba(226,211,174,.2);border-radius:5px;box-shadow:inset 0 0 24px rgba(225,211,176,.055);
+}
+.warrior-record-figure:before{content:"";position:absolute;left:20%;right:20%;bottom:8px;height:10px;background:rgba(222,183,105,.25);filter:blur(9px);border-radius:50%}
+.warrior-record-figure:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;background:linear-gradient(118deg,transparent 20%,rgba(255,255,255,.10) 34%,transparent 47%,transparent 72%,rgba(255,255,255,.045) 82%,transparent 92%)}
+.warrior-trophy-object{
+  position:relative;width:min(100%,142px);height:151px!important;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  gap:0;filter:drop-shadow(0 7px 8px rgba(0,0,0,.58));
+}
+.warrior-trophy-insignia{
+  width:30px;height:22px;margin-bottom:5px;display:grid;place-items:center;color:#f5dfa4;font-size:20px;line-height:1;
+  text-shadow:0 0 9px rgba(242,207,132,.5);border-bottom:1px solid rgba(226,196,133,.5);
+}
+.warrior-trophy-art{
+  position:relative;width:83%;height:94px;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  padding:5px;border:1px solid #b99a5d;border-radius:4px;
+  background:linear-gradient(145deg,#34332d,#171a1a 55%,#28241b);
+  box-shadow:inset 0 0 0 3px rgba(240,220,173,.08),inset 0 0 18px rgba(0,0,0,.55),0 0 0 2px rgba(207,179,119,.12);
+}
+.warrior-trophy-art:before{content:"";position:absolute;inset:4px;border:1px solid rgba(226,204,157,.24);pointer-events:none;z-index:2}
+.warrior-trophy-art img{
+  display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center;
+  transform:none!important;filter:grayscale(.72) sepia(.48) saturate(.72) brightness(.78) contrast(1.16)!important;
+  mix-blend-mode:normal!important;border-radius:1px;
+}
+.warrior-trophy-art.no-image{background:radial-gradient(ellipse,#393326,#151719)}
+.warrior-trophy-art .warrior-no-art{color:#d6bd83;font:700 8px/1.6 Arial,sans-serif;letter-spacing:1px;text-align:center}
+.warrior-trophy-plinth{
+  position:relative;z-index:3;width:88%;height:22px!important;min-height:22px;display:flex;align-items:center;justify-content:center;
+  margin-top:5px;padding:0 5px!important;border:1px solid #e1c98e;border-radius:2px;
+  background:linear-gradient(180deg,#f0dfb2 0%,#c4a363 25%,#72552a 78%,#d8bb7b 100%)!important;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.75),0 3px 6px rgba(0,0,0,.5);color:#241b0d!important;
+}
+.warrior-trophy-plinth span{display:block!important;font:900 7px/1 Arial,sans-serif!important;letter-spacing:1.15px!important;white-space:nowrap;color:#241b0d!important}
+.warrior-trophy-plinth b{display:none!important}
+.warrior-trophy-base{
+  z-index:3;width:96%;height:8px!important;margin-top:2px;border:1px solid #e4d09b;border-radius:2px 2px 5px 5px;
+  background:linear-gradient(180deg,#f0dfb2,#b58c48 48%,#49351b)!important;box-shadow:0 4px 7px rgba(0,0,0,.55),0 0 7px rgba(224,190,116,.16);
+}
+.warrior-record strong{margin-top:10px!important}
+.warrior-modal-figure .warrior-record-figure{height:220px!important;width:100%!important;padding:12px!important}
+.warrior-modal-figure .warrior-trophy-object{width:min(78%,220px);height:190px!important}
+.warrior-modal-figure .warrior-trophy-insignia{width:38px;height:28px;font-size:25px;margin-bottom:8px}
+.warrior-modal-figure .warrior-trophy-art{height:125px;width:86%}
+.warrior-modal-figure .warrior-trophy-plinth{height:28px!important}
+.warrior-modal-figure .warrior-trophy-plinth span{font-size:9px!important}
+.warrior-modal-figure .warrior-trophy-base{height:11px!important}
+#warriorTrophyModal .warrior-modal-figure .warrior-trophy-art img{filter:grayscale(.72) sepia(.48) saturate(.72) brightness(.78) contrast(1.16)!important;mix-blend-mode:normal!important}
+@media(max-width:430px){.warrior-record-figure{height:164px!important;min-height:164px}.warrior-trophy-object{height:145px!important}.warrior-trophy-art{height:88px}}
+
+
+/* REDISEÑO: PLACAS DE HONOR — geometría sencilla, estable y adaptable */
+.warrior-record-figure{
+  height:190px!important;min-height:190px;display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:9px!important;overflow:hidden!important;isolation:isolate;
+  background:radial-gradient(ellipse at 50% 50%,rgba(213,183,116,.13),transparent 70%),linear-gradient(145deg,rgba(255,255,255,.045),rgba(0,0,0,.24))!important;
+  border:1px solid rgba(224,207,166,.19);border-radius:5px;
+}
+.warrior-record-figure:before,.warrior-record-figure:after{display:none!important}
+.warrior-hall-plaque{
+  position:relative;width:min(100%,190px);height:166px;padding:9px 9px 8px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;
+  border:2px solid #b99b60;border-radius:5px;
+  background:linear-gradient(135deg,#3b3a34 0%,#171a1b 26%,#24231f 72%,#101314 100%);
+  box-shadow:inset 0 0 0 3px rgba(238,220,174,.08),inset 0 0 22px rgba(0,0,0,.72),0 7px 14px rgba(0,0,0,.55);
+}
+.warrior-hall-plaque:before{content:"";position:absolute;inset:5px;border:1px solid rgba(230,207,155,.24);pointer-events:none}
+.warrior-plaque-header{height:17px;display:flex;align-items:center;justify-content:space-between;gap:3px;color:#d9c18b;font:900 6px/1 Arial,sans-serif;letter-spacing:1px}
+.warrior-plaque-header b{font-size:14px;color:#f0d28b;text-shadow:0 0 9px rgba(239,205,128,.4)}
+.warrior-plaque-art{
+  position:relative;flex:1;min-height:0;margin:5px 0;padding:5px;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  border:1px solid rgba(205,178,119,.55);border-radius:3px;background:linear-gradient(145deg,#292b29,#101415 70%,#24221c);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.035),inset 0 0 16px rgba(0,0,0,.65);
+}
+.warrior-plaque-art img{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center;transform:none!important;filter:grayscale(.55) sepia(.28) saturate(.72) brightness(.9) contrast(1.05)!important;mix-blend-mode:normal!important}
+.warrior-plaque-art.no-image{background:radial-gradient(ellipse,#393326,#151719)}
+.warrior-plaque-art .warrior-no-art{color:#d6bd83;font:700 8px/1.6 Arial,sans-serif;letter-spacing:1px;text-align:center}
+.warrior-plaque-seal{position:absolute;right:13px;bottom:27px;width:27px;height:27px;display:grid;place-items:center;border:1px solid #e0c17c;border-radius:50%;background:radial-gradient(circle at 35% 28%,#f4dfaa,#98713a 70%,#392812);box-shadow:0 2px 6px #000;color:#241a0b;font:900 8px/1 Arial,sans-serif}
+.warrior-plaque-footer{height:15px;display:grid;place-items:center;border-top:1px solid rgba(218,193,139,.4);color:#e0c98f;font:900 7px/1 Arial,sans-serif;letter-spacing:1.6px}
+.warrior-record strong{margin-top:10px!important}
+.warrior-modal-stage{height:290px!important}
+.warrior-modal-figure{height:235px!important;width:100%;display:flex;align-items:center;justify-content:center}
+.warrior-modal-figure .warrior-record-figure{width:min(100%,310px)!important;height:245px!important;min-height:245px;padding:12px!important}
+.warrior-modal-figure .warrior-hall-plaque{width:min(100%,270px);height:218px;padding:12px}
+.warrior-modal-figure .warrior-plaque-header{font-size:8px;height:22px}
+.warrior-modal-figure .warrior-plaque-art{margin:7px 0}
+.warrior-modal-figure .warrior-plaque-seal{width:34px;height:34px;right:18px;bottom:34px;font-size:10px}
+.warrior-modal-figure .warrior-plaque-footer{height:19px;font-size:9px}
+#warriorTrophyModal .warrior-modal-figure .warrior-plaque-art img{filter:grayscale(.45) sepia(.22) saturate(.7) brightness(.95) contrast(1.05)!important;mix-blend-mode:normal!important}
+@media(max-width:430px){.warrior-record-figure{height:174px!important;min-height:174px}.warrior-hall-plaque{height:151px}.warrior-plaque-header{font-size:5px}.warrior-plaque-seal{width:23px;height:23px;right:11px;bottom:25px}}
+
 </style>
+
+<style id="warrior-minimal-honor-plates">
+/* SALA DEL GUERRERO — PLACAS MINIMALISTAS DE ALTA GAMA */
+.warrior-record{
+  padding:10px 9px 13px!important;
+  border:1px solid rgba(201,174,116,.36)!important;
+  border-radius:13px!important;
+  background:linear-gradient(155deg,rgba(31,32,31,.98),rgba(8,10,11,.99) 72%)!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.055)!important;
+}
+.warrior-record:before{inset:5px!important;border:1px solid rgba(220,197,151,.10)!important;border-radius:9px!important}
+.warrior-record-select{gap:0!important}
+.warrior-record-kicker{
+  display:block!important;
+  margin:1px 0 10px!important;
+  color:#cbb783!important;
+  font:700 9px/1.2 Arial,sans-serif!important;
+  letter-spacing:2.4px!important;
+}
+.warrior-record-figure{
+  height:164px!important;min-height:164px!important;
+  padding:5px!important;
+  background:transparent!important;
+  border:0!important;
+  overflow:visible!important;
+}
+.warrior-hall-plaque{
+  position:relative!important;
+  width:100%!important;max-width:220px!important;height:142px!important;
+  padding:16px 11px 13px!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  gap:0!important;
+  overflow:hidden!important;
+  border:1px solid #a88b55!important;border-radius:4px!important;
+  background:
+    linear-gradient(112deg,rgba(255,255,255,.075),transparent 18%,transparent 78%,rgba(255,255,255,.035)),
+    linear-gradient(145deg,#292b2b 0%,#171a1b 48%,#101213 100%)!important;
+  box-shadow:
+    inset 0 0 0 3px rgba(226,205,158,.055),
+    inset 0 0 24px rgba(0,0,0,.7),
+    0 8px 20px rgba(0,0,0,.55),
+    0 0 18px rgba(193,157,91,.08)!important;
+}
+.warrior-hall-plaque:before{
+  content:""!important;position:absolute!important;inset:5px!important;
+  border:1px solid rgba(218,192,139,.22)!important;
+  pointer-events:none!important;
+}
+.warrior-plaque-title{
+  position:relative!important;z-index:1!important;
+  color:#c9b27d!important;
+  font:700 8px/1.2 Arial,sans-serif!important;
+  letter-spacing:2.1px!important;text-align:center!important;
+  white-space:nowrap!important;
+}
+.warrior-plaque-rule{
+  width:34px!important;height:1px!important;flex:none!important;
+  margin:11px auto 10px!important;
+  background:linear-gradient(90deg,transparent,#d4b875,transparent)!important;
+}
+.warrior-plaque-exercise{
+  position:relative!important;z-index:1!important;
+  width:100%!important;max-width:100%!important;
+  color:#f0e7d2!important;
+  font:500 clamp(11px,2.8vw,14px)/1.3 Georgia,serif!important;
+  letter-spacing:.15px!important;text-align:center!important;
+  overflow-wrap:anywhere!important;
+  display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;
+  overflow:hidden!important;
+}
+.warrior-plaque-weight{
+  position:relative!important;z-index:1!important;
+  margin-top:10px!important;
+  color:#e6ca87!important;
+  font:700 clamp(19px,5vw,25px)/1 Arial,sans-serif!important;
+  letter-spacing:.2px!important;text-align:center!important;
+  white-space:nowrap!important;
+  text-shadow:0 1px 10px rgba(216,180,107,.16)!important;
+}
+.warrior-record-figure img,.warrior-plaque-art,.warrior-plaque-seal,.warrior-plaque-header,.warrior-plaque-footer{display:none!important}
+.warrior-record small{
+  display:block!important;margin:5px 0 9px!important;
+  color:#bcb6a8!important;font-size:10px!important;line-height:1.4!important;
+}
+.warrior-record-improvement{margin:0 auto 8px!important}
+.warrior-record-tap{
+  margin-top:3px!important;padding-top:8px!important;width:100%!important;
+  border-top:1px solid rgba(207,184,132,.13)!important;
+  color:#b9a779!important;font:700 8px/1.4 Arial,sans-serif!important;
+  letter-spacing:1.35px!important;text-align:center!important;
+}
+.warrior-modal-stage{height:250px!important}
+.warrior-modal-figure{height:190px!important}
+.warrior-modal-figure .warrior-record-figure{
+  height:180px!important;min-height:180px!important;width:100%!important;
+}
+.warrior-modal-figure .warrior-hall-plaque{
+  width:min(88%,330px)!important;max-width:330px!important;height:170px!important;
+}
+.warrior-modal-figure .warrior-plaque-title{font-size:10px!important;letter-spacing:2.8px!important}
+.warrior-modal-figure .warrior-plaque-exercise{font-size:18px!important}
+.warrior-modal-figure .warrior-plaque-weight{font-size:32px!important}
+@media(max-width:390px){
+  .warrior-record-figure{height:150px!important;min-height:150px!important}
+  .warrior-hall-plaque{height:130px!important;padding:12px 8px!important}
+  .warrior-plaque-title{font-size:7px!important;letter-spacing:1.6px!important}
+  .warrior-plaque-weight{font-size:20px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .warrior-record,.warrior-hall-plaque{transition:none!important;animation:none!important}
+}
+</style>
+
 </head>
 <body class="app-booting">
 <div id="brandBootScreen" role="status" aria-live="polite" aria-label="Cargando GYM PROGRESS">
@@ -4173,22 +4383,15 @@ function warriorExerciseRecord(row){
   return record;
 }
 function warriorFigureMarkup(row){
-  const record=warriorExerciseRecord(row);
-  const flat=record?.images?.flat;
-  // Un solo recorte por ejercicio: no duplicar la imagen start/peak.
-  const path=flat?.start||flat?.peak;
-  if(!path)return '<div class="warrior-record-figure"><div class="warrior-no-art">Trofeo aún no disponible<br>para este ejercicio</div></div>';
-  const src=REPDB_ASSETS+path;
-  const alt=escapeHTML(row.exercise_name||"ejercicio");
+  const name=escapeHTML(row.exercise_name||row.exercise_id||"Ejercicio");
+  const weight=Number(row.weight);
+  const weightLabel=(Number.isFinite(weight)?weight:0).toLocaleString("es-ES",{maximumFractionDigits:2})+" kg";
   return `<div class="warrior-record-figure">
-    <div class="warrior-trophy-object" aria-label="Trofeo escultórico de ${alt}">
-      <div class="warrior-trophy-crown"><i></i><i></i><i></i></div>
-      <div class="warrior-trophy-statue"><img loading="lazy" decoding="async" src="${src}" alt="Escultura de ${alt}" onerror="this.closest('.warrior-trophy-object').classList.add('no-image');this.remove()"></div>
-      <div class="warrior-trophy-cup-rim"></div>
-      <div class="warrior-trophy-neck"></div>
-      <div class="warrior-trophy-handles"><i></i><i></i></div>
-      <div class="warrior-trophy-plinth"><span>GYM PROGRESS</span><b>ORO</b></div>
-      <div class="warrior-trophy-base"></div>
+    <div class="warrior-hall-plaque" role="img" aria-label="Placa de honor: Récord personal, ${name}, ${weightLabel}">
+      <div class="warrior-plaque-title">RÉCORD PERSONAL</div>
+      <div class="warrior-plaque-rule" aria-hidden="true"></div>
+      <div class="warrior-plaque-exercise">${name}</div>
+      <div class="warrior-plaque-weight">${weightLabel}</div>
     </div>
   </div>`;
 }
@@ -4215,7 +4418,7 @@ async function renderWarriorRecords(){
       }
     }
     const records=[...best.values()].sort((a,b)=>b.weight-a.weight||String(a.exercise_name).localeCompare(String(b.exercise_name),"es"));
-    if(!records.length){target.innerHTML='<div class="warrior-empty">Todavía no hay pesos guardados para mostrar. Cuando registres tus cargas, tus esculturas y vitrinas aparecerán aquí automáticamente.</div>';return;}
+    if(!records.length){target.innerHTML='<div class="warrior-empty">Todavía no hay pesos guardados para mostrar. Cuando registres tus cargas, tus placas de honor aparecerán aquí automáticamente.</div>';return;}
     target.innerHTML=records.map((row,index)=>{
       const date=row.performed_at?new Intl.DateTimeFormat("es-ES",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(row.performed_at)):"Fecha no disponible";
       const name=escapeHTML(row.exercise_name||row.exercise_id||"Ejercicio");
@@ -4225,7 +4428,7 @@ async function renderWarriorRecords(){
         : '<span class="warrior-record-improvement no-previous">PRIMERA MARCA</span>';
       const figure=warriorFigureMarkup(row);
       const payload=encodeURIComponent(JSON.stringify({name:row.exercise_name||row.exercise_id||"Ejercicio",weight:row.weight,reps:row.reps||0,date,improvement:row.improvement||0,figure}));
-      return `<article class="warrior-record"><button type="button" class="warrior-record-select" data-trophy="${payload}" aria-label="Levantar trofeo de ${name}"><span class="warrior-record-kicker">TROFEO ${String(index+1).padStart(2,"0")}</span>${figure}<strong>${name}</strong><b>${row.weight.toLocaleString("es-ES",{maximumFractionDigits:2})} kg</b><small>${date}${reps}</small>${improvement}<span class="warrior-record-tap">TOCA PARA LEVANTAR EL TROFEO</span></button></article>`;
+      return `<article class="warrior-record"><button type="button" class="warrior-record-select" data-trophy="${payload}" aria-label="Ampliar placa de honor de ${name}"><span class="warrior-record-kicker">PLACA ${String(index+1).padStart(2,"0")}</span>${figure}<small>${date}${reps}</small>${improvement}<span class="warrior-record-tap">TOCA PARA VER EL DETALLE</span></button></article>`;
     }).join("");
   }catch(error){
     console.error("No se pudieron cargar los récords personales:",error);
