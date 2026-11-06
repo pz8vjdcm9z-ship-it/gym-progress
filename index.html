@@ -1400,6 +1400,143 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
   #warriorTrophyModal .warrior-modal-stage.lift .warrior-modal-figure{animation:none;opacity:1;transform:translate(-50%,0) scale(1)}
 }
 
+
+/* ================================================================
+   SALA DEL GUERRERO · EDICIÓN MUSEO DE LUJO
+   Capa visual final: mantiene intactos los datos y la lógica existentes.
+   ================================================================ */
+#warriorHall{
+  padding: max(18px,env(safe-area-inset-top)) 13px max(38px,env(safe-area-inset-bottom));
+  background:
+    radial-gradient(ellipse at 50% -8%,rgba(255,219,130,.22),transparent 34%),
+    radial-gradient(ellipse at 8% 42%,rgba(101,125,139,.09),transparent 35%),
+    radial-gradient(ellipse at 92% 68%,rgba(183,132,45,.09),transparent 36%),
+    linear-gradient(180deg,#17191a 0%,#090b0d 38%,#11100d 100%);
+  isolation:isolate;
+}
+#warriorHall:before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.2;
+  background:repeating-linear-gradient(90deg,transparent 0,transparent 48px,rgba(255,255,255,.018) 49px,transparent 50px);
+}
+.warrior-shell{width:min(100%,980px)}
+.warrior-back{
+  border:1px solid rgba(226,195,119,.48);border-radius:999px;padding:11px 17px;
+  background:linear-gradient(135deg,rgba(33,35,35,.94),rgba(7,9,10,.94));
+  color:#f3d78d;box-shadow:0 8px 24px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.1);
+  letter-spacing:.55px;backdrop-filter:blur(16px);
+}
+.warrior-title{
+  margin:27px 0 7px;font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(29px,7vw,47px);font-weight:600;letter-spacing:2.4px;
+  color:#f3d991;text-shadow:0 2px 2px #000,0 0 28px rgba(226,181,83,.28);
+}
+.warrior-subtitle{font-size:9px;letter-spacing:3px;color:#b9ad91}
+.warrior-hero{
+  position:relative;overflow:hidden;padding:24px 18px 25px;border:1px solid rgba(222,199,147,.28);
+  border-radius:5px;background:linear-gradient(125deg,rgba(255,255,255,.075),rgba(255,255,255,.012) 42%,rgba(209,167,83,.055));
+  box-shadow:0 22px 48px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.12);
+}
+.warrior-hero:before,.warrior-hero:after{content:"";position:absolute;pointer-events:none}
+.warrior-hero:before{inset:7px;border:1px solid rgba(255,255,255,.075)}
+.warrior-hero:after{width:55%;height:1px;left:22.5%;bottom:0;background:linear-gradient(90deg,transparent,#e8c879,transparent);box-shadow:0 0 18px #d9b765}
+.warrior-emblem{font-size:43px;color:#e6c779;filter:drop-shadow(0 0 13px rgba(231,190,95,.5))}
+.warrior-hero h2{font-family:Georgia,"Times New Roman",serif;font-size:21px;font-weight:500;letter-spacing:1.6px;color:#f0d99d}
+.warrior-hero p{max-width:560px;margin:0 auto;color:#c4bdad;font-size:12px;line-height:1.8}
+.warrior-record-card{
+  position:relative;margin-top:25px;padding:25px 12px 23px;border:1px solid rgba(206,220,224,.36);
+  border-radius:7px;overflow:hidden;
+  background:linear-gradient(110deg,rgba(255,255,255,.075),transparent 14%,transparent 86%,rgba(255,255,255,.055)),
+    linear-gradient(180deg,rgba(42,48,50,.94),rgba(10,13,15,.98) 24%,rgba(6,8,10,.99));
+  box-shadow:inset 0 0 0 4px rgba(215,230,234,.035),inset 0 0 55px rgba(188,212,220,.055),0 24px 60px rgba(0,0,0,.55);
+}
+.warrior-record-card:before{
+  content:"";position:absolute;inset:8px;border:1px solid rgba(223,235,237,.17);border-radius:3px;
+  box-shadow:inset 0 0 18px rgba(210,230,235,.035);pointer-events:none;
+}
+.warrior-record-card:after{
+  content:"";position:absolute;top:0;left:8%;right:8%;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.72),rgba(224,190,116,.8),rgba(255,255,255,.72),transparent);
+  filter:blur(.4px);pointer-events:none;
+}
+.warrior-record-card h3{font-family:Georgia,"Times New Roman",serif;font-size:19px;font-weight:500;letter-spacing:1.2px;color:#f0d99b}
+.warrior-record-card>p{max-width:600px;margin:0 auto 21px;color:#c4c0b5;font-size:11px;line-height:1.7}
+.warrior-record-list{
+  grid-template-columns:repeat(3,minmax(0,1fr));gap:19px 11px;padding:16px 10px 18px;
+  border:1px solid rgba(202,220,225,.27);border-radius:4px;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.08),transparent 2.5%,transparent 97.5%,rgba(255,255,255,.08)),
+    repeating-linear-gradient(to bottom,rgba(190,211,218,.025) 0,rgba(190,211,218,.025) 2px,transparent 2px,transparent 254px,rgba(216,229,231,.3) 254px,rgba(255,255,255,.08) 257px,rgba(4,7,9,.94) 263px),
+    linear-gradient(180deg,rgba(25,31,34,.9),rgba(5,8,10,.96));
+  box-shadow:inset 0 0 30px rgba(194,220,228,.075),0 10px 25px rgba(0,0,0,.28);
+}
+.warrior-record{
+  position:relative;padding:9px 6px 12px;border:1px solid rgba(218,201,157,.28);border-radius:3px;
+  background:linear-gradient(145deg,rgba(42,46,45,.96),rgba(12,15,16,.98) 60%,rgba(26,22,15,.98));
+  box-shadow:0 12px 24px rgba(0,0,0,.48),inset 0 1px rgba(255,255,255,.14),inset 0 0 20px rgba(216,190,126,.045);
+  transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+}
+.warrior-record:before{inset:4px;border:1px solid rgba(232,221,189,.12);border-radius:1px}
+.warrior-record:after{content:"";position:absolute;top:0;left:14%;right:14%;height:1px;background:linear-gradient(90deg,transparent,#f4e6bf,transparent);opacity:.65}
+.warrior-record:active{transform:scale(.985);border-color:rgba(242,211,139,.75)}
+.warrior-record-select{height:100%;gap:0}
+.warrior-record-kicker{margin:2px 0 7px;color:#dfc17b;font-size:8px;letter-spacing:2px}
+.warrior-record-figure{
+  height:177px!important;position:relative;isolation:isolate;padding:8px 4px 15px!important;
+  border:1px solid rgba(218,230,232,.15);border-radius:2px;
+  background:radial-gradient(ellipse at 50% 48%,rgba(255,219,143,.2),rgba(151,169,172,.055) 42%,rgba(0,0,0,.22) 78%),
+    linear-gradient(115deg,rgba(255,255,255,.09),transparent 22%,transparent 75%,rgba(255,255,255,.055));
+  box-shadow:inset 0 0 25px rgba(215,226,227,.07),0 7px 14px rgba(0,0,0,.25);overflow:hidden;
+}
+.warrior-record-figure:before{bottom:10px;left:16%;right:16%;height:15px;background:rgba(238,190,89,.36);filter:blur(12px)}
+.warrior-record-figure:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(115deg,transparent 15%,rgba(255,255,255,.12) 28%,transparent 39%,transparent 72%,rgba(255,255,255,.06) 83%,transparent 91%)}
+.warrior-trophy-object{width:94%;height:151px;filter:drop-shadow(0 8px 8px rgba(0,0,0,.8))}
+.warrior-trophy-statue{width:72%;height:91px;overflow:visible}
+.warrior-trophy-statue img{
+  width:100%;height:100%;object-fit:contain;object-position:center bottom;transform:scale(1.12);
+  filter:grayscale(1) sepia(.8) saturate(4.5) hue-rotate(3deg) brightness(1.3) contrast(1.18) drop-shadow(0 0 9px rgba(255,211,111,.78));
+  mix-blend-mode:screen;
+}
+.warrior-trophy-crown{top:1px;width:34%;height:15px;background:linear-gradient(180deg,#fff8d5 0%,#e9c76f 25%,#9d681f 68%,#f8e5a2 100%);filter:drop-shadow(0 0 5px rgba(255,218,137,.65))}
+.warrior-trophy-cup-rim{height:8px;border-color:#fff0bc;background:linear-gradient(180deg,#fff7d8,#d4a74b 52%,#78501a);box-shadow:0 0 12px rgba(255,214,125,.55)}
+.warrior-trophy-neck{height:11px;background:linear-gradient(90deg,#704313,#f9e6a0 28%,#b17a2d 67%,#fff0bc)}
+.warrior-trophy-handles i{border-color:#d8ad58;box-shadow:inset 0 0 5px #fff2c6,0 0 8px rgba(255,210,120,.55)}
+.warrior-trophy-plinth{height:25px;border-color:#fff0b6;background:linear-gradient(180deg,#fff3c1 0%,#d8ad54 24%,#80541a 74%,#e7c36e 100%);box-shadow:inset 0 1px 2px #fff9dc,0 3px 8px rgba(0,0,0,.5);color:#2a1c09}
+.warrior-trophy-plinth span{font-size:5px;letter-spacing:.65px}.warrior-trophy-plinth b{font-size:8px;color:#38240a}
+.warrior-trophy-base{height:11px;border-color:#f8e5a5;background:linear-gradient(180deg,#fff0b4,#c18d35 45%,#49300f);box-shadow:0 4px 10px rgba(0,0,0,.55),0 0 9px rgba(231,189,95,.2)}
+.warrior-record strong{min-height:34px;margin:10px 0 5px;color:#f2e9d1;font-family:Georgia,"Times New Roman",serif;font-size:clamp(11px,2.5vw,14px);font-weight:500;line-height:1.35}
+.warrior-record b{font-size:clamp(19px,4.7vw,27px);color:#f1d17d;text-shadow:0 0 17px rgba(240,199,105,.32)}
+.warrior-record small{color:#c1b9a7;font-size:9px}
+.warrior-record-improvement{border-radius:2px;color:#c7e5ce}
+.warrior-record-tap{margin-top:11px;padding-top:8px;border-top:1px solid rgba(231,211,160,.15);color:#e5c982;font-size:8px;letter-spacing:1.2px}
+.warrior-empty,.warrior-loading{padding:23px 15px;color:#d4c8a7;line-height:1.8}
+#warriorTrophyModal{padding:16px;background:rgba(0,0,0,.88);backdrop-filter:blur(13px)}
+.warrior-modal-panel{
+  width:min(100%,470px);padding:27px 19px 24px;border:1px solid rgba(232,208,151,.62);border-radius:5px;
+  background:linear-gradient(115deg,rgba(255,255,255,.075),transparent 28%,transparent 74%,rgba(255,255,255,.045)),
+    radial-gradient(ellipse at 50% 18%,rgba(231,190,105,.2),transparent 54%),linear-gradient(160deg,#282722,#090c0e 72%);
+  box-shadow:0 30px 100px #000,inset 0 0 0 5px rgba(221,230,225,.035),inset 0 0 45px rgba(255,211,124,.08);
+}
+.warrior-modal-panel:before{content:"";position:absolute;inset:8px;border:1px solid rgba(240,226,190,.13);pointer-events:none}
+.warrior-modal-close{z-index:5;border-color:rgba(238,213,158,.4);background:#171817;color:#f2d88e}
+.warrior-modal-label{color:#d9bd7a;letter-spacing:2.5px}
+.warrior-modal-title{font-family:Georgia,"Times New Roman",serif;font-weight:500;color:#f4e7c4}
+.warrior-modal-weight{color:#f0d184;text-shadow:0 0 25px rgba(241,201,111,.42)}
+#warriorTrophyModal .warrior-modal-stage{height:300px!important;margin:9px 0 12px;border:1px solid rgba(221,230,225,.17);background:radial-gradient(ellipse at 50% 55%,rgba(236,199,119,.16),transparent 61%),linear-gradient(115deg,rgba(255,255,255,.045),transparent 25%,transparent 75%,rgba(255,255,255,.035));box-shadow:inset 0 0 30px rgba(210,224,225,.055)}
+#warriorTrophyModal .warrior-modal-figure .warrior-trophy-statue img{filter:grayscale(1) sepia(.8) saturate(4.5) hue-rotate(3deg) brightness(1.35) contrast(1.2) drop-shadow(0 0 17px rgba(255,219,144,.8))}
+.warrior-modal-meta{color:#c9c0aa;font-size:11px;line-height:1.8}
+@media(min-width:760px){
+  .warrior-record-list{grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 14px;padding:19px 14px 22px}
+  .warrior-record-figure{height:190px!important}.warrior-trophy-object{height:160px}
+}
+@media(max-width:430px){
+  .warrior-record-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 8px;padding:11px 7px 14px}
+  .warrior-record{padding:7px 5px 10px}.warrior-record-figure{height:158px!important}
+  .warrior-trophy-object{height:140px}.warrior-trophy-statue{height:83px}
+  .warrior-record strong{font-size:11px;min-height:31px}.warrior-record b{font-size:21px}
+  .warrior-title{letter-spacing:1.5px}.warrior-record-card{padding:21px 8px 17px}
+}
+@media(prefers-reduced-motion:reduce){.warrior-record{transition:none}}
+
 </style>
 </head>
 <body class="app-booting">
