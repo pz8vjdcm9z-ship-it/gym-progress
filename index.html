@@ -1144,10 +1144,14 @@ body.is-arniforcamp-theme .dashboard-library{border-color:rgba(255,211,35,.34);b
 @media(max-width:390px){body.is-arniforcamp-theme .dashboard-art{width:92px;height:92px;flex-basis:92px;border-radius:23px}body.is-arniforcamp-theme .dashboard-copy h2{font-size:clamp(27px,7.5vw,34px)}}
 
 /* ICONO DEL PANEL: mancuerna para todas las cuentas; casco solo ARNIFORCAMP. */
-body:not(.is-arniforcamp-theme) .dashboard-art .dashboard-helmet-logo{display:none!important}
+.dashboard-art .dashboard-helmet-logo{display:none!important}
 body:not(.is-arniforcamp-theme) .dashboard-art .dashboard-dumbbell-icon{display:block!important;width:54px!important;height:54px!important;color:var(--accent)!important;filter:drop-shadow(0 5px 10px rgba(85,223,189,.2))!important;transform:rotate(-5deg)!important}
 body.is-arniforcamp-theme .dashboard-art .dashboard-dumbbell-icon{display:none!important}
 body.is-arniforcamp-theme .dashboard-art .dashboard-helmet-logo{display:block!important}
+/* En el panel de administración se conserva la mancuerna dorada, aunque el admin use el tema ARNIFORCAMP. */
+body.admin-account-mode .dashboard-art .dashboard-helmet-logo{display:none!important}
+body.admin-account-mode .dashboard-art .dashboard-dumbbell-icon{display:block!important;width:54px!important;height:54px!important;color:var(--accent)!important;filter:drop-shadow(0 5px 10px rgba(255,211,35,.24))!important;transform:rotate(-5deg)!important}
+body.admin-account-mode .dashboard-art{background:linear-gradient(145deg,rgba(255,211,35,.16),rgba(255,184,0,.04))!important;border-color:rgba(255,211,35,.42)!important}
 </style>
 </head>
 <body>
@@ -1886,6 +1890,7 @@ async function loadRepDB(){
 }
 
 function renderDays(){
+  document.body.classList.toggle("admin-account-mode",!!currentIsAdmin&&!adminPreviewMode);
   document.body.classList.toggle("is-isabela-theme",isIsabelaAccount());
   document.body.classList.toggle("is-jordi-theme",isJordiAccount());
   document.body.classList.toggle("is-arniforcamp-theme",isArniforcampAccount());
@@ -2832,6 +2837,9 @@ async function openAdminUserApp(){
   adminPreviewMode=true;
   currentUser=adminPreviewUser;
   currentIsAdmin=false;
+  // La vista previa debe adoptar la identidad y el icono de la cuenta consultada.
+  document.body.classList.remove("admin-account-mode");
+  renderUsersThemeReset();
   document.body.classList.add("admin-preview-mode");
   document.body.classList.toggle("is-isabela-theme",isIsabelaAccount());
   document.body.classList.toggle("is-jordi-theme",isJordiAccount());
@@ -2881,11 +2889,13 @@ function closeAdminUserApp(){
   $("usersNav").classList.remove("hidden");
   setMainTab("users");
   adminPreviewMode=false;
+  document.body.classList.toggle("admin-account-mode",!!currentIsAdmin);
   $("adminUserDetail").classList.remove("hidden");
   $("adminUserDetail").scrollIntoView({behavior:"smooth",block:"start"});
   renderUsersThemeReset();
 }
 function renderUsersThemeReset(){
+  document.body.classList.toggle("admin-account-mode",!!currentIsAdmin&&!adminPreviewMode);
   const themeMeta=document.querySelector('meta[name="theme-color"]');
   if(themeMeta)themeMeta.content=isIsabelaAccount()?"#fff4f7":(isJordiAccount()?"#090a0c":(isArniforcampAccount()?"#08090b":"#0b1422"));
   document.body.classList.toggle("is-isabela-theme",isIsabelaAccount());
@@ -2988,8 +2998,12 @@ async function enterApp(user){
     startAccountBlockWatcher(user);
   }
   await refreshAdminAccess();
+  document.body.classList.toggle("admin-account-mode",!!currentIsAdmin&&!adminPreviewMode);
   if(isIsabelaAccount() && selectedDay>2)selectedDay=1;
   document.body.classList.add("spotify-visible");
+  // Aplicar siempre el tema completo de la cuenta autenticada; evita heredar el casco del administrador.
+  document.body.classList.toggle("is-isabela-theme",isIsabelaAccount());
+  document.body.classList.toggle("is-jordi-theme",isJordiAccount());
   document.body.classList.toggle("is-arniforcamp-theme",isArniforcampAccount());
   const accountThemeMeta=document.querySelector('meta[name="theme-color"]');if(accountThemeMeta)accountThemeMeta.content=isArniforcampAccount()?"#08090b":(isIsabelaAccount()?"#fff4f7":(isJordiAccount()?"#090a0c":"#0b1422"));
   $("loginView").classList.add("hidden");
