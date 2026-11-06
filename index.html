@@ -1175,6 +1175,14 @@ body.app-booting{overflow:hidden}
 @keyframes boot-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.025)}}
 @media(prefers-reduced-motion:reduce){.boot-logo,.boot-spinner{animation:none}}
 
+
+/* Copia de seguridad global en USERS: solo visible dentro del panel admin */
+.users-toolbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.users-backup-btn{min-height:42px;padding:8px 12px;border:1px solid rgba(85,223,189,.42);border-radius:11px;background:linear-gradient(145deg,rgba(85,223,189,.17),rgba(85,223,189,.06));color:#8ff0d5;font-size:10px;font-weight:950;letter-spacing:.45px;display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer}
+.users-backup-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.users-backup-btn:disabled{opacity:.55;cursor:wait}
+@media(max-width:480px){.users-toolbar{align-items:flex-start;flex-wrap:wrap}.users-toolbar-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.users-toolbar-actions button{width:100%;min-width:0}.users-backup-btn{font-size:9px;padding:8px 5px}}
+
 </style>
 </head>
 <body class="app-booting">
@@ -1360,7 +1368,7 @@ body.app-booting{overflow:hidden}
         <span class="users-admin-mark">ADMIN</span>
       </div>
       <div class="users-panel">
-        <div class="users-toolbar"><strong id="usersCount">Usuarios registrados</strong><button type="button" class="users-refresh" id="usersRefresh">ACTUALIZAR</button></div>
+        <div class="users-toolbar"><strong id="usersCount">Usuarios registrados</strong><div class="users-toolbar-actions"><button type="button" class="users-refresh" id="usersRefresh">ACTUALIZAR</button><button type="button" class="users-backup-btn" id="usersBackup" aria-label="Descargar copia de seguridad de todos los usuarios"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 18.5h10a4 4 0 0 0 .4-8A6.2 6.2 0 0 0 6 9.2a4.7 4.7 0 0 0 1.5 9.3Z"/><path d="M12 12v7m-3-3 3 3 3-3"/></svg><span>DESCARGAR COPIA</span></button></div></div>
         <div id="usersList" class="users-list"><div class="empty">Cargando usuarios…</div></div>
         <div id="usersStatus" class="status hidden" role="status"></div>
         <section id="adminUserDetail" class="admin-user-detail hidden" aria-live="polite">
@@ -2401,6 +2409,7 @@ $("libraryNav").addEventListener("click",showLibrary);
 $("streakNav").addEventListener("click",()=>setMainTab("streak"));
 $("usersNav").addEventListener("click",()=>{if(currentIsAdmin)setMainTab("users");});
 $("usersRefresh").addEventListener("click",loadUsers);
+$("usersBackup").addEventListener("click",downloadAllUsersBackup);
 $("streakPrevMonth").addEventListener("click",()=>changeStreakMonth(-1));
 $("streakNextMonth").addEventListener("click",()=>changeStreakMonth(1));
 $("dashboardLibraryBtn").addEventListener("click",showLibrary);
@@ -2803,6 +2812,56 @@ async function refreshAdminAccess(){
   $("usersNav").classList.toggle("hidden",!currentIsAdmin);
   return currentIsAdmin;
 }
+
+// Descarga una copia JSON de los datos centralizados de TODOS los usuarios.
+// La función de servidor valida el rol admin; nunca se expone service_role en el HTML.
+async function downloadAllUsersBackup(){
+  if(!currentUser||!currentIsAdmin){
+    showStatus($("usersStatus"),"La copia de seguridad solo está disponible para la cuenta administradora.",true);
+    return;
+  }
+  const button=$("usersBackup"),status=$("usersStatus");
+  if(!button)return;
+  const original=button.innerHTML;
+  button.disabled=true;
+  button.innerHTML='<span>PREPARANDO COPIA…</span>';
+  hideStatus(status);
+  try{
+    const {data:{session},error:sessionError}=await supabase.auth.getSession();
+    if(sessionError)throw sessionError;
+    if(!session?.access_token)throw new Error("La sesión ha caducado. Cierra sesión y vuelve a entrar.");
+    const {data,error}=await supabase.functions.invoke("backup-all-users",{
+      body:{requestedAt:new Date().toISOString()}
+    });
+    if(error)throw error;
+    if(!data||data.ok!==true||!data.backup)throw new Error(data?.message||"El servidor no ha devuelto una copia válida.");
+    const backup={
+      format:"GYM_PROGRESS_BACKUP",
+      format_version:1,
+      downloaded_at:new Date().toISOString(),
+      note:"Copia de datos centralizados en Supabase. No contiene contraseñas ni tokens de sesión. Los datos que solo existan en el almacenamiento local de móviles/navegadores no están incluidos.",
+      ...data.backup
+    };
+    const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement("a");
+    const stamp=new Date().toISOString().replace(/[:.]/g,"-");
+    link.href=url;
+    link.download=`GYM_PROGRESS_COPIA_COMPLETA_${stamp}.json`;
+    document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+    const total=backup.auth_users?.length??0;
+    showStatus(status,`Copia descargada correctamente. Cuentas incluidas: ${total}. Guarda el archivo en un lugar seguro.`);
+  }catch(error){
+    console.error("Error al descargar la copia global:",error);
+    const message=error?.context?.json?.message||error?.message||"No se ha podido crear la copia.";
+    showStatus(status,`${message} Comprueba que la función backup-all-users está instalada en Supabase.`,true);
+  }finally{
+    button.disabled=false;
+    button.innerHTML=original;
+  }
+}
+
 async function loadUsers(){
   if(!currentUser||!currentIsAdmin)return;
   const list=$("usersList"),status=$("usersStatus"),button=$("usersRefresh");
