@@ -1152,9 +1152,40 @@ body.is-arniforcamp-theme .dashboard-art .dashboard-helmet-logo{display:block!im
 body.admin-account-mode .dashboard-art .dashboard-helmet-logo{display:none!important}
 body.admin-account-mode .dashboard-art .dashboard-dumbbell-icon{display:block!important;width:54px!important;height:54px!important;color:var(--accent)!important;filter:drop-shadow(0 5px 10px rgba(255,211,35,.24))!important;transform:rotate(-5deg)!important}
 body.admin-account-mode .dashboard-art{background:linear-gradient(145deg,rgba(255,211,35,.16),rgba(255,184,0,.04))!important;border-color:rgba(255,211,35,.42)!important}
+
+/* Pantalla de bienvenida: evita mostrar el formulario mientras se restaura la sesión. */
+body.app-booting{overflow:hidden}
+#brandBootScreen{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 42%,rgba(85,223,189,.12),transparent 36%),linear-gradient(155deg,#091321,#101c2d 58%,#080e18);opacity:1;visibility:visible;transition:opacity .28s ease,visibility .28s ease}
+#brandBootScreen.is-leaving{opacity:0;visibility:hidden;pointer-events:none}
+.boot-content{display:grid;justify-items:center;gap:18px;text-align:center}
+.boot-logo{width:112px;height:112px;display:grid;place-items:center;border:1px solid rgba(85,223,189,.38);border-radius:32px;background:linear-gradient(145deg,rgba(85,223,189,.17),rgba(85,223,189,.035));box-shadow:0 0 48px rgba(85,223,189,.13),inset 0 1px rgba(255,255,255,.08);color:#55dfbd;animation:boot-breathe 1.8s ease-in-out infinite}
+.boot-logo svg{width:68px;height:68px;filter:drop-shadow(0 5px 12px currentColor)}
+.boot-logo img{width:100%;height:100%;padding:7px;object-fit:contain;border-radius:25px}
+.boot-brand{font-size:13px;font-weight:950;letter-spacing:3px;color:#f3f7fc}
+.boot-caption{margin-top:-12px;color:#9eafc3;font-size:10px;letter-spacing:2px}
+.boot-spinner{width:25px;height:25px;margin-top:8px;border:2px solid rgba(255,255,255,.16);border-top-color:currentColor;border-radius:50%;animation:boot-spin .8s linear infinite;color:#55dfbd}
+#brandBootScreen[data-theme="pink"] .boot-logo{color:#d979a5;border-color:rgba(217,121,165,.42);background:linear-gradient(145deg,rgba(243,169,197,.2),rgba(243,169,197,.04));box-shadow:0 0 48px rgba(243,169,197,.13)}
+#brandBootScreen[data-theme="pink"] .boot-spinner{color:#d979a5}
+#brandBootScreen[data-theme="gold"] .boot-logo{color:#e2b75c;border-color:rgba(226,183,92,.45);background:linear-gradient(145deg,rgba(214,173,85,.2),rgba(214,173,85,.04));box-shadow:0 0 48px rgba(214,173,85,.13)}
+#brandBootScreen[data-theme="gold"] .boot-spinner{color:#e2b75c}
+#brandBootScreen[data-theme="arniforcamp"]{background:radial-gradient(circle at 50% 42%,rgba(255,211,35,.13),transparent 36%),linear-gradient(155deg,#08090b,#171719 58%,#08090b)}
+#brandBootScreen[data-theme="arniforcamp"] .boot-logo{color:#ffd323;border-color:rgba(255,211,35,.5);background:linear-gradient(145deg,rgba(255,211,35,.16),rgba(255,184,0,.035));box-shadow:0 0 48px rgba(255,211,35,.15)}
+#brandBootScreen[data-theme="arniforcamp"] .boot-spinner{color:#ffd323}
+@keyframes boot-spin{to{transform:rotate(360deg)}}
+@keyframes boot-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.025)}}
+@media(prefers-reduced-motion:reduce){.boot-logo,.boot-spinner{animation:none}}
+
 </style>
 </head>
-<body>
+<body class="app-booting">
+<div id="brandBootScreen" role="status" aria-live="polite" aria-label="Cargando GYM PROGRESS">
+  <div class="boot-content">
+    <div class="boot-logo" id="bootLogo" aria-hidden="true"></div>
+    <div class="boot-brand">GYM PROGRESS</div>
+    <div class="boot-caption">ENTRENA CON CONSTANCIA</div>
+    <div class="boot-spinner" aria-hidden="true"></div>
+  </div>
+</div>
 <header>
   <div class="container">
     <div class="header-row">
@@ -1638,6 +1669,29 @@ const ALTERNATIVES = {
 };
 
 const $ = id => document.getElementById(id);
+function setBootBrand(user=null){
+  const screen=$("brandBootScreen"),slot=$("bootLogo");
+  if(!screen||!slot)return;
+  const email=(user?.email||"").trim().toLowerCase();
+  const arniforcamp=email==="arniforcamp@gmail.com";
+  const isabela=email==="isabela@gmail.com";
+  const jordi=email==="jordi@gmail.com";
+  screen.dataset.theme=arniforcamp?"arniforcamp":(isabela?"pink":(jordi?"gold":"default"));
+  slot.replaceChildren();
+  const dashboard=$("appView")?.querySelector(".dashboard-art");
+  const source=dashboard?.querySelector(arniforcamp?".dashboard-helmet-logo":".dashboard-dumbbell-icon");
+  if(source){
+    const clone=source.cloneNode(true);
+    if(clone.tagName.toLowerCase()==="img")clone.alt="";
+    slot.append(clone);
+  }
+}
+function hideBrandBoot(){
+  const screen=$("brandBootScreen");
+  document.body.classList.remove("app-booting");
+  if(screen){screen.classList.add("is-leaving");setTimeout(()=>screen.remove(),320);}
+}
+
 
 const BIKE_TIMER_SECONDS=600;
 const BIKE_NOTIFICATION_TEST_SECONDS=1;
@@ -2990,6 +3044,9 @@ function startAccountBlockWatcher(user){
 
 
 async function enterApp(user){
+  setBootBrand(user);
+  document.body.classList.add("app-booting");
+  $("brandBootScreen")?.classList.remove("is-leaving");
   currentUser=user;
   if(!adminPreviewMode){
     const {data:accountActive,error:accountStateError}=await supabase.rpc("gym_progress_account_is_active",{check_user_id:user.id});
@@ -3038,6 +3095,8 @@ async function enterApp(user){
   }catch(error){
     console.error(error);
     showStatus($("saveStatus"),`No se han podido cargar tus registros: ${error.message||"comprueba la configuración de Supabase"}`,true);
+  }finally{
+    hideBrandBoot();
   }
 }
 
@@ -3049,6 +3108,9 @@ $("loginForm").addEventListener("submit",async event=>{
   button.disabled=true;
   button.textContent="CONECTANDO…";
   hideStatus($("loginStatus"));
+  setBootBrand({email});
+  document.body.classList.add("app-booting");
+  $("brandBootScreen")?.classList.remove("is-leaving");
   try{
     const {data,error}=await supabase.auth.signInWithPassword({email,password});
     if(error)throw error;
@@ -3058,6 +3120,7 @@ $("loginForm").addEventListener("submit",async event=>{
     console.error("Error de inicio de sesión:",error);
     const message=error?.message||"Error de conexión con Supabase.";
     showStatus($("loginStatus"),message.includes("Invalid login credentials")?"Correo o contraseña incorrectos.":`No se ha podido iniciar sesión: ${message}`,true);
+    hideBrandBoot();
   }finally{
     button.disabled=false;
     button.textContent="INICIAR SESIÓN";
@@ -3556,15 +3619,24 @@ async function initializeSpotifyForApp(){
 })();
 (async function init(){
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
+  setBootBrand(null);
   try{
     const {data,error}=await supabase.auth.getSession();
     if(error)throw error;
     if(data?.session?.user){
+      setBootBrand(data.session.user);
       await enterApp(data.session.user);
+      return;
     }
+    $("appView").classList.add("hidden");
+    $("loginView").classList.remove("hidden");
   }catch(error){
     console.error("No se pudo restaurar la sesión:",error);
+    $("appView").classList.add("hidden");
+    $("loginView").classList.remove("hidden");
     showStatus($("loginStatus"),"No se ha podido recuperar la sesión. Inicia sesión de nuevo. Detalle: "+(error?.message||"error de conexión"),true);
+  }finally{
+    if(!currentUser || $("loginView").classList.contains("hidden")===false)hideBrandBoot();
   }
 })();
 </script>
