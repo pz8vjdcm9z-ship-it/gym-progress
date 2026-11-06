@@ -1748,6 +1748,100 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 }
 </style>
 
+
+<style id="warrior-exercise-image-plaque">
+/* Placa de honor: ejercicio arriba, imagen real al centro y carga abajo */
+.warrior-record-figure{
+  height:190px!important;min-height:190px!important;
+  padding:4px!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  overflow:visible!important;background:transparent!important;border:0!important;
+}
+.warrior-hall-plaque{
+  width:100%!important;max-width:220px!important;height:178px!important;
+  box-sizing:border-box!important;padding:11px 9px 10px!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:space-between!important;
+  gap:5px!important;overflow:hidden!important;position:relative!important;
+  border:1px solid rgba(202,174,116,.88)!important;border-radius:5px!important;
+  background:linear-gradient(145deg,#292a29 0%,#171a1a 50%,#0d1010 100%)!important;
+  box-shadow:inset 0 0 0 3px rgba(229,207,160,.06),inset 0 0 22px rgba(0,0,0,.68),0 7px 18px rgba(0,0,0,.48)!important;
+}
+.warrior-hall-plaque:before{
+  content:""!important;position:absolute!important;inset:5px!important;pointer-events:none!important;
+  border:1px solid rgba(220,194,141,.2)!important;
+}
+.warrior-plaque-exercise{
+  position:relative!important;z-index:1!important;flex:0 0 auto!important;
+  width:100%!important;max-width:100%!important;min-height:30px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  color:#f1e8d5!important;font:600 clamp(10px,2.6vw,13px)/1.2 Georgia,serif!important;
+  text-align:center!important;letter-spacing:.1px!important;overflow-wrap:anywhere!important;
+  display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;
+}
+.warrior-plaque-image-window{
+  position:relative!important;z-index:1!important;flex:1 1 auto!important;
+  width:100%!important;min-height:70px!important;max-height:91px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  overflow:hidden!important;border:1px solid rgba(205,180,126,.2)!important;border-radius:3px!important;
+  background:radial-gradient(ellipse at 50% 40%,rgba(190,159,91,.13),rgba(7,9,9,.72) 72%)!important;
+}
+.warrior-plaque-exercise-image{
+  display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+  object-fit:contain!important;object-position:center!important;padding:3px!important;box-sizing:border-box!important;
+  filter:drop-shadow(0 3px 5px rgba(0,0,0,.38))!important;
+}
+.warrior-plaque-image-fallback{
+  color:#9f916e!important;font:700 7px/1.4 Arial,sans-serif!important;letter-spacing:1.2px!important;text-align:center!important;
+}
+.warrior-plaque-weight{
+  position:relative!important;z-index:1!important;flex:0 0 auto!important;
+  margin:0!important;color:#e8cb88!important;font:700 clamp(20px,5vw,25px)/1 Arial,sans-serif!important;
+  letter-spacing:.1px!important;text-align:center!important;white-space:nowrap!important;
+  text-shadow:0 1px 10px rgba(216,180,107,.16)!important;
+}
+.warrior-plaque-title,.warrior-plaque-rule{display:none!important}
+.warrior-modal-figure .warrior-record-figure{height:250px!important;min-height:250px!important}
+.warrior-modal-figure .warrior-hall-plaque{max-width:340px!important;height:230px!important;padding:15px 14px 13px!important}
+.warrior-modal-figure .warrior-plaque-exercise{font-size:18px!important;min-height:42px!important}
+.warrior-modal-figure .warrior-plaque-image-window{max-height:125px!important;min-height:105px!important}
+.warrior-modal-figure .warrior-plaque-weight{font-size:34px!important}
+@media(max-width:390px){
+  .warrior-record-figure{height:178px!important;min-height:178px!important}
+  .warrior-hall-plaque{height:166px!important;padding:9px 7px!important}
+  .warrior-plaque-exercise{font-size:10px!important;min-height:27px!important}
+  .warrior-plaque-image-window{min-height:65px!important;max-height:82px!important}
+  .warrior-plaque-weight{font-size:20px!important}
+}
+</style>
+
+
+<style id="warrior-no-hand-gold-cutout">
+/* Sin mano: el toque abre directamente la placa */
+.warrior-hand{display:none!important}
+.warrior-modal-stage.lift .warrior-hand{display:none!important;animation:none!important}
+.warrior-modal-stage.lift .warrior-modal-figure{animation:none!important}
+.warrior-modal-stage{align-items:center!important;height:auto!important;min-height:250px!important}
+.warrior-modal-figure{height:auto!important;min-height:220px!important}
+.warrior-modal-figure .warrior-hall-plaque{height:260px!important;max-width:360px!important}
+.warrior-modal-figure .warrior-plaque-image-window{min-height:130px!important;max-height:145px!important}
+.warrior-plaque-image-window{
+  background:radial-gradient(ellipse at 50% 48%,rgba(201,164,91,.12),transparent 72%)!important;
+  border-color:rgba(205,180,126,.12)!important;
+}
+.warrior-plaque-exercise-image{
+  object-fit:contain!important;
+  mix-blend-mode:normal!important;
+  filter:drop-shadow(0 0 7px rgba(221,179,92,.25))!important;
+}
+.warrior-plaque-exercise-image.warrior-gold-cutout-ready{
+  background:transparent!important;
+}
+.warrior-plaque-exercise-image.warrior-gold-cutout-fallback{
+  mix-blend-mode:multiply!important;
+  filter:sepia(1) saturate(2.6) hue-rotate(4deg) contrast(1.35)!important;
+}
+.warrior-modal-figure .warrior-plaque-exercise-image{max-height:140px!important}
+</style>
+
 </head>
 <body class="app-booting">
 <div id="brandBootScreen" role="status" aria-live="polite" aria-label="Cargando GYM PROGRESS">
@@ -1983,10 +2077,10 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
       <h1 class="warrior-title">SALA DEL GUERRERO</h1>
       <p class="warrior-subtitle">DISCIPLINA · CONSTANCIA · SUPERACIÓN</p>
       <div class="warrior-hero"><div class="warrior-emblem" aria-hidden="true">⚔</div><h2>TU CAMINO, TUS MARCAS</h2><p>Un espacio personal para reconocer tu esfuerzo y consultar los resultados que has conseguido entrenando.</p></div>
-      <section class="warrior-record-card"><h3>🏆 VITRINA DE TUS CONQUISTAS</h3><p>Todos tus trofeos reunidos en una vitrina. Toca una conquista para levantarla y verla de cerca.</p><div id="warriorRecordsList" class="warrior-record-list"><div class="warrior-loading">Preparando tus vitrinas…</div></div></section>
+      <section class="warrior-record-card"><h3>🏆 VITRINA DE TUS CONQUISTAS</h3><p>Tus récords reunidos en una vitrina. Toca un ejercicio para ver su placa de honor.</p><div id="warriorRecordsList" class="warrior-record-list"><div class="warrior-loading">Preparando tus vitrinas…</div></div></section>
     </div>
   </section>
-  <div id="warriorTrophyModal" role="dialog" aria-modal="true" aria-label="Detalle de tu trofeo">
+  <div id="warriorTrophyModal" role="dialog" aria-modal="true" aria-label="Detalle de tu placa de honor">
     <div class="warrior-modal-panel">
       <button type="button" class="warrior-modal-close" id="warriorTrophyClose" aria-label="Cerrar">×</button>
       <div class="warrior-modal-label">TU CONQUISTA</div>
@@ -1994,23 +2088,7 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
       <div class="warrior-modal-weight" id="warriorModalWeight">0 kg</div>
       <div class="warrior-modal-stage" id="warriorModalStage">
         <div class="warrior-modal-figure" id="warriorModalFigure"></div>
-        <div class="warrior-hand" aria-hidden="true">
-          <svg viewBox="0 0 220 250" role="presentation">
-            <defs>
-              <linearGradient id="warriorSkin" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#f4c9a1"/><stop offset=".42" stop-color="#c88962"/><stop offset="1" stop-color="#75452f"/>
-              </linearGradient>
-              <linearGradient id="warriorSkinLight" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#ffe0bd"/><stop offset="1" stop-color="#b97550"/>
-              </linearGradient>
-            </defs>
-            <path d="M41 231 C31 213 26 190 31 169 L43 124 C46 113 58 109 65 118 L69 145 L77 63 C78 48 96 47 100 62 L103 132 L111 31 C113 14 132 15 135 32 L137 132 L146 48 C148 31 166 34 168 51 L166 145 L177 88 C181 71 199 78 198 95 L190 169 C188 195 174 221 157 239 Z" fill="url(#warriorSkin)" stroke="#6f422f" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M43 177 C60 162 75 166 88 177 C101 188 113 189 126 178 C143 164 160 168 178 181 L170 212 C150 225 124 226 101 218 C77 210 58 211 39 219 Z" fill="url(#warriorSkinLight)" opacity=".78"/>
-            <path d="M78 63 C83 79 83 105 81 137 M113 32 C117 62 116 100 116 137 M148 49 C151 77 148 109 147 140 M181 89 C181 111 176 133 172 151" fill="none" stroke="#70432f" stroke-width="3" stroke-linecap="round" opacity=".7"/>
-            <path d="M68 147 C83 155 96 155 108 148 M105 149 C120 158 135 157 148 148 M145 151 C158 158 169 157 181 151" fill="none" stroke="#f8d4b2" stroke-width="3" stroke-linecap="round" opacity=".65"/>
-            <path d="M30 187 C18 176 12 160 18 148 C23 137 36 138 43 149 L62 177" fill="url(#warriorSkin)" stroke="#70432f" stroke-width="3" stroke-linejoin="round"/>
-          </svg>
-        </div>
+
       </div>
       <div class="warrior-modal-meta" id="warriorModalMeta"></div>
     </div>
@@ -4382,15 +4460,60 @@ function warriorExerciseRecord(row){
   }
   return record;
 }
+function warriorGoldCutout(img){
+  if(!img || img.dataset.goldProcessed==="1" || !img.naturalWidth)return;
+  img.dataset.goldProcessed="1";
+  try{
+    const maxSide=700;
+    const scale=Math.min(1,maxSide/Math.max(img.naturalWidth,img.naturalHeight));
+    const canvas=document.createElement("canvas");
+    canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));
+    canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+    const ctx=canvas.getContext("2d",{willReadFrequently:true});
+    if(!ctx)throw new Error("Canvas no disponible");
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    const frame=ctx.getImageData(0,0,canvas.width,canvas.height);
+    const px=frame.data;
+    for(let i=0;i<px.length;i+=4){
+      const r=px[i],g=px[i+1],b=px[i+2];
+      const hi=Math.max(r,g,b),lo=Math.min(r,g,b);
+      const luma=.299*r+.587*g+.114*b;
+      const nearWhite=luma>202 && (hi-lo)<48;
+      if(nearWhite){
+        px[i+3]=Math.round(255*Math.max(0,Math.min(1,(246-luma)/44)));
+      }else{
+        const ink=Math.max(.18,Math.min(1,(246-luma)/205));
+        px[i]=222;px[i+1]=178;px[i+2]=91;
+        px[i+3]=Math.round(px[i+3]*ink);
+      }
+    }
+    ctx.putImageData(frame,0,0);
+    img.src=canvas.toDataURL("image/png");
+    img.classList.add("warrior-gold-cutout-ready");
+  }catch(error){
+    // Si el servidor de imágenes no permite procesar el recurso por CORS,
+    // se conserva la ilustración original sin bloquear la vitrina.
+    img.classList.add("warrior-gold-cutout-fallback");
+    console.warn("No se pudo recortar el fondo de la ilustración:",error);
+  }
+}
 function warriorFigureMarkup(row){
   const name=escapeHTML(row.exercise_name||row.exercise_id||"Ejercicio");
   const weight=Number(row.weight);
   const weightLabel=(Number.isFinite(weight)?weight:0).toLocaleString("es-ES",{maximumFractionDigits:2})+" kg";
+  const record=warriorExerciseRecord(row);
+  const flat=record?.images?.flat;
+  const path=flat?.start||flat?.peak||"";
+  const image=path
+    ? `<img class="warrior-plaque-exercise-image" crossorigin="anonymous" loading="lazy" decoding="async" onload="warriorGoldCutout(this)" src="${escapeHTML(REPDB_ASSETS+path)}" alt="Imagen del ejercicio ${name}" onerror="this.hidden=true;this.nextElementSibling.hidden=false">`
+    : "";
   return `<div class="warrior-record-figure">
-    <div class="warrior-hall-plaque" role="img" aria-label="Placa de honor: Récord personal, ${name}, ${weightLabel}">
-      <div class="warrior-plaque-title">RÉCORD PERSONAL</div>
-      <div class="warrior-plaque-rule" aria-hidden="true"></div>
+    <div class="warrior-hall-plaque" role="img" aria-label="Placa de honor: ${name}, ${weightLabel}">
       <div class="warrior-plaque-exercise">${name}</div>
+      <div class="warrior-plaque-image-window">
+        ${image}
+        <div class="warrior-plaque-image-fallback" ${path?'hidden':''}>IMAGEN NO DISPONIBLE</div>
+      </div>
       <div class="warrior-plaque-weight">${weightLabel}</div>
     </div>
   </div>`;
@@ -4428,7 +4551,7 @@ async function renderWarriorRecords(){
         : '<span class="warrior-record-improvement no-previous">PRIMERA MARCA</span>';
       const figure=warriorFigureMarkup(row);
       const payload=encodeURIComponent(JSON.stringify({name:row.exercise_name||row.exercise_id||"Ejercicio",weight:row.weight,reps:row.reps||0,date,improvement:row.improvement||0,figure}));
-      return `<article class="warrior-record"><button type="button" class="warrior-record-select" data-trophy="${payload}" aria-label="Ampliar placa de honor de ${name}"><span class="warrior-record-kicker">PLACA ${String(index+1).padStart(2,"0")}</span>${figure}<small>${date}${reps}</small>${improvement}<span class="warrior-record-tap">TOCA PARA VER EL DETALLE</span></button></article>`;
+      return `<article class="warrior-record"><button type="button" class="warrior-record-select" data-trophy="${payload}" aria-label="Ver placa de honor de ${name}"><span class="warrior-record-kicker">PLACA ${String(index+1).padStart(2,"0")}</span>${figure}<small>${date}${reps}</small>${improvement}<span class="warrior-record-tap">TOCA PARA VER LA PLACA</span></button></article>`;
     }).join("");
   }catch(error){
     console.error("No se pudieron cargar los récords personales:",error);
@@ -4443,7 +4566,7 @@ function openWarriorTrophy(encoded){
     $("warriorModalFigure").innerHTML=trophy.figure;
     $("warriorModalMeta").textContent=trophy.date+(trophy.reps?" · "+trophy.reps+" repeticiones":"")+(trophy.improvement>0?" · Mejora de +"+Number(trophy.improvement).toLocaleString("es-ES",{maximumFractionDigits:2})+" kg":"");
     const modal=$("warriorTrophyModal"),stage=$("warriorModalStage");
-    modal.classList.add("open");stage.classList.remove("lift");void stage.offsetWidth;stage.classList.add("lift");
+    modal.classList.add("open");stage.classList.remove("lift");
     document.body.style.overflow="hidden";
   }catch(error){console.error("No se pudo abrir el trofeo:",error);}
 }
