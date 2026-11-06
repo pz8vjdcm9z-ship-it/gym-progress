@@ -1214,6 +1214,192 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 @media(prefers-reduced-motion:reduce){.warrior-modal-stage.lift .warrior-hand,.warrior-modal-stage.lift .warrior-modal-figure{animation:none;opacity:1;transform:none}}
 
 
+
+/* SALA DEL GUERRERO — VITRINA LARGA DE CRISTAL CON CUATRO TROFEOS POR FILA */
+.warrior-record-card{
+  padding:22px 10px 28px;
+  border:1px solid rgba(210,225,235,.34);
+  border-radius:24px;
+  background:
+    linear-gradient(115deg,rgba(255,255,255,.055),transparent 18%,transparent 78%,rgba(255,255,255,.035)),
+    linear-gradient(180deg,rgba(28,34,38,.88),rgba(7,9,12,.97));
+  box-shadow:
+    inset 0 0 0 3px rgba(210,225,235,.045),
+    inset 0 0 42px rgba(190,210,225,.055),
+    0 22px 60px rgba(0,0,0,.48);
+}
+.warrior-record-card:before{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border:1px solid rgba(220,235,245,.13);
+  border-radius:18px;
+  pointer-events:none;
+}
+.warrior-record-card h3,.warrior-record-card>p{z-index:1}
+.warrior-record-card>p{margin-bottom:17px}
+.warrior-record-list{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px 7px;
+  padding:12px 7px 18px;
+  border:1px solid rgba(190,215,230,.24);
+  border-radius:14px;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.055),transparent 3%,transparent 97%,rgba(255,255,255,.055)),
+    repeating-linear-gradient(to bottom,
+      rgba(130,155,170,.025) 0,
+      rgba(130,155,170,.025) 2px,
+      transparent 2px,
+      transparent 168px,
+      rgba(205,225,238,.26) 168px,
+      rgba(255,255,255,.10) 171px,
+      rgba(5,8,12,.85) 176px);
+  box-shadow:inset 0 0 24px rgba(180,210,230,.055);
+}
+.warrior-record{
+  min-width:0;
+  padding:5px 3px 10px;
+  border:1px solid rgba(205,225,238,.27);
+  border-radius:9px;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.018) 38%,rgba(255,211,35,.035)),
+    linear-gradient(180deg,rgba(42,49,53,.48),rgba(7,10,13,.76));
+  box-shadow:
+    inset 1px 0 rgba(255,255,255,.18),
+    inset -1px 0 rgba(255,255,255,.08),
+    inset 0 1px rgba(255,255,255,.16),
+    0 7px 14px rgba(0,0,0,.3);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+.warrior-record:before{
+  inset:3px;
+  border-color:rgba(230,240,245,.10);
+  border-radius:6px;
+}
+.warrior-record-select{gap:2px}
+.warrior-record-figure{
+  height:94px;
+  padding:3px;
+  border-radius:6px;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.09),transparent 45%),
+    radial-gradient(ellipse at 50% 75%,rgba(255,202,65,.22),rgba(0,0,0,.12) 72%);
+}
+.warrior-record-figure img{width:48%;max-height:82px;filter:grayscale(1) sepia(1) saturate(5) hue-rotate(2deg) brightness(1.2) contrast(1.1) drop-shadow(0 0 7px rgba(255,190,35,.5))}
+.warrior-record-figure.single img{width:88%}
+.warrior-record-kicker{margin-top:4px;font-size:7px;letter-spacing:.7px}
+.warrior-record strong{
+  min-height:34px;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  margin:3px 0;
+  font-size:9px;
+  line-height:1.18;
+  overflow-wrap:anywhere;
+}
+.warrior-record b{font-size:clamp(15px,4.2vw,20px);line-height:1.05}
+.warrior-record small{min-height:26px;margin-top:4px;font-size:7px;line-height:1.3}
+.warrior-record-improvement{margin-top:4px;padding:3px 4px;font-size:7px;line-height:1.2}
+.warrior-record-tap{margin-top:5px;font-size:7px;letter-spacing:.35px;line-height:1.25}
+@media(max-width:390px){
+  .warrior-record-list{gap:16px 5px;padding:10px 5px 15px}
+  .warrior-record{padding:4px 2px 8px}
+  .warrior-record-figure{height:82px}
+  .warrior-record-figure img{max-height:72px}
+  .warrior-record strong{font-size:8px;min-height:31px}
+  .warrior-record b{font-size:16px}
+  .warrior-record small{font-size:6.5px}
+  .warrior-record-tap{font-size:6px}
+}
+
+
+/* TROFEOS ESCULTÓRICOS: imagen única recortada, cuerpo, asas y peana metálica */
+.warrior-record-figure{height:166px!important;display:flex;align-items:flex-end;justify-content:center;padding:5px 3px 9px!important;overflow:hidden}
+.warrior-trophy-object{position:relative;width:88%;height:148px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;filter:drop-shadow(0 5px 7px rgba(0,0,0,.65))}
+.warrior-trophy-statue{position:relative;z-index:2;width:70%;height:88px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.warrior-trophy-statue img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 43%;transform:scale(1.32);filter:grayscale(1) sepia(1) saturate(7) hue-rotate(2deg) brightness(1.32) contrast(1.32) drop-shadow(0 0 7px rgba(255,203,65,.75));mix-blend-mode:screen}
+.warrior-trophy-crown{position:absolute;top:0;z-index:3;width:31%;height:13px;border-bottom:3px solid #fff0a2;background:linear-gradient(180deg,#fff2a6,#b87912 48%,#ffe77c);clip-path:polygon(0 100%,8% 8%,27% 62%,50% 0,73% 62%,92% 8%,100% 100%)}
+.warrior-trophy-crown i{display:none}
+.warrior-trophy-cup-rim{z-index:3;width:79%;height:7px;border:1px solid #fff0a2;border-radius:50%;background:linear-gradient(180deg,#fff2a6,#b77810 55%,#ffe57a);box-shadow:0 0 12px rgba(255,204,55,.48)}
+.warrior-trophy-neck{z-index:2;width:23%;height:10px;background:linear-gradient(90deg,#80500b,#ffe58a 30%,#a86c0d 70%,#fff0a0);border-left:1px solid #fff0a2;border-right:1px solid #fff0a2}
+.warrior-trophy-handles{position:absolute;z-index:1;top:23px;width:100%;height:61px;pointer-events:none}
+.warrior-trophy-handles i{position:absolute;top:0;width:28%;height:51px;border:6px solid #d99a21;border-radius:48% 48% 48% 48%;box-shadow:inset 0 0 5px #fff0a0,0 0 6px rgba(255,197,45,.5)}
+.warrior-trophy-handles i:first-child{left:0;transform:rotate(-25deg)}
+.warrior-trophy-handles i:last-child{right:0;transform:rotate(25deg)}
+.warrior-trophy-plinth{z-index:4;width:66%;height:25px;display:flex;align-items:center;justify-content:space-around;padding:0 4px;border:1px solid #fff0a0;background:linear-gradient(180deg,#ffe98b,#b47713 35%,#5c3909 70%,#f6d45d);box-shadow:inset 0 1px 2px #fff7c7;color:#2b1a04}
+.warrior-trophy-plinth span{font-size:5px;font-weight:1000;letter-spacing:.5px}
+.warrior-trophy-plinth b{font-size:8px}
+.warrior-trophy-base{z-index:4;width:82%;height:10px;border:1px solid #fff0a2;border-radius:2px 2px 5px 5px;background:linear-gradient(180deg,#fff0a0,#c1871b 45%,#513107);box-shadow:0 3px 9px rgba(255,188,28,.25)}
+.warrior-modal-figure{position:relative;z-index:2;align-items:flex-end!important;height:205px!important;padding-bottom:25px}
+.warrior-modal-figure .warrior-record-figure{height:190px!important;width:76%;padding-bottom:0!important}
+.warrior-modal-figure .warrior-trophy-object{height:174px;width:82%}
+.warrior-modal-figure .warrior-trophy-statue{height:112px;width:72%}
+.warrior-modal-figure .warrior-trophy-statue img{transform:scale(1.4)}
+.warrior-hand{z-index:8;position:absolute;left:50%;bottom:-2px;width:176px;height:188px;transform:translate(-50%,60px) rotate(-5deg);opacity:0;filter:drop-shadow(0 9px 13px rgba(0,0,0,.55))}
+.warrior-hand svg{display:block;width:100%;height:100%}
+.warrior-modal-stage.lift .warrior-hand{animation:warrior-real-hand-grip 1.2s cubic-bezier(.2,.8,.25,1) forwards}
+.warrior-modal-stage.lift .warrior-modal-figure{animation:warrior-trophy-lift 1.2s cubic-bezier(.2,.8,.25,1) forwards}
+@keyframes warrior-real-hand-grip{0%{opacity:0;transform:translate(-50%,70px) rotate(-9deg)}28%{opacity:1}70%{transform:translate(-50%,5px) rotate(0)}100%{opacity:1;transform:translate(-50%,-2px) rotate(0)}}
+
+
+/* SALA DEL GUERRERO — animación de agarre y acercamiento */
+#warriorTrophyModal .warrior-modal-stage{
+  height:300px!important;min-height:300px;overflow:visible;perspective:900px;
+  align-items:center;justify-content:center;
+}
+#warriorTrophyModal .warrior-modal-figure{
+  position:absolute;left:50%;top:12px;width:100%;height:235px!important;
+  transform:translateX(-50%);z-index:3;display:flex;align-items:center;justify-content:center;
+  transform-origin:50% 72%;
+}
+#warriorTrophyModal .warrior-modal-figure .warrior-record-figure{
+  width:82%!important;height:220px!important;display:flex;align-items:center;justify-content:center;
+}
+#warriorTrophyModal .warrior-modal-figure .warrior-trophy-object{
+  width:88%;height:205px;transform-origin:50% 80%;
+}
+#warriorTrophyModal .warrior-modal-figure .warrior-trophy-statue{height:132px;width:72%}
+#warriorTrophyModal .warrior-modal-figure .warrior-trophy-statue img{transform:scale(1.42)}
+#warriorTrophyModal .warrior-hand{
+  position:absolute;left:4%;bottom:-24px;width:150px;height:190px;z-index:6;
+  transform:translate(-150px,75px) rotate(-24deg) scale(.82);opacity:0;
+  transform-origin:55% 80%;pointer-events:none;
+}
+#warriorTrophyModal .warrior-modal-stage.lift .warrior-hand{
+  animation:warrior-hand-reach-grab-lift 1.85s cubic-bezier(.2,.78,.22,1) both;
+}
+#warriorTrophyModal .warrior-modal-stage.lift .warrior-modal-figure{
+  animation:warrior-figure-pickup-forward 1.85s cubic-bezier(.2,.78,.22,1) both;
+}
+@keyframes warrior-hand-reach-grab-lift{
+  0%{opacity:0;transform:translate(-150px,75px) rotate(-24deg) scale(.82)}
+  22%{opacity:1;transform:translate(-58px,34px) rotate(-12deg) scale(.9)}
+  43%{opacity:1;transform:translate(4px,5px) rotate(1deg) scale(1)}
+  58%{opacity:1;transform:translate(12px,-3px) rotate(-2deg) scale(1.02)}
+  78%{opacity:1;transform:translate(48px,-25px) rotate(-7deg) scale(1.08)}
+  100%{opacity:1;transform:translate(52px,-20px) rotate(-5deg) scale(1.12)}
+}
+@keyframes warrior-figure-pickup-forward{
+  0%{opacity:.2;transform:translate(-50%,32px) scale(.68) rotate(5deg);filter:brightness(.72)}
+  25%{opacity:1;transform:translate(-50%,18px) scale(.78) rotate(2deg);filter:brightness(1)}
+  48%{transform:translate(-50%,5px) scale(.9) rotate(0)}
+  72%{transform:translate(-50%,-15px) scale(1.12) rotate(-2deg)}
+  100%{transform:translate(-50%,-10px) scale(1.18) rotate(-2deg);filter:drop-shadow(0 18px 24px rgba(255,190,35,.42))}
+}
+@media(max-width:390px){
+  #warriorTrophyModal .warrior-modal-stage{height:275px!important;min-height:275px}
+  #warriorTrophyModal .warrior-modal-figure{top:14px;height:215px!important}
+  #warriorTrophyModal .warrior-hand{width:128px;height:166px;left:1%;bottom:-22px}
+}
+@media(prefers-reduced-motion:reduce){
+  #warriorTrophyModal .warrior-modal-stage.lift .warrior-hand,
+  #warriorTrophyModal .warrior-modal-stage.lift .warrior-modal-figure{animation:none;opacity:1;transform:translate(-50%,0) scale(1)}
+}
+
 </style>
 </head>
 <body class="app-booting">
@@ -1461,7 +1647,23 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
       <div class="warrior-modal-weight" id="warriorModalWeight">0 kg</div>
       <div class="warrior-modal-stage" id="warriorModalStage">
         <div class="warrior-modal-figure" id="warriorModalFigure"></div>
-        <div class="warrior-hand" aria-hidden="true">🫴</div>
+        <div class="warrior-hand" aria-hidden="true">
+          <svg viewBox="0 0 220 250" role="presentation">
+            <defs>
+              <linearGradient id="warriorSkin" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#f4c9a1"/><stop offset=".42" stop-color="#c88962"/><stop offset="1" stop-color="#75452f"/>
+              </linearGradient>
+              <linearGradient id="warriorSkinLight" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffe0bd"/><stop offset="1" stop-color="#b97550"/>
+              </linearGradient>
+            </defs>
+            <path d="M41 231 C31 213 26 190 31 169 L43 124 C46 113 58 109 65 118 L69 145 L77 63 C78 48 96 47 100 62 L103 132 L111 31 C113 14 132 15 135 32 L137 132 L146 48 C148 31 166 34 168 51 L166 145 L177 88 C181 71 199 78 198 95 L190 169 C188 195 174 221 157 239 Z" fill="url(#warriorSkin)" stroke="#6f422f" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M43 177 C60 162 75 166 88 177 C101 188 113 189 126 178 C143 164 160 168 178 181 L170 212 C150 225 124 226 101 218 C77 210 58 211 39 219 Z" fill="url(#warriorSkinLight)" opacity=".78"/>
+            <path d="M78 63 C83 79 83 105 81 137 M113 32 C117 62 116 100 116 137 M148 49 C151 77 148 109 147 140 M181 89 C181 111 176 133 172 151" fill="none" stroke="#70432f" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+            <path d="M68 147 C83 155 96 155 108 148 M105 149 C120 158 135 157 148 148 M145 151 C158 158 169 157 181 151" fill="none" stroke="#f8d4b2" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+            <path d="M30 187 C18 176 12 160 18 148 C23 137 36 138 43 149 L62 177" fill="url(#warriorSkin)" stroke="#70432f" stroke-width="3" stroke-linejoin="round"/>
+          </svg>
+        </div>
       </div>
       <div class="warrior-modal-meta" id="warriorModalMeta"></div>
     </div>
@@ -3836,11 +4038,22 @@ function warriorExerciseRecord(row){
 function warriorFigureMarkup(row){
   const record=warriorExerciseRecord(row);
   const flat=record?.images?.flat;
-  const paths=[flat?.start,flat?.peak].filter(Boolean);
-  const unique=[...new Set(paths)];
-  if(!unique.length)return '<div class="warrior-record-figure"><div class="warrior-no-art">Ilustración de este ejercicio<br>no disponible</div></div>';
-  const images=unique.map(path=>`<img loading="lazy" decoding="async" src="${REPDB_ASSETS+path}" alt="Escultura dorada: ${escapeHTML(row.exercise_name||"ejercicio")}" onerror="this.remove()">`).join("");
-  return `<div class="warrior-record-figure ${unique.length===1?"single":""}">${images}</div>`;
+  // Un solo recorte por ejercicio: no duplicar la imagen start/peak.
+  const path=flat?.start||flat?.peak;
+  if(!path)return '<div class="warrior-record-figure"><div class="warrior-no-art">Trofeo aún no disponible<br>para este ejercicio</div></div>';
+  const src=REPDB_ASSETS+path;
+  const alt=escapeHTML(row.exercise_name||"ejercicio");
+  return `<div class="warrior-record-figure">
+    <div class="warrior-trophy-object" aria-label="Trofeo escultórico de ${alt}">
+      <div class="warrior-trophy-crown"><i></i><i></i><i></i></div>
+      <div class="warrior-trophy-statue"><img loading="lazy" decoding="async" src="${src}" alt="Escultura de ${alt}" onerror="this.closest('.warrior-trophy-object').classList.add('no-image');this.remove()"></div>
+      <div class="warrior-trophy-cup-rim"></div>
+      <div class="warrior-trophy-neck"></div>
+      <div class="warrior-trophy-handles"><i></i><i></i></div>
+      <div class="warrior-trophy-plinth"><span>GYM PROGRESS</span><b>ORO</b></div>
+      <div class="warrior-trophy-base"></div>
+    </div>
+  </div>`;
 }
 async function renderWarriorRecords(){
   const target=$("warriorRecordsList");
