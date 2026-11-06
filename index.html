@@ -1175,13 +1175,6 @@ body.app-booting{overflow:hidden}
 @keyframes boot-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.025)}}
 @media(prefers-reduced-motion:reduce){.boot-logo,.boot-spinner{animation:none}}
 
-
-.users-toolbar-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-.users-backup-btn{min-height:42px;padding:8px 13px;border:1px solid rgba(85,223,189,.42);border-radius:13px;background:linear-gradient(145deg,rgba(85,223,189,.17),rgba(85,223,189,.07));color:#65e4c3;font:900 11px inherit;letter-spacing:.7px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
-.users-backup-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.users-backup-btn:disabled{opacity:.55;cursor:wait}
-@media(max-width:480px){.users-toolbar{align-items:flex-start;gap:10px}.users-toolbar-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.users-toolbar-actions button{width:100%}}
-
 </style>
 </head>
 <body class="app-booting">
@@ -1367,7 +1360,7 @@ body.app-booting{overflow:hidden}
         <span class="users-admin-mark">ADMIN</span>
       </div>
       <div class="users-panel">
-        <div class="users-toolbar"><strong id="usersCount">Usuarios registrados</strong><div class="users-toolbar-actions"><button type="button" class="users-refresh" id="usersRefresh">ACTUALIZAR</button><button type="button" class="users-backup-btn" id="usersBackup" aria-label="Descargar copia completa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 18.5h10a4 4 0 0 0 .4-8A6.2 6.2 0 0 0 6 9.2a4.7 4.7 0 0 0 1.5 9.3Z"/><path d="M12 12v7m-3-3 3 3 3-3"/></svg><span>COPIA ZIP</span></button></div></div>
+        <div class="users-toolbar"><strong id="usersCount">Usuarios registrados</strong><button type="button" class="users-refresh" id="usersRefresh">ACTUALIZAR</button></div>
         <div id="usersList" class="users-list"><div class="empty">Cargando usuarios…</div></div>
         <div id="usersStatus" class="status hidden" role="status"></div>
         <section id="adminUserDetail" class="admin-user-detail hidden" aria-live="polite">
@@ -1460,7 +1453,6 @@ body.app-booting{overflow:hidden}
 
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import JSZip from "https://esm.sh/jszip@3.10.1";
 
 const SUPABASE_URL = "https://xpvpddzucguypmfrfqtg.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwdnBkZHp1Y2d1eXBtZnJmcXRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MDYxMjMsImV4cCI6MjEwOTE4MjEyM30.uMyUBgFP3QAXHEjpq5qDu_rzi17jZCiTnu6nfe1XI8A";
@@ -2409,7 +2401,6 @@ $("libraryNav").addEventListener("click",showLibrary);
 $("streakNav").addEventListener("click",()=>setMainTab("streak"));
 $("usersNav").addEventListener("click",()=>{if(currentIsAdmin)setMainTab("users");});
 $("usersRefresh").addEventListener("click",loadUsers);
-$("usersBackup").addEventListener("click",downloadAllUsersBackup);
 $("streakPrevMonth").addEventListener("click",()=>changeStreakMonth(-1));
 $("streakNextMonth").addEventListener("click",()=>changeStreakMonth(1));
 $("dashboardLibraryBtn").addEventListener("click",showLibrary);
@@ -2812,53 +2803,6 @@ async function refreshAdminAccess(){
   $("usersNav").classList.toggle("hidden",!currentIsAdmin);
   return currentIsAdmin;
 }
-
-// Copia administrativa global: la Edge Function valida el rol y devuelve
-// los datos de todas las cuentas; el ZIP se genera en el navegador.
-async function downloadAllUsersBackup(){
-  if(!currentUser||!currentIsAdmin){
-    showStatus($("usersStatus"),"Esta descarga solo está disponible para el administrador.",true);
-    return;
-  }
-  const button=$("usersBackup"),status=$("usersStatus");
-  const original=button.innerHTML;
-  button.disabled=true;
-  button.innerHTML='<span>PREPARANDO…</span>';
-  hideStatus(status);
-  try{
-    const {data:{session},error:sessionError}=await supabase.auth.getSession();
-    if(sessionError)throw sessionError;
-    if(!session?.access_token)throw new Error("La sesión ha caducado. Vuelve a iniciar sesión.");
-    const {data,error}=await supabase.functions.invoke("backup-all-users",{
-      body:{requestedAt:new Date().toISOString()}
-    });
-    if(error)throw error;
-    if(!data||data.ok!==true||!data.backup)throw new Error(data?.message||"La función no ha devuelto una copia válida.");
-    const zip=new JSZip();
-    zip.file("GYM_PROGRESS_backup/LEEME.txt",
-      "COPIA DE SEGURIDAD GYM PROGRESS\\n"+
-      "Fecha: "+(data.backup.exported_at||new Date().toISOString())+"\\n"+
-      "Usuarios registrados incluidos: "+(data.backup.auth_users?.length??0)+"\\n\\n"+
-      "Incluye datos de las tablas de Supabase y datos de perfil de autenticación no sensibles.\\n"+
-      "No incluye contraseñas, tokens de sesión ni datos guardados únicamente en el almacenamiento local de cada dispositivo.\\n"+
-      "Guarda este archivo en un lugar seguro. Contiene información personal y de entrenamiento.\\n");
-    zip.file("GYM_PROGRESS_backup/copia_completa.json",JSON.stringify(data.backup,null,2));
-    const blob=await zip.generateAsync({type:"blob",compression:"DEFLATE",compressionOptions:{level:6}});
-    const url=URL.createObjectURL(blob);
-    const link=document.createElement("a");
-    const stamp=new Date().toISOString().replace(/[:.]/g,"-");
-    link.href=url;link.download=`GYM_PROGRESS_COPIA_${stamp}.zip`;
-    document.body.append(link);link.click();link.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),30000);
-    showStatus(status,`Copia ZIP descargada. Usuarios incluidos: ${data.backup.auth_users?.length??0}.`);
-  }catch(error){
-    console.error("Error al generar la copia global:",error);
-    showStatus(status,error.message||"No se ha podido generar la copia. Comprueba que está instalada la función backup-all-users.",true);
-  }finally{
-    button.disabled=false;button.innerHTML=original;
-  }
-}
-
 async function loadUsers(){
   if(!currentUser||!currentIsAdmin)return;
   const list=$("usersList"),status=$("usersStatus"),button=$("usersRefresh");
@@ -3636,3 +3580,65 @@ async function initializeSpotifyForApp(){
   const handle=document.getElementById("spotifyMiniHandle");
   if(!panel||!handle)return;
   let startY=null;
+  const hidePlayer=()=>{
+    spotifySetExpanded(false);
+    panel.classList.add("is-hidden");
+    handle.classList.add("is-visible");
+    handle.setAttribute("aria-expanded","false");
+    handle.setAttribute("aria-label","Mostrar reproductor");
+  };
+  const showPlayer=()=>{
+    panel.classList.remove("is-hidden");
+    handle.classList.remove("is-visible");
+    // Mostrar solo la barra compacta; la biblioteca requiere una acción aparte.
+    spotifySetExpanded(false);
+    handle.setAttribute("aria-expanded","true");
+    handle.setAttribute("aria-label","Reproductor visible");
+  };
+  // Estado inicial correcto: Spotify no ocupa pantalla hasta que el usuario lo muestra.
+  hidePlayer();
+  panel.addEventListener("touchstart",e=>{
+    if(e.touches.length===1)startY=e.touches[0].clientY;
+  },{passive:true});
+  panel.addEventListener("touchend",e=>{
+    if(startY===null||!e.changedTouches.length)return;
+    const delta=e.changedTouches[0].clientY-startY;
+    if(delta>35)hidePlayer();
+    startY=null;
+  },{passive:true});
+  handle.addEventListener("click",showPlayer);
+  handle.addEventListener("touchstart",e=>{
+    if(e.touches.length===1)startY=e.touches[0].clientY;
+  },{passive:true});
+  handle.addEventListener("touchend",e=>{
+    if(startY===null||!e.changedTouches.length)return;
+    const delta=e.changedTouches[0].clientY-startY;
+    if(delta < -20)showPlayer();
+    startY=null;
+  },{passive:true});
+})();
+(async function init(){
+  $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
+  setBootBrand(null);
+  try{
+    const {data,error}=await supabase.auth.getSession();
+    if(error)throw error;
+    if(data?.session?.user){
+      setBootBrand(data.session.user);
+      await enterApp(data.session.user);
+      return;
+    }
+    $("appView").classList.add("hidden");
+    $("loginView").classList.remove("hidden");
+  }catch(error){
+    console.error("No se pudo restaurar la sesión:",error);
+    $("appView").classList.add("hidden");
+    $("loginView").classList.remove("hidden");
+    showStatus($("loginStatus"),"No se ha podido recuperar la sesión. Inicia sesión de nuevo. Detalle: "+(error?.message||"error de conexión"),true);
+  }finally{
+    if(!currentUser || $("loginView").classList.contains("hidden")===false)hideBrandBoot();
+  }
+})();
+</script>
+</body>
+</html>
