@@ -3222,6 +3222,15 @@ async function enterApp(user){
     console.error(error);
     showStatus($("saveStatus"),`No se han podido cargar tus registros: ${error.message||"comprueba la configuración de Supabase"}`,true);
   }finally{
+    // Tras cada inicio de sesión, mostrar siempre la pantalla principal de MI RUTINA.
+    // Evita que la navegación quede sin una sección visible y aparezca el área en negro.
+    try{
+      if(currentUser && !adminPreviewMode && !$("appView").classList.contains("hidden")){
+        setMainTab("workout");
+      }
+    }catch(tabError){
+      console.warn("No se pudo activar la pestaña MI RUTINA automáticamente:",tabError);
+    }
     hideBrandBoot();
   }
 }
