@@ -1592,7 +1592,10 @@ function updateNewUserPlanView(){
   const isNewUser=canConfigurePersonalPlan()&&!customTrainingPlan?.days&&!adminPreviewMode;
   $("homeDashboard")?.classList.toggle("hidden",isNewUser);
   $("daySelector")?.classList.toggle("hidden",isNewUser);
-  $("routineDetails")?.classList.toggle("hidden",isNewUser);
+  // La rutina siempre empieza recogida; el usuario la abre manualmente con EMPEZAR ENTRENAMIENTO.
+  $("routineDetails")?.classList.add("hidden");
+  const startButton=$("startWorkoutBtn");
+  if(startButton)startButton.innerHTML='EMPEZAR ENTRENAMIENTO <span aria-hidden="true">→</span>';
   if(isNewUser){
     $("planSetup")?.classList.remove("hidden");
     document.querySelector(".plan-launch")?.classList.remove("hidden");
