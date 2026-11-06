@@ -1401,447 +1401,39 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 }
 
 
-/* ================================================================
-   SALA DEL GUERRERO · EDICIÓN MUSEO DE LUJO
-   Capa visual final: mantiene intactos los datos y la lógica existentes.
-   ================================================================ */
-#warriorHall{
-  padding: max(18px,env(safe-area-inset-top)) 13px max(38px,env(safe-area-inset-bottom));
-  background:
-    radial-gradient(ellipse at 50% -8%,rgba(255,219,130,.22),transparent 34%),
-    radial-gradient(ellipse at 8% 42%,rgba(101,125,139,.09),transparent 35%),
-    radial-gradient(ellipse at 92% 68%,rgba(183,132,45,.09),transparent 36%),
-    linear-gradient(180deg,#17191a 0%,#090b0d 38%,#11100d 100%);
-  isolation:isolate;
-}
-#warriorHall:before{
-  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.2;
-  background:repeating-linear-gradient(90deg,transparent 0,transparent 48px,rgba(255,255,255,.018) 49px,transparent 50px);
-}
-.warrior-shell{width:min(100%,980px)}
-.warrior-back{
-  border:1px solid rgba(226,195,119,.48);border-radius:999px;padding:11px 17px;
-  background:linear-gradient(135deg,rgba(33,35,35,.94),rgba(7,9,10,.94));
-  color:#f3d78d;box-shadow:0 8px 24px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.1);
-  letter-spacing:.55px;backdrop-filter:blur(16px);
-}
-.warrior-title{
-  margin:27px 0 7px;font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(29px,7vw,47px);font-weight:600;letter-spacing:2.4px;
-  color:#f3d991;text-shadow:0 2px 2px #000,0 0 28px rgba(226,181,83,.28);
-}
-.warrior-subtitle{font-size:9px;letter-spacing:3px;color:#b9ad91}
-.warrior-hero{
-  position:relative;overflow:hidden;padding:24px 18px 25px;border:1px solid rgba(222,199,147,.28);
-  border-radius:5px;background:linear-gradient(125deg,rgba(255,255,255,.075),rgba(255,255,255,.012) 42%,rgba(209,167,83,.055));
-  box-shadow:0 22px 48px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.12);
-}
-.warrior-hero:before,.warrior-hero:after{content:"";position:absolute;pointer-events:none}
-.warrior-hero:before{inset:7px;border:1px solid rgba(255,255,255,.075)}
-.warrior-hero:after{width:55%;height:1px;left:22.5%;bottom:0;background:linear-gradient(90deg,transparent,#e8c879,transparent);box-shadow:0 0 18px #d9b765}
-.warrior-emblem{font-size:43px;color:#e6c779;filter:drop-shadow(0 0 13px rgba(231,190,95,.5))}
-.warrior-hero h2{font-family:Georgia,"Times New Roman",serif;font-size:21px;font-weight:500;letter-spacing:1.6px;color:#f0d99d}
-.warrior-hero p{max-width:560px;margin:0 auto;color:#c4bdad;font-size:12px;line-height:1.8}
-.warrior-record-card{
-  position:relative;margin-top:25px;padding:25px 12px 23px;border:1px solid rgba(206,220,224,.36);
-  border-radius:7px;overflow:hidden;
-  background:linear-gradient(110deg,rgba(255,255,255,.075),transparent 14%,transparent 86%,rgba(255,255,255,.055)),
-    linear-gradient(180deg,rgba(42,48,50,.94),rgba(10,13,15,.98) 24%,rgba(6,8,10,.99));
-  box-shadow:inset 0 0 0 4px rgba(215,230,234,.035),inset 0 0 55px rgba(188,212,220,.055),0 24px 60px rgba(0,0,0,.55);
-}
-.warrior-record-card:before{
-  content:"";position:absolute;inset:8px;border:1px solid rgba(223,235,237,.17);border-radius:3px;
-  box-shadow:inset 0 0 18px rgba(210,230,235,.035);pointer-events:none;
-}
-.warrior-record-card:after{
-  content:"";position:absolute;top:0;left:8%;right:8%;height:2px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.72),rgba(224,190,116,.8),rgba(255,255,255,.72),transparent);
-  filter:blur(.4px);pointer-events:none;
-}
-.warrior-record-card h3{font-family:Georgia,"Times New Roman",serif;font-size:19px;font-weight:500;letter-spacing:1.2px;color:#f0d99b}
-.warrior-record-card>p{max-width:600px;margin:0 auto 21px;color:#c4c0b5;font-size:11px;line-height:1.7}
-.warrior-record-list{
-  grid-template-columns:repeat(3,minmax(0,1fr));gap:19px 11px;padding:16px 10px 18px;
-  border:1px solid rgba(202,220,225,.27);border-radius:4px;
-  background:
-    linear-gradient(90deg,rgba(255,255,255,.08),transparent 2.5%,transparent 97.5%,rgba(255,255,255,.08)),
-    repeating-linear-gradient(to bottom,rgba(190,211,218,.025) 0,rgba(190,211,218,.025) 2px,transparent 2px,transparent 254px,rgba(216,229,231,.3) 254px,rgba(255,255,255,.08) 257px,rgba(4,7,9,.94) 263px),
-    linear-gradient(180deg,rgba(25,31,34,.9),rgba(5,8,10,.96));
-  box-shadow:inset 0 0 30px rgba(194,220,228,.075),0 10px 25px rgba(0,0,0,.28);
-}
-.warrior-record{
-  position:relative;padding:9px 6px 12px;border:1px solid rgba(218,201,157,.28);border-radius:3px;
-  background:linear-gradient(145deg,rgba(42,46,45,.96),rgba(12,15,16,.98) 60%,rgba(26,22,15,.98));
-  box-shadow:0 12px 24px rgba(0,0,0,.48),inset 0 1px rgba(255,255,255,.14),inset 0 0 20px rgba(216,190,126,.045);
-  transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
-}
-.warrior-record:before{inset:4px;border:1px solid rgba(232,221,189,.12);border-radius:1px}
-.warrior-record:after{content:"";position:absolute;top:0;left:14%;right:14%;height:1px;background:linear-gradient(90deg,transparent,#f4e6bf,transparent);opacity:.65}
-.warrior-record:active{transform:scale(.985);border-color:rgba(242,211,139,.75)}
-.warrior-record-select{height:100%;gap:0}
-.warrior-record-kicker{margin:2px 0 7px;color:#dfc17b;font-size:8px;letter-spacing:2px}
-.warrior-record-figure{
-  height:177px!important;position:relative;isolation:isolate;padding:8px 4px 15px!important;
-  border:1px solid rgba(218,230,232,.15);border-radius:2px;
-  background:radial-gradient(ellipse at 50% 48%,rgba(255,219,143,.2),rgba(151,169,172,.055) 42%,rgba(0,0,0,.22) 78%),
-    linear-gradient(115deg,rgba(255,255,255,.09),transparent 22%,transparent 75%,rgba(255,255,255,.055));
-  box-shadow:inset 0 0 25px rgba(215,226,227,.07),0 7px 14px rgba(0,0,0,.25);overflow:hidden;
-}
-.warrior-record-figure:before{bottom:10px;left:16%;right:16%;height:15px;background:rgba(238,190,89,.36);filter:blur(12px)}
-.warrior-record-figure:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(115deg,transparent 15%,rgba(255,255,255,.12) 28%,transparent 39%,transparent 72%,rgba(255,255,255,.06) 83%,transparent 91%)}
-.warrior-trophy-object{width:94%;height:151px;filter:drop-shadow(0 8px 8px rgba(0,0,0,.8))}
-.warrior-trophy-statue{width:72%;height:91px;overflow:visible}
-.warrior-trophy-statue img{
-  width:100%;height:100%;object-fit:contain;object-position:center bottom;transform:scale(1.12);
-  filter:grayscale(1) sepia(.8) saturate(4.5) hue-rotate(3deg) brightness(1.3) contrast(1.18) drop-shadow(0 0 9px rgba(255,211,111,.78));
-  mix-blend-mode:screen;
-}
-.warrior-trophy-crown{top:1px;width:34%;height:15px;background:linear-gradient(180deg,#fff8d5 0%,#e9c76f 25%,#9d681f 68%,#f8e5a2 100%);filter:drop-shadow(0 0 5px rgba(255,218,137,.65))}
-.warrior-trophy-cup-rim{height:8px;border-color:#fff0bc;background:linear-gradient(180deg,#fff7d8,#d4a74b 52%,#78501a);box-shadow:0 0 12px rgba(255,214,125,.55)}
-.warrior-trophy-neck{height:11px;background:linear-gradient(90deg,#704313,#f9e6a0 28%,#b17a2d 67%,#fff0bc)}
-.warrior-trophy-handles i{border-color:#d8ad58;box-shadow:inset 0 0 5px #fff2c6,0 0 8px rgba(255,210,120,.55)}
-.warrior-trophy-plinth{height:25px;border-color:#fff0b6;background:linear-gradient(180deg,#fff3c1 0%,#d8ad54 24%,#80541a 74%,#e7c36e 100%);box-shadow:inset 0 1px 2px #fff9dc,0 3px 8px rgba(0,0,0,.5);color:#2a1c09}
-.warrior-trophy-plinth span{font-size:5px;letter-spacing:.65px}.warrior-trophy-plinth b{font-size:8px;color:#38240a}
-.warrior-trophy-base{height:11px;border-color:#f8e5a5;background:linear-gradient(180deg,#fff0b4,#c18d35 45%,#49300f);box-shadow:0 4px 10px rgba(0,0,0,.55),0 0 9px rgba(231,189,95,.2)}
-.warrior-record strong{min-height:34px;margin:10px 0 5px;color:#f2e9d1;font-family:Georgia,"Times New Roman",serif;font-size:clamp(11px,2.5vw,14px);font-weight:500;line-height:1.35}
-.warrior-record b{font-size:clamp(19px,4.7vw,27px);color:#f1d17d;text-shadow:0 0 17px rgba(240,199,105,.32)}
-.warrior-record small{color:#c1b9a7;font-size:9px}
-.warrior-record-improvement{border-radius:2px;color:#c7e5ce}
-.warrior-record-tap{margin-top:11px;padding-top:8px;border-top:1px solid rgba(231,211,160,.15);color:#e5c982;font-size:8px;letter-spacing:1.2px}
-.warrior-empty,.warrior-loading{padding:23px 15px;color:#d4c8a7;line-height:1.8}
-#warriorTrophyModal{padding:16px;background:rgba(0,0,0,.88);backdrop-filter:blur(13px)}
-.warrior-modal-panel{
-  width:min(100%,470px);padding:27px 19px 24px;border:1px solid rgba(232,208,151,.62);border-radius:5px;
-  background:linear-gradient(115deg,rgba(255,255,255,.075),transparent 28%,transparent 74%,rgba(255,255,255,.045)),
-    radial-gradient(ellipse at 50% 18%,rgba(231,190,105,.2),transparent 54%),linear-gradient(160deg,#282722,#090c0e 72%);
-  box-shadow:0 30px 100px #000,inset 0 0 0 5px rgba(221,230,225,.035),inset 0 0 45px rgba(255,211,124,.08);
-}
-.warrior-modal-panel:before{content:"";position:absolute;inset:8px;border:1px solid rgba(240,226,190,.13);pointer-events:none}
-.warrior-modal-close{z-index:5;border-color:rgba(238,213,158,.4);background:#171817;color:#f2d88e}
-.warrior-modal-label{color:#d9bd7a;letter-spacing:2.5px}
-.warrior-modal-title{font-family:Georgia,"Times New Roman",serif;font-weight:500;color:#f4e7c4}
-.warrior-modal-weight{color:#f0d184;text-shadow:0 0 25px rgba(241,201,111,.42)}
-#warriorTrophyModal .warrior-modal-stage{height:300px!important;margin:9px 0 12px;border:1px solid rgba(221,230,225,.17);background:radial-gradient(ellipse at 50% 55%,rgba(236,199,119,.16),transparent 61%),linear-gradient(115deg,rgba(255,255,255,.045),transparent 25%,transparent 75%,rgba(255,255,255,.035));box-shadow:inset 0 0 30px rgba(210,224,225,.055)}
-#warriorTrophyModal .warrior-modal-figure .warrior-trophy-statue img{filter:grayscale(1) sepia(.8) saturate(4.5) hue-rotate(3deg) brightness(1.35) contrast(1.2) drop-shadow(0 0 17px rgba(255,219,144,.8))}
-.warrior-modal-meta{color:#c9c0aa;font-size:11px;line-height:1.8}
-@media(min-width:760px){
-  .warrior-record-list{grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 14px;padding:19px 14px 22px}
-  .warrior-record-figure{height:190px!important}.warrior-trophy-object{height:160px}
-}
-@media(max-width:430px){
-  .warrior-record-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 8px;padding:11px 7px 14px}
-  .warrior-record{padding:7px 5px 10px}.warrior-record-figure{height:158px!important}
-  .warrior-trophy-object{height:140px}.warrior-trophy-statue{height:83px}
-  .warrior-record strong{font-size:11px;min-height:31px}.warrior-record b{font-size:21px}
-  .warrior-title{letter-spacing:1.5px}.warrior-record-card{padding:21px 8px 17px}
-}
-@media(prefers-reduced-motion:reduce){.warrior-record{transition:none}}
-
-
-
-/* REDISEÑO DEFINITIVO DE TROFEOS — ilustración integrada, sin recortes ni textos desbordados */
-.warrior-record-figure{
-  height:174px!important;min-height:174px;display:flex!important;align-items:center!important;justify-content:center!important;
-  padding:10px 6px 8px!important;overflow:hidden!important;isolation:isolate;
-  background:radial-gradient(ellipse at 50% 55%,rgba(224,190,116,.17),transparent 66%),linear-gradient(145deg,rgba(255,255,255,.055),rgba(0,0,0,.24))!important;
-  border:1px solid rgba(226,211,174,.2);border-radius:5px;box-shadow:inset 0 0 24px rgba(225,211,176,.055);
-}
-.warrior-record-figure:before{content:"";position:absolute;left:20%;right:20%;bottom:8px;height:10px;background:rgba(222,183,105,.25);filter:blur(9px);border-radius:50%}
-.warrior-record-figure:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;background:linear-gradient(118deg,transparent 20%,rgba(255,255,255,.10) 34%,transparent 47%,transparent 72%,rgba(255,255,255,.045) 82%,transparent 92%)}
-.warrior-trophy-object{
-  position:relative;width:min(100%,142px);height:151px!important;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-  gap:0;filter:drop-shadow(0 7px 8px rgba(0,0,0,.58));
-}
-.warrior-trophy-insignia{
-  width:30px;height:22px;margin-bottom:5px;display:grid;place-items:center;color:#f5dfa4;font-size:20px;line-height:1;
-  text-shadow:0 0 9px rgba(242,207,132,.5);border-bottom:1px solid rgba(226,196,133,.5);
-}
-.warrior-trophy-art{
-  position:relative;width:83%;height:94px;display:flex;align-items:center;justify-content:center;overflow:hidden;
-  padding:5px;border:1px solid #b99a5d;border-radius:4px;
-  background:linear-gradient(145deg,#34332d,#171a1a 55%,#28241b);
-  box-shadow:inset 0 0 0 3px rgba(240,220,173,.08),inset 0 0 18px rgba(0,0,0,.55),0 0 0 2px rgba(207,179,119,.12);
-}
-.warrior-trophy-art:before{content:"";position:absolute;inset:4px;border:1px solid rgba(226,204,157,.24);pointer-events:none;z-index:2}
-.warrior-trophy-art img{
-  display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center;
-  transform:none!important;filter:grayscale(.72) sepia(.48) saturate(.72) brightness(.78) contrast(1.16)!important;
-  mix-blend-mode:normal!important;border-radius:1px;
-}
-.warrior-trophy-art.no-image{background:radial-gradient(ellipse,#393326,#151719)}
-.warrior-trophy-art .warrior-no-art{color:#d6bd83;font:700 8px/1.6 Arial,sans-serif;letter-spacing:1px;text-align:center}
-.warrior-trophy-plinth{
-  position:relative;z-index:3;width:88%;height:22px!important;min-height:22px;display:flex;align-items:center;justify-content:center;
-  margin-top:5px;padding:0 5px!important;border:1px solid #e1c98e;border-radius:2px;
-  background:linear-gradient(180deg,#f0dfb2 0%,#c4a363 25%,#72552a 78%,#d8bb7b 100%)!important;
-  box-shadow:inset 0 1px 2px rgba(255,255,255,.75),0 3px 6px rgba(0,0,0,.5);color:#241b0d!important;
-}
-.warrior-trophy-plinth span{display:block!important;font:900 7px/1 Arial,sans-serif!important;letter-spacing:1.15px!important;white-space:nowrap;color:#241b0d!important}
-.warrior-trophy-plinth b{display:none!important}
-.warrior-trophy-base{
-  z-index:3;width:96%;height:8px!important;margin-top:2px;border:1px solid #e4d09b;border-radius:2px 2px 5px 5px;
-  background:linear-gradient(180deg,#f0dfb2,#b58c48 48%,#49351b)!important;box-shadow:0 4px 7px rgba(0,0,0,.55),0 0 7px rgba(224,190,116,.16);
-}
-.warrior-record strong{margin-top:10px!important}
-.warrior-modal-figure .warrior-record-figure{height:220px!important;width:100%!important;padding:12px!important}
-.warrior-modal-figure .warrior-trophy-object{width:min(78%,220px);height:190px!important}
-.warrior-modal-figure .warrior-trophy-insignia{width:38px;height:28px;font-size:25px;margin-bottom:8px}
-.warrior-modal-figure .warrior-trophy-art{height:125px;width:86%}
-.warrior-modal-figure .warrior-trophy-plinth{height:28px!important}
-.warrior-modal-figure .warrior-trophy-plinth span{font-size:9px!important}
-.warrior-modal-figure .warrior-trophy-base{height:11px!important}
-#warriorTrophyModal .warrior-modal-figure .warrior-trophy-art img{filter:grayscale(.72) sepia(.48) saturate(.72) brightness(.78) contrast(1.16)!important;mix-blend-mode:normal!important}
-@media(max-width:430px){.warrior-record-figure{height:164px!important;min-height:164px}.warrior-trophy-object{height:145px!important}.warrior-trophy-art{height:88px}}
-
-
-/* REDISEÑO: PLACAS DE HONOR — geometría sencilla, estable y adaptable */
-.warrior-record-figure{
-  height:190px!important;min-height:190px;display:flex!important;align-items:center!important;justify-content:center!important;
-  padding:9px!important;overflow:hidden!important;isolation:isolate;
-  background:radial-gradient(ellipse at 50% 50%,rgba(213,183,116,.13),transparent 70%),linear-gradient(145deg,rgba(255,255,255,.045),rgba(0,0,0,.24))!important;
-  border:1px solid rgba(224,207,166,.19);border-radius:5px;
-}
-.warrior-record-figure:before,.warrior-record-figure:after{display:none!important}
-.warrior-hall-plaque{
-  position:relative;width:min(100%,190px);height:166px;padding:9px 9px 8px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;
-  border:2px solid #b99b60;border-radius:5px;
-  background:linear-gradient(135deg,#3b3a34 0%,#171a1b 26%,#24231f 72%,#101314 100%);
-  box-shadow:inset 0 0 0 3px rgba(238,220,174,.08),inset 0 0 22px rgba(0,0,0,.72),0 7px 14px rgba(0,0,0,.55);
-}
-.warrior-hall-plaque:before{content:"";position:absolute;inset:5px;border:1px solid rgba(230,207,155,.24);pointer-events:none}
-.warrior-plaque-header{height:17px;display:flex;align-items:center;justify-content:space-between;gap:3px;color:#d9c18b;font:900 6px/1 Arial,sans-serif;letter-spacing:1px}
-.warrior-plaque-header b{font-size:14px;color:#f0d28b;text-shadow:0 0 9px rgba(239,205,128,.4)}
-.warrior-plaque-art{
-  position:relative;flex:1;min-height:0;margin:5px 0;padding:5px;display:flex;align-items:center;justify-content:center;overflow:hidden;
-  border:1px solid rgba(205,178,119,.55);border-radius:3px;background:linear-gradient(145deg,#292b29,#101415 70%,#24221c);
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.035),inset 0 0 16px rgba(0,0,0,.65);
-}
-.warrior-plaque-art img{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center;transform:none!important;filter:grayscale(.55) sepia(.28) saturate(.72) brightness(.9) contrast(1.05)!important;mix-blend-mode:normal!important}
-.warrior-plaque-art.no-image{background:radial-gradient(ellipse,#393326,#151719)}
-.warrior-plaque-art .warrior-no-art{color:#d6bd83;font:700 8px/1.6 Arial,sans-serif;letter-spacing:1px;text-align:center}
-.warrior-plaque-seal{position:absolute;right:13px;bottom:27px;width:27px;height:27px;display:grid;place-items:center;border:1px solid #e0c17c;border-radius:50%;background:radial-gradient(circle at 35% 28%,#f4dfaa,#98713a 70%,#392812);box-shadow:0 2px 6px #000;color:#241a0b;font:900 8px/1 Arial,sans-serif}
-.warrior-plaque-footer{height:15px;display:grid;place-items:center;border-top:1px solid rgba(218,193,139,.4);color:#e0c98f;font:900 7px/1 Arial,sans-serif;letter-spacing:1.6px}
-.warrior-record strong{margin-top:10px!important}
-.warrior-modal-stage{height:290px!important}
-.warrior-modal-figure{height:235px!important;width:100%;display:flex;align-items:center;justify-content:center}
-.warrior-modal-figure .warrior-record-figure{width:min(100%,310px)!important;height:245px!important;min-height:245px;padding:12px!important}
-.warrior-modal-figure .warrior-hall-plaque{width:min(100%,270px);height:218px;padding:12px}
-.warrior-modal-figure .warrior-plaque-header{font-size:8px;height:22px}
-.warrior-modal-figure .warrior-plaque-art{margin:7px 0}
-.warrior-modal-figure .warrior-plaque-seal{width:34px;height:34px;right:18px;bottom:34px;font-size:10px}
-.warrior-modal-figure .warrior-plaque-footer{height:19px;font-size:9px}
-#warriorTrophyModal .warrior-modal-figure .warrior-plaque-art img{filter:grayscale(.45) sepia(.22) saturate(.7) brightness(.95) contrast(1.05)!important;mix-blend-mode:normal!important}
-@media(max-width:430px){.warrior-record-figure{height:174px!important;min-height:174px}.warrior-hall-plaque{height:151px}.warrior-plaque-header{font-size:5px}.warrior-plaque-seal{width:23px;height:23px;right:11px;bottom:25px}}
+/* PERFORMANCE CENTER · negro grafito y oro */
+#warriorHall{position:fixed;inset:0;z-index:500;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:max(16px,env(safe-area-inset-top)) 14px max(34px,env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% -10%,rgba(199,158,64,.16),transparent 48%),linear-gradient(180deg,#090909 0%,#101010 55%,#080808 100%);color:#f4f0e5}
+.warrior-shell{width:min(100%,920px);margin:0 auto;position:relative}
+.warrior-back{position:sticky;top:4px;z-index:5;border:1px solid rgba(210,173,85,.45);border-radius:12px;padding:11px 14px;background:rgba(12,12,12,.92);backdrop-filter:blur(10px);color:#e3c477;font-size:11px;font-weight:900}
+.warrior-title{text-align:center;margin:24px 0 5px;color:#e3c477;font-size:clamp(27px,7vw,40px);font-weight:950;letter-spacing:1.7px;text-shadow:0 0 24px rgba(205,165,72,.22)}
+.warrior-subtitle{text-align:center;margin:0 0 22px;color:#a99a76;font-size:10px;letter-spacing:2px}
+.pc-hero{padding:22px 18px;border:1px solid rgba(211,174,88,.35);border-radius:20px;background:linear-gradient(135deg,rgba(196,155,61,.13),rgba(255,255,255,.025));box-shadow:0 18px 48px rgba(0,0,0,.28)}
+.pc-kicker{color:#c6a65e;font-size:10px;font-weight:900;letter-spacing:2px}
+.pc-hero h2{margin:8px 0;color:#f0d58d;font-size:21px;letter-spacing:.4px}
+.pc-hero p{margin:0;color:#bdb6a5;font-size:12px;line-height:1.6}
+.pc-section{margin-top:18px;padding:17px 14px;border:1px solid rgba(210,173,85,.2);border-radius:17px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.012))}
+.pc-section h3{margin:0 0 5px;color:#e2c477;font-size:14px;letter-spacing:.6px}
+.pc-section>p{margin:0 0 14px;color:#a9a394;font-size:11px;line-height:1.55}
+.pc-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.pc-kpi{padding:14px 12px;border:1px solid rgba(211,174,88,.2);border-radius:14px;background:rgba(0,0,0,.28);min-width:0}
+.pc-kpi span{display:block;color:#a99f89;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.pc-kpi strong{display:block;margin-top:7px;color:#f0d58d;font-size:clamp(21px,5vw,29px);font-weight:950;line-height:1.1;overflow-wrap:anywhere}
+.pc-kpi small{display:block;margin-top:5px;color:#928b7c;font-size:10px}
+.pc-filter-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.pc-select{min-width:0;flex:1;border:1px solid rgba(210,173,85,.32);border-radius:10px;padding:10px;background:#171510;color:#f2dfad;font-size:12px}
+.pc-chart{width:100%;height:190px;display:block;overflow:visible}
+.pc-chart-wrap{padding:10px 6px 3px;border-radius:12px;background:rgba(0,0,0,.22)}
+.pc-chart-label{display:flex;justify-content:space-between;gap:10px;color:#9d9583;font-size:10px;margin-top:8px}
+.pc-insights{display:grid;gap:8px}
+.pc-insight{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.055)}
+.pc-insight strong{color:#eee4ca;font-size:11px}
+.pc-insight span{color:#d6b766;font-size:11px;font-weight:900;text-align:right}
+.pc-status{padding:14px;border-radius:12px;background:rgba(0,0,0,.25);color:#bcb5a4;font-size:11px;line-height:1.6}
+.pc-positive{color:#b9d9a1!important}.pc-negative{color:#d7a18d!important}
+.pc-footnote{margin-top:12px;color:#8e887b;font-size:9px;line-height:1.5}
+@media(min-width:650px){.pc-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}.pc-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.pc-grid-2 .pc-section{margin-top:18px}}
 
 </style>
-
-<style id="warrior-minimal-honor-plates">
-/* SALA DEL GUERRERO — PLACAS MINIMALISTAS DE ALTA GAMA */
-.warrior-record{
-  padding:10px 9px 13px!important;
-  border:1px solid rgba(201,174,116,.36)!important;
-  border-radius:13px!important;
-  background:linear-gradient(155deg,rgba(31,32,31,.98),rgba(8,10,11,.99) 72%)!important;
-  box-shadow:0 12px 28px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.055)!important;
-}
-.warrior-record:before{inset:5px!important;border:1px solid rgba(220,197,151,.10)!important;border-radius:9px!important}
-.warrior-record-select{gap:0!important}
-.warrior-record-kicker{
-  display:block!important;
-  margin:1px 0 10px!important;
-  color:#cbb783!important;
-  font:700 9px/1.2 Arial,sans-serif!important;
-  letter-spacing:2.4px!important;
-}
-.warrior-record-figure{
-  height:164px!important;min-height:164px!important;
-  padding:5px!important;
-  background:transparent!important;
-  border:0!important;
-  overflow:visible!important;
-}
-.warrior-hall-plaque{
-  position:relative!important;
-  width:100%!important;max-width:220px!important;height:142px!important;
-  padding:16px 11px 13px!important;
-  display:flex!important;flex-direction:column!important;
-  align-items:center!important;justify-content:center!important;
-  gap:0!important;
-  overflow:hidden!important;
-  border:1px solid #a88b55!important;border-radius:4px!important;
-  background:
-    linear-gradient(112deg,rgba(255,255,255,.075),transparent 18%,transparent 78%,rgba(255,255,255,.035)),
-    linear-gradient(145deg,#292b2b 0%,#171a1b 48%,#101213 100%)!important;
-  box-shadow:
-    inset 0 0 0 3px rgba(226,205,158,.055),
-    inset 0 0 24px rgba(0,0,0,.7),
-    0 8px 20px rgba(0,0,0,.55),
-    0 0 18px rgba(193,157,91,.08)!important;
-}
-.warrior-hall-plaque:before{
-  content:""!important;position:absolute!important;inset:5px!important;
-  border:1px solid rgba(218,192,139,.22)!important;
-  pointer-events:none!important;
-}
-.warrior-plaque-title{
-  position:relative!important;z-index:1!important;
-  color:#c9b27d!important;
-  font:700 8px/1.2 Arial,sans-serif!important;
-  letter-spacing:2.1px!important;text-align:center!important;
-  white-space:nowrap!important;
-}
-.warrior-plaque-rule{
-  width:34px!important;height:1px!important;flex:none!important;
-  margin:11px auto 10px!important;
-  background:linear-gradient(90deg,transparent,#d4b875,transparent)!important;
-}
-.warrior-plaque-exercise{
-  position:relative!important;z-index:1!important;
-  width:100%!important;max-width:100%!important;
-  color:#f0e7d2!important;
-  font:500 clamp(11px,2.8vw,14px)/1.3 Georgia,serif!important;
-  letter-spacing:.15px!important;text-align:center!important;
-  overflow-wrap:anywhere!important;
-  display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;
-  overflow:hidden!important;
-}
-.warrior-plaque-weight{
-  position:relative!important;z-index:1!important;
-  margin-top:10px!important;
-  color:#e6ca87!important;
-  font:700 clamp(19px,5vw,25px)/1 Arial,sans-serif!important;
-  letter-spacing:.2px!important;text-align:center!important;
-  white-space:nowrap!important;
-  text-shadow:0 1px 10px rgba(216,180,107,.16)!important;
-}
-.warrior-record-figure img,.warrior-plaque-art,.warrior-plaque-seal,.warrior-plaque-header,.warrior-plaque-footer{display:none!important}
-.warrior-record small{
-  display:block!important;margin:5px 0 9px!important;
-  color:#bcb6a8!important;font-size:10px!important;line-height:1.4!important;
-}
-.warrior-record-improvement{margin:0 auto 8px!important}
-.warrior-record-tap{
-  margin-top:3px!important;padding-top:8px!important;width:100%!important;
-  border-top:1px solid rgba(207,184,132,.13)!important;
-  color:#b9a779!important;font:700 8px/1.4 Arial,sans-serif!important;
-  letter-spacing:1.35px!important;text-align:center!important;
-}
-.warrior-modal-stage{height:250px!important}
-.warrior-modal-figure{height:190px!important}
-.warrior-modal-figure .warrior-record-figure{
-  height:180px!important;min-height:180px!important;width:100%!important;
-}
-.warrior-modal-figure .warrior-hall-plaque{
-  width:min(88%,330px)!important;max-width:330px!important;height:170px!important;
-}
-.warrior-modal-figure .warrior-plaque-title{font-size:10px!important;letter-spacing:2.8px!important}
-.warrior-modal-figure .warrior-plaque-exercise{font-size:18px!important}
-.warrior-modal-figure .warrior-plaque-weight{font-size:32px!important}
-@media(max-width:390px){
-  .warrior-record-figure{height:150px!important;min-height:150px!important}
-  .warrior-hall-plaque{height:130px!important;padding:12px 8px!important}
-  .warrior-plaque-title{font-size:7px!important;letter-spacing:1.6px!important}
-  .warrior-plaque-weight{font-size:20px!important}
-}
-@media(prefers-reduced-motion:reduce){
-  .warrior-record,.warrior-hall-plaque{transition:none!important;animation:none!important}
-}
-</style>
-
-
-<style id="warrior-exercise-image-plaque">
-/* Placa de honor: ejercicio arriba, imagen real al centro y carga abajo */
-.warrior-record-figure{
-  height:190px!important;min-height:190px!important;
-  padding:4px!important;display:flex!important;align-items:center!important;justify-content:center!important;
-  overflow:visible!important;background:transparent!important;border:0!important;
-}
-.warrior-hall-plaque{
-  width:100%!important;max-width:220px!important;height:178px!important;
-  box-sizing:border-box!important;padding:11px 9px 10px!important;
-  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:space-between!important;
-  gap:5px!important;overflow:hidden!important;position:relative!important;
-  border:1px solid rgba(202,174,116,.88)!important;border-radius:5px!important;
-  background:linear-gradient(145deg,#292a29 0%,#171a1a 50%,#0d1010 100%)!important;
-  box-shadow:inset 0 0 0 3px rgba(229,207,160,.06),inset 0 0 22px rgba(0,0,0,.68),0 7px 18px rgba(0,0,0,.48)!important;
-}
-.warrior-hall-plaque:before{
-  content:""!important;position:absolute!important;inset:5px!important;pointer-events:none!important;
-  border:1px solid rgba(220,194,141,.2)!important;
-}
-.warrior-plaque-exercise{
-  position:relative!important;z-index:1!important;flex:0 0 auto!important;
-  width:100%!important;max-width:100%!important;min-height:30px!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  color:#f1e8d5!important;font:600 clamp(10px,2.6vw,13px)/1.2 Georgia,serif!important;
-  text-align:center!important;letter-spacing:.1px!important;overflow-wrap:anywhere!important;
-  display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;
-}
-.warrior-plaque-image-window{
-  position:relative!important;z-index:1!important;flex:1 1 auto!important;
-  width:100%!important;min-height:70px!important;max-height:91px!important;
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  overflow:hidden!important;border:1px solid rgba(205,180,126,.2)!important;border-radius:3px!important;
-  background:radial-gradient(ellipse at 50% 40%,rgba(190,159,91,.13),rgba(7,9,9,.72) 72%)!important;
-}
-.warrior-plaque-exercise-image{
-  display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
-  object-fit:contain!important;object-position:center!important;padding:3px!important;box-sizing:border-box!important;
-  filter:drop-shadow(0 3px 5px rgba(0,0,0,.38))!important;
-}
-.warrior-plaque-image-fallback{
-  color:#9f916e!important;font:700 7px/1.4 Arial,sans-serif!important;letter-spacing:1.2px!important;text-align:center!important;
-}
-.warrior-plaque-weight{
-  position:relative!important;z-index:1!important;flex:0 0 auto!important;
-  margin:0!important;color:#e8cb88!important;font:700 clamp(20px,5vw,25px)/1 Arial,sans-serif!important;
-  letter-spacing:.1px!important;text-align:center!important;white-space:nowrap!important;
-  text-shadow:0 1px 10px rgba(216,180,107,.16)!important;
-}
-.warrior-plaque-title,.warrior-plaque-rule{display:none!important}
-.warrior-modal-figure .warrior-record-figure{height:250px!important;min-height:250px!important}
-.warrior-modal-figure .warrior-hall-plaque{max-width:340px!important;height:230px!important;padding:15px 14px 13px!important}
-.warrior-modal-figure .warrior-plaque-exercise{font-size:18px!important;min-height:42px!important}
-.warrior-modal-figure .warrior-plaque-image-window{max-height:125px!important;min-height:105px!important}
-.warrior-modal-figure .warrior-plaque-weight{font-size:34px!important}
-@media(max-width:390px){
-  .warrior-record-figure{height:178px!important;min-height:178px!important}
-  .warrior-hall-plaque{height:166px!important;padding:9px 7px!important}
-  .warrior-plaque-exercise{font-size:10px!important;min-height:27px!important}
-  .warrior-plaque-image-window{min-height:65px!important;max-height:82px!important}
-  .warrior-plaque-weight{font-size:20px!important}
-}
-</style>
-
-
-<style id="warrior-no-hand-gold-cutout">
-/* Sin mano: el toque abre directamente la placa */
-.warrior-hand{display:none!important}
-.warrior-modal-stage.lift .warrior-hand{display:none!important;animation:none!important}
-.warrior-modal-stage.lift .warrior-modal-figure{animation:none!important}
-.warrior-modal-stage{align-items:center!important;height:auto!important;min-height:250px!important}
-.warrior-modal-figure{height:auto!important;min-height:220px!important}
-.warrior-modal-figure .warrior-hall-plaque{height:260px!important;max-width:360px!important}
-.warrior-modal-figure .warrior-plaque-image-window{min-height:130px!important;max-height:145px!important}
-.warrior-plaque-image-window{
-  background:radial-gradient(ellipse at 50% 48%,rgba(201,164,91,.12),transparent 72%)!important;
-  border-color:rgba(205,180,126,.12)!important;
-}
-.warrior-plaque-exercise-image{
-  object-fit:contain!important;
-  mix-blend-mode:normal!important;
-  filter:drop-shadow(0 0 7px rgba(221,179,92,.25))!important;
-}
-.warrior-plaque-exercise-image.warrior-gold-cutout-ready{
-  background:transparent!important;
-}
-.warrior-plaque-exercise-image.warrior-gold-cutout-fallback{
-  mix-blend-mode:multiply!important;
-  filter:sepia(1) saturate(2.6) hue-rotate(4deg) contrast(1.35)!important;
-}
-.warrior-modal-figure .warrior-plaque-exercise-image{max-height:140px!important}
-</style>
-
 </head>
 <body class="app-booting">
 <div id="brandBootScreen" role="status" aria-live="polite" aria-label="Cargando GYM PROGRESS">
@@ -2071,28 +1663,57 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
     </section>
   </section>
 
-  <section id="warriorHall" class="hidden" aria-label="Sala del Guerrero" aria-modal="true" role="dialog">
-    <div class="warrior-shell">
-      <button type="button" id="warriorHallBack" class="warrior-back">← VOLVER A MI RUTINA</button>
-      <h1 class="warrior-title">SALA DEL GUERRERO</h1>
-      <p class="warrior-subtitle">DISCIPLINA · CONSTANCIA · SUPERACIÓN</p>
-      <div class="warrior-hero"><div class="warrior-emblem" aria-hidden="true">⚔</div><h2>TU CAMINO, TUS MARCAS</h2><p>Un espacio personal para reconocer tu esfuerzo y consultar los resultados que has conseguido entrenando.</p></div>
-      <section class="warrior-record-card"><h3>🏆 VITRINA DE TUS CONQUISTAS</h3><p>Tus récords reunidos en una vitrina. Toca un ejercicio para ver su placa de honor.</p><div id="warriorRecordsList" class="warrior-record-list"><div class="warrior-loading">Preparando tus vitrinas…</div></div></section>
+  <section id="warriorHall" class="hidden" aria-label="Centro de rendimiento" aria-modal="true" role="dialog">
+  <div class="warrior-shell">
+    <button type="button" id="warriorHallBack" class="warrior-back">← VOLVER A MI RUTINA</button>
+    <h1 class="warrior-title">PERFORMANCE CENTER</h1>
+    <p class="warrior-subtitle">ANÁLISIS · EVOLUCIÓN · RENDIMIENTO</p>
+    <div class="pc-hero">
+      <div class="pc-kicker">ARNIFORCAMP · CENTRO DE CONTROL</div>
+      <h2>Tu progreso, medido con tus datos reales.</h2>
+      <p>Analizamos las cargas que ya has registrado. Esta sala no modifica tu entrenamiento ni añade campos al registro actual.</p>
     </div>
-  </section>
-  <div id="warriorTrophyModal" role="dialog" aria-modal="true" aria-label="Detalle de tu placa de honor">
-    <div class="warrior-modal-panel">
-      <button type="button" class="warrior-modal-close" id="warriorTrophyClose" aria-label="Cerrar">×</button>
-      <div class="warrior-modal-label">TU CONQUISTA</div>
-      <h2 class="warrior-modal-title" id="warriorModalTitle">Ejercicio</h2>
-      <div class="warrior-modal-weight" id="warriorModalWeight">0 kg</div>
-      <div class="warrior-modal-stage" id="warriorModalStage">
-        <div class="warrior-modal-figure" id="warriorModalFigure"></div>
-
-      </div>
-      <div class="warrior-modal-meta" id="warriorModalMeta"></div>
+    <div class="pc-kpis" id="pcKpis">
+      <div class="pc-kpi"><span>Ejercicios analizados</span><strong>—</strong><small>Esperando datos</small></div>
+      <div class="pc-kpi"><span>Con mejora</span><strong>—</strong><small>Comparación histórica</small></div>
+      <div class="pc-kpi"><span>Sin mejora reciente</span><strong>—</strong><small>Según registros</small></div>
+      <div class="pc-kpi"><span>Último registro</span><strong>—</strong><small>Fecha disponible</small></div>
     </div>
+    <div class="pc-grid-2">
+      <section class="pc-section">
+        <h3>EVOLUCIÓN POR EJERCICIO</h3>
+        <p>Compara la primera carga registrada con la más reciente para cada ejercicio.</p>
+        <div class="pc-filter-row"><select id="pcExerciseSelect" class="pc-select" aria-label="Seleccionar ejercicio"><option value="">Selecciona un ejercicio</option></select></div>
+        <div id="pcExerciseDetail" class="pc-status">Selecciona un ejercicio para consultar su evolución.</div>
+      </section>
+      <section class="pc-section">
+        <h3>TENDENCIA DE CARGA</h3>
+        <p>Historial de cargas registradas del ejercicio seleccionado. No representa una estimación de 1RM.</p>
+        <div class="pc-chart-wrap"><svg id="pcChart" class="pc-chart" viewBox="0 0 600 190" role="img" aria-label="Gráfico de evolución de carga"><text x="300" y="95" text-anchor="middle" fill="#9d9583" font-size="14">Selecciona un ejercicio</text></svg></div>
+        <div class="pc-chart-label"><span>Registros cronológicos</span><span id="pcChartUnit">kg</span></div>
+      </section>
+    </div>
+    <div class="pc-grid-2">
+      <section class="pc-section">
+        <h3>RESUMEN DE PROGRESIÓN</h3>
+        <p>Clasificación basada en la primera y última carga disponible de cada ejercicio.</p>
+        <div id="pcProgressSummary" class="pc-insights"><div class="pc-status">Cargando análisis…</div></div>
+      </section>
+      <section class="pc-section">
+        <h3>POSIBLES ESTANCAMIENTOS</h3>
+        <p>Ejercicios sin una carga superior en las últimas anotaciones. Es una señal de seguimiento, no una conclusión sobre pérdida de fuerza.</p>
+        <div id="pcPlateaus" class="pc-insights"><div class="pc-status">Cargando análisis…</div></div>
+      </section>
+    </div>
+    <section class="pc-section">
+      <h3>COMPARATIVA DE PERIODOS</h3>
+      <p>Compara la carga máxima registrada en los últimos 30, 60 y 90 días con el periodo inmediatamente anterior de la misma duración.</p>
+      <div id="pcPeriods" class="pc-insights"><div class="pc-status">Cargando comparativa…</div></div>
+      <div class="pc-footnote">Los resultados dependen de los registros guardados. No se deducen repeticiones reales por serie, RIR/RPE, masa muscular ni una marca de 1RM.</div>
+    </section>
+    <div id="pcLoadStatus" class="pc-footnote" role="status"></div>
   </div>
+</section>
 
 </main>
 
@@ -4424,168 +4045,71 @@ async function initializeSpotifyForApp(){
   },{passive:true});
 })();
 
-// Sala del Guerrero: entrada exclusiva al tocar el casco dorado de ARNIFORCAMP.
+// PERFORMANCE CENTER: utiliza exclusivamente workout_weights; no modifica el registro.
+let pcRows=[];
+let pcExerciseMap=new Map();
+function pcFmt(value){return Number(value).toLocaleString("es-ES",{maximumFractionDigits:2});}
+function pcDate(value){if(!value)return "Fecha no disponible";const d=new Date(value);return Number.isNaN(d.getTime())?"Fecha no disponible":new Intl.DateTimeFormat("es-ES",{day:"2-digit",month:"short",year:"numeric"}).format(d);}
+function pcEscape(value){return escapeHTML(String(value??""));}
 async function openWarriorHall(){
   if(!currentUser || adminPreviewMode || !document.body.classList.contains("is-arniforcamp-theme"))return;
   const art=document.querySelector(".dashboard-art");
-  art?.classList.remove("helmet-awaken");
-  void art?.offsetWidth;
-  art?.classList.add("helmet-awaken");
+  art?.classList.remove("helmet-awaken");void art?.offsetWidth;art?.classList.add("helmet-awaken");
   await new Promise(resolve=>setTimeout(resolve,620));
-  $("warriorHall").classList.remove("hidden");
-  document.body.style.overflow="hidden";
+  $("warriorHall").classList.remove("hidden");document.body.style.overflow="hidden";
   await renderWarriorRecords();
 }
-function closeWarriorHall(){
-  $("warriorHall").classList.add("hidden");
-  document.body.style.overflow="";
-}
-function warriorExerciseRecord(row){
-  const id=String(row.exercise_id||"");
-  let record=repdbExercises.get(id);
-  if(!record){
-    const normalized=String(row.exercise_name||"").trim().toLocaleLowerCase("es");
-    record=exerciseCatalog.find(item=>String(item.name_es||item.name_en||"").trim().toLocaleLowerCase("es")===normalized);
-  }
-  if(!record){
-    const aliases={
-      incline_dumbbell_press:"incline-db-press",cable_chest_fly:"cable-fly",triceps_machine:"machine-triceps-extension",
-      overhead_triceps_cable:"cable-overhead-tricep-extension",leg_press:"leg-press",leg_extension:"leg-extension",
-      seated_leg_curl:"seated-leg-curl",hip_abduction_machine:"hip-abduction",seated_calf_raise:"seated-calf-raise",
-      lat_pulldown:"lat-pulldown",seated_cable_row:"seated-cable-row",chest_supported_machine_row:"chest-supported-machine-row",
-      cable_biceps_curl:"cable-curl",cable_hammer_curl:"cable-hammer-curl",machine_shoulder_press:"machine-shoulder-press",
-      dumbbell_lateral_raise:"lateral-raise",face_pull:"face-pull",front_plank:"plank",cable_crunch:"cable-crunch"
-    };
-    record=repdbExercises.get(aliases[id]||id);
-  }
-  return record;
-}
-function warriorGoldCutout(img){
-  if(!img || img.dataset.goldProcessed==="1" || !img.naturalWidth)return;
-  img.dataset.goldProcessed="1";
-  try{
-    const maxSide=700;
-    const scale=Math.min(1,maxSide/Math.max(img.naturalWidth,img.naturalHeight));
-    const canvas=document.createElement("canvas");
-    canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));
-    canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
-    const ctx=canvas.getContext("2d",{willReadFrequently:true});
-    if(!ctx)throw new Error("Canvas no disponible");
-    ctx.drawImage(img,0,0,canvas.width,canvas.height);
-    const frame=ctx.getImageData(0,0,canvas.width,canvas.height);
-    const px=frame.data;
-    for(let i=0;i<px.length;i+=4){
-      const r=px[i],g=px[i+1],b=px[i+2];
-      const hi=Math.max(r,g,b),lo=Math.min(r,g,b);
-      const luma=.299*r+.587*g+.114*b;
-      const nearWhite=luma>202 && (hi-lo)<48;
-      if(nearWhite){
-        px[i+3]=Math.round(255*Math.max(0,Math.min(1,(246-luma)/44)));
-      }else{
-        const ink=Math.max(.18,Math.min(1,(246-luma)/205));
-        px[i]=222;px[i+1]=178;px[i+2]=91;
-        px[i+3]=Math.round(px[i+3]*ink);
-      }
-    }
-    ctx.putImageData(frame,0,0);
-    img.src=canvas.toDataURL("image/png");
-    img.classList.add("warrior-gold-cutout-ready");
-  }catch(error){
-    // Si el servidor de imágenes no permite procesar el recurso por CORS,
-    // se conserva la ilustración original sin bloquear la vitrina.
-    img.classList.add("warrior-gold-cutout-fallback");
-    console.warn("No se pudo recortar el fondo de la ilustración:",error);
-  }
-}
-function warriorFigureMarkup(row){
-  const name=escapeHTML(row.exercise_name||row.exercise_id||"Ejercicio");
-  const weight=Number(row.weight);
-  const weightLabel=(Number.isFinite(weight)?weight:0).toLocaleString("es-ES",{maximumFractionDigits:2})+" kg";
-  const record=warriorExerciseRecord(row);
-  const flat=record?.images?.flat;
-  const path=flat?.start||flat?.peak||"";
-  const image=path
-    ? `<img class="warrior-plaque-exercise-image" crossorigin="anonymous" loading="lazy" decoding="async" onload="warriorGoldCutout(this)" src="${escapeHTML(REPDB_ASSETS+path)}" alt="Imagen del ejercicio ${name}" onerror="this.hidden=true;this.nextElementSibling.hidden=false">`
-    : "";
-  return `<div class="warrior-record-figure">
-    <div class="warrior-hall-plaque" role="img" aria-label="Placa de honor: ${name}, ${weightLabel}">
-      <div class="warrior-plaque-exercise">${name}</div>
-      <div class="warrior-plaque-image-window">
-        ${image}
-        <div class="warrior-plaque-image-fallback" ${path?'hidden':''}>IMAGEN NO DISPONIBLE</div>
-      </div>
-      <div class="warrior-plaque-weight">${weightLabel}</div>
-    </div>
-  </div>`;
-}
+function closeWarriorHall(){$("warriorHall").classList.add("hidden");document.body.style.overflow="";}
 async function renderWarriorRecords(){
-  const target=$("warriorRecordsList");
-  target.innerHTML='<div class="warrior-loading">Consultando tus conquistas guardadas…</div>';
+  const status=$("pcLoadStatus");status.textContent="Consultando tus registros guardados…";
   try{
-    if(!currentUser)throw new Error("Inicia sesión para consultar tus récords.");
-    const {data,error}=await supabase.from("workout_weights")
-      .select("exercise_id,exercise_name,performed_at,weight,sets,reps")
-      .eq("user_id",currentUser.id)
-      .order("performed_at",{ascending:true});
+    if(!currentUser)throw new Error("Inicia sesión para consultar tus estadísticas.");
+    const {data,error}=await supabase.from("workout_weights").select("exercise_id,exercise_name,performed_at,weight,sets,reps").eq("user_id",currentUser.id).order("performed_at",{ascending:true});
     if(error)throw error;
-    const best=new Map();
-    for(const row of (data||[])){
-      const weight=Number(row.weight);
-      if(!Number.isFinite(weight)||weight<0)continue;
-      const key=row.exercise_id||row.exercise_name||"ejercicio";
-      const old=best.get(key);
-      const reps=Number(row.reps)||0;
-      if(!old){best.set(key,{...row,weight,reps,previousBest:null,improvement:null});continue;}
-      if(weight>old.weight||(weight===old.weight&&reps>old.reps)){
-        best.set(key,{...row,weight,reps,previousBest:old.weight,improvement:weight-old.weight});
-      }
-    }
-    const records=[...best.values()].sort((a,b)=>b.weight-a.weight||String(a.exercise_name).localeCompare(String(b.exercise_name),"es"));
-    if(!records.length){target.innerHTML='<div class="warrior-empty">Todavía no hay pesos guardados para mostrar. Cuando registres tus cargas, tus placas de honor aparecerán aquí automáticamente.</div>';return;}
-    target.innerHTML=records.map((row,index)=>{
-      const date=row.performed_at?new Intl.DateTimeFormat("es-ES",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(row.performed_at)):"Fecha no disponible";
-      const name=escapeHTML(row.exercise_name||row.exercise_id||"Ejercicio");
-      const reps=row.reps?` · ${row.reps} repeticiones`:"";
-      const improvement=row.improvement!==null&&row.improvement>0
-        ? `<span class="warrior-record-improvement">MEJORA +${row.improvement.toLocaleString("es-ES",{maximumFractionDigits:2})} kg</span>`
-        : '<span class="warrior-record-improvement no-previous">PRIMERA MARCA</span>';
-      const figure=warriorFigureMarkup(row);
-      const payload=encodeURIComponent(JSON.stringify({name:row.exercise_name||row.exercise_id||"Ejercicio",weight:row.weight,reps:row.reps||0,date,improvement:row.improvement||0,figure}));
-      return `<article class="warrior-record"><button type="button" class="warrior-record-select" data-trophy="${payload}" aria-label="Ver placa de honor de ${name}"><span class="warrior-record-kicker">PLACA ${String(index+1).padStart(2,"0")}</span>${figure}<small>${date}${reps}</small>${improvement}<span class="warrior-record-tap">TOCA PARA VER LA PLACA</span></button></article>`;
-    }).join("");
+    pcRows=(data||[]).map(r=>({...r,weight:Number(r.weight),time:new Date(r.performed_at).getTime()})).filter(r=>Number.isFinite(r.weight)&&Number.isFinite(r.time)).sort((a,b)=>a.time-b.time);
+    pcExerciseMap=new Map();
+    for(const row of pcRows){const key=String(row.exercise_id||row.exercise_name||"Ejercicio");if(!pcExerciseMap.has(key))pcExerciseMap.set(key,[]);pcExerciseMap.get(key).push(row);}
+    const exercises=[...pcExerciseMap.entries()].map(([id,rows])=>({id,name:rows.at(-1).exercise_name||id,rows}));
+    const select=$("pcExerciseSelect");select.innerHTML='<option value="">Selecciona un ejercicio</option>'+exercises.map(e=>`<option value="${pcEscape(e.id)}">${pcEscape(e.name)}</option>`).join("");
+    const improved=exercises.filter(e=>e.rows.at(-1).weight>e.rows[0].weight).length;
+    const latest=pcRows.at(-1);
+    $("pcKpis").innerHTML=[
+      ["Ejercicios analizados",exercises.length,"Con registros válidos"],
+      ["Con mejora",improved,exercises.length?`${pcFmt(improved/exercises.length*100)}% del total`:"Sin datos"],
+      ["Sin mejora reciente",exercises.filter(e=>{const recent=e.rows.filter(r=>Date.now()-r.time<=90*86400000);return recent.length>=2&&Math.max(...recent.map(r=>r.weight))===recent[0].weight;}).length,"Últimos 90 días · mínimo 2 anotaciones"],
+      ["Último registro",latest?pcDate(latest.performed_at):"—",latest?`${pcFmt(latest.weight)} kg · ${pcEscape(latest.exercise_name||"Ejercicio")}`:"Sin registros"]
+    ].map(([label,value,sub])=>`<div class="pc-kpi"><span>${label}</span><strong>${value}</strong><small>${sub}</small></div>`).join("");
+    $("pcProgressSummary").innerHTML=exercises.length?exercises.map(e=>{const first=e.rows[0].weight,last=e.rows.at(-1).weight,diff=last-first,pct=first>0?diff/first*100:null;const state=diff>0.0001?"MEJORA":diff< -0.0001?"DESCENSO":"ESTABLE";return `<div class="pc-insight"><strong>${pcEscape(e.name)}</strong><span class="${diff>0?"pc-positive":diff<0?"pc-negative":""}">${state} · ${diff>0?"+":""}${pcFmt(diff)} kg${pct===null?"":` (${pct>0?"+":""}${pcFmt(pct)}%)`}</span></div>`;}).join(""):'<div class="pc-status">Aún no hay registros suficientes para analizar la progresión.</div>';
+    const plateaus=exercises.map(e=>{const recent=e.rows.filter(r=>Date.now()-r.time<=90*86400000);return {name:e.name,rows:recent,max:Math.max(...recent.map(r=>r.weight))};}).filter(e=>e.rows.length>=2&&e.rows.at(-1).weight===e.max);
+    $("pcPlateaus").innerHTML=plateaus.length?plateaus.map(e=>`<div class="pc-insight"><strong>${pcEscape(e.name)}</strong><span>${e.rows.length} anotaciones · sin superar ${pcFmt(e.max)} kg</span></div>`).join(""):'<div class="pc-status">No se detectan posibles estancamientos con el criterio actual o faltan anotaciones recientes.</div>';
+    renderPcPeriods();
+    select.onchange=()=>renderPcExercise(select.value);
+    if(exercises.length) {select.value=exercises[0].id;renderPcExercise(select.value);}
+    else {renderPcExercise("");$("pcProgressSummary").innerHTML='<div class="pc-status">Guarda cargas desde tu rutina para empezar a generar estadísticas.</div>';}
+    status.textContent=`Análisis actualizado con ${pcRows.length} registros de cargas.`;
   }catch(error){
-    console.error("No se pudieron cargar los récords personales:",error);
-    target.innerHTML=`<div class="warrior-empty">No se han podido cargar tus récords. ${escapeHTML(error?.message||"Comprueba la conexión e inténtalo de nuevo.")}</div>`;
+    console.error("No se pudo cargar Performance Center:",error);
+    status.textContent="No se han podido cargar las estadísticas: "+(error?.message||"comprueba la conexión y los permisos.");
+    $("pcProgressSummary").innerHTML='<div class="pc-status">No se han podido consultar los datos.</div>';
+    $("pcPlateaus").innerHTML='<div class="pc-status">No se han podido consultar los datos.</div>';
+    $("pcPeriods").innerHTML='<div class="pc-status">No se han podido consultar los datos.</div>';
   }
 }
-function openWarriorTrophy(encoded){
-  try{
-    const trophy=JSON.parse(decodeURIComponent(encoded));
-    $("warriorModalTitle").textContent=trophy.name;
-    $("warriorModalWeight").textContent=Number(trophy.weight).toLocaleString("es-ES",{maximumFractionDigits:2})+" kg";
-    $("warriorModalFigure").innerHTML=trophy.figure;
-    $("warriorModalMeta").textContent=trophy.date+(trophy.reps?" · "+trophy.reps+" repeticiones":"")+(trophy.improvement>0?" · Mejora de +"+Number(trophy.improvement).toLocaleString("es-ES",{maximumFractionDigits:2})+" kg":"");
-    const modal=$("warriorTrophyModal"),stage=$("warriorModalStage");
-    modal.classList.add("open");stage.classList.remove("lift");
-    document.body.style.overflow="hidden";
-  }catch(error){console.error("No se pudo abrir el trofeo:",error);}
+function renderPcExercise(id){
+  const rows=pcExerciseMap.get(id)||[];
+  const detail=$("pcExerciseDetail"),chart=$("pcChart");
+  if(!rows.length){detail.textContent="Selecciona un ejercicio para consultar su evolución.";chart.innerHTML='<text x="300" y="95" text-anchor="middle" fill="#9d9583" font-size="14">Sin datos para mostrar</text>';return;}
+  const first=rows[0],last=rows.at(-1),diff=last.weight-first.weight,pct=first.weight>0?diff/first.weight*100:null;
+  detail.innerHTML=`<div class="pc-insights"><div class="pc-insight"><strong>Primera carga</strong><span>${pcFmt(first.weight)} kg</span></div><div class="pc-insight"><strong>Última carga</strong><span>${pcFmt(last.weight)} kg</span></div><div class="pc-insight"><strong>Diferencia</strong><span class="${diff>=0?"pc-positive":"pc-negative"}">${diff>0?"+":""}${pcFmt(diff)} kg</span></div><div class="pc-insight"><strong>Variación histórica</strong><span>${pct===null?"No calculable":`${pct>0?"+":""}${pcFmt(pct)}%`}</span></div><div class="pc-insight"><strong>Registros</strong><span>${rows.length}</span></div><div class="pc-insight"><strong>Periodo</strong><span>${pcDate(first.performed_at)} – ${pcDate(last.performed_at)}</span></div></div>`;
+  const vals=rows.map(r=>r.weight),min=Math.min(...vals),max=Math.max(...vals),range=max-min||1;
+  const pts=vals.map((v,i)=>`${25+i*(550/Math.max(1,vals.length-1))},${155-(v-min)/range*125}`).join(" ");
+  const guides=[0,1,2,3].map(i=>`<line x1="25" y1="${25+i*43}" x2="575" y2="${25+i*43}" stroke="rgba(255,255,255,.09)" stroke-dasharray="3 5"/>`).join("");
+  chart.innerHTML=`${guides}<polyline points="${pts}" fill="none" stroke="#d9b65f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${vals.map((v,i)=>`<circle cx="${25+i*(550/Math.max(1,vals.length-1))}" cy="${155-(v-min)/range*125}" r="4" fill="#f0d58d" stroke="#17130a" stroke-width="2"/>`).join("")}<text x="25" y="178" fill="#9d9583" font-size="10">${pcFmt(min)} kg</text><text x="575" y="15" text-anchor="end" fill="#d9b65f" font-size="10">${pcFmt(max)} kg</text>`;
 }
-function closeWarriorTrophy(){
-  $("warriorTrophyModal").classList.remove("open");
-  if(!$("warriorHall").classList.contains("hidden"))document.body.style.overflow="hidden";
-  else document.body.style.overflow="";
+function renderPcPeriods(){
+  const now=Date.now(),day=86400000,periods=[30,60,90];
+  $("pcPeriods").innerHTML=periods.map(n=>{const current=pcRows.filter(r=>r.time>=now-n*day),previous=pcRows.filter(r=>r.time>=now-2*n*day&&r.time<now-n*day);const maxOf=a=>a.length?Math.max(...a.map(r=>r.weight)):null;const c=maxOf(current),p=maxOf(previous);const delta=c!==null&&p!==null?c-p:null;return `<div class="pc-insight"><strong>Últimos ${n} días</strong><span>${c===null?"Sin registros":`${pcFmt(c)} kg`}${delta===null?"":` · ${delta>0?"+":""}${pcFmt(delta)} kg vs periodo anterior`}</span></div>`;}).join("");
 }
-$("warriorRecordsList")?.addEventListener("click",event=>{
-  const button=event.target.closest("[data-trophy]");
-  if(button)openWarriorTrophy(button.dataset.trophy);
-});
-$("warriorTrophyClose")?.addEventListener("click",closeWarriorTrophy);
-$("warriorTrophyModal")?.addEventListener("click",event=>{
-  if(event.target.id==="warriorTrophyModal")closeWarriorTrophy();
-});
-document.addEventListener("keydown",event=>{
-  if(event.key==="Escape"&&$("warriorTrophyModal").classList.contains("open"))closeWarriorTrophy();
-});
 $("helmetHallBtn")?.addEventListener("click",openWarriorHall);
 $("warriorHallBack")?.addEventListener("click",closeWarriorHall);
 
