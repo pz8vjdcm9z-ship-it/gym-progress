@@ -1575,6 +1575,19 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
  .pc-selected-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 
+
+/* MUSCLE PERFORMANCE — panel estadístico compacto */
+.pc-shell{width:min(100%,1040px)}
+#warriorHall{background:radial-gradient(ellipse at 50% 0%,rgba(207,166,74,.13),transparent 38%),linear-gradient(180deg,#101113,#08090b 58%,#10100d);color:#f4f1e8}
+.pc-dashboard-head{padding:20px 4px 15px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.pc-brandline{display:flex;align-items:center;gap:9px;color:#e9d18b;font-size:10px;font-weight:900;letter-spacing:1.4px}.pc-brand-mark{width:27px;height:27px;border:1px solid #b9974b;border-radius:8px;display:grid;place-items:center;font-size:15px}.pc-brandline i{display:block;font-style:normal;font-size:7px;letter-spacing:1.5px;color:#8f8a7c;margin-top:3px}
+.pc-head-title{width:100%;text-align:left}.pc-overline{font-size:9px;letter-spacing:1.8px;font-weight:900;color:#bda15e}.pc-head-title h1{font-size:clamp(25px,5vw,36px);letter-spacing:-.8px;line-height:1;margin:7px 0;color:#f5f0df}.pc-head-title h1 em{font-style:normal;color:#d8b65f}.pc-head-title p{margin:7px 0 0;color:#aaa596;font-size:11px}.pc-live{font-size:8px;letter-spacing:1px;color:#a9a18f}.pc-live span{display:inline-block;width:6px;height:6px;border-radius:50%;background:#c9a54e;margin-right:5px;box-shadow:0 0 8px #c9a54e}
+.pc-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:9px 0 19px}.pc-kpi{min-width:0;padding:11px 9px;border:1px solid #ffffff16;border-radius:12px;background:linear-gradient(145deg,#1a1a18,#101113);}.pc-kpi span{display:block;color:#9e998d;font-size:8px;line-height:1.3;letter-spacing:.6px;text-transform:uppercase}.pc-kpi strong{display:block;color:#f0d58a;font-size:clamp(17px,3vw,24px);line-height:1.25;margin:5px 0 2px;overflow-wrap:anywhere}.pc-kpi small{display:block;color:#77766f;font-size:8px;line-height:1.3}
+.pc-section-head{display:flex;justify-content:space-between;align-items:center;margin:16px 0 11px}.pc-section-head h3{font-size:13px;letter-spacing:1.1px;color:#eee8d8;margin:5px 0}.pc-section-head p{font-size:10px;color:#8f8c82;margin:0}.pc-section-icon{color:#c7a85c;font-size:21px}.pc-muscle-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.pc-muscle-tile{min-width:0;min-height:105px;position:relative;text-align:left;padding:11px 9px;border:1px solid #c7a85c35;border-radius:13px;background:linear-gradient(145deg,#1b1a16,#101113 72%);color:#eee8d8;cursor:pointer;overflow:hidden}.pc-muscle-tile:after{content:"";position:absolute;width:52px;height:52px;border:1px solid #c9a65a20;border-radius:50%;right:-22px;top:-20px;box-shadow:0 0 0 9px #c9a65a08}.pc-muscle-symbol{font-size:17px;color:#d7b86c;display:block;margin-bottom:9px}.pc-muscle-tile strong{display:block;font-size:10px;line-height:1.2;white-space:normal}.pc-muscle-tile small{display:block;margin-top:5px;color:#8e897d;font-size:8px}.pc-muscle-tile b{position:absolute;right:8px;bottom:8px;color:#d5b866;font-size:9px}
+.pc-view-toolbar{display:flex;justify-content:space-between;align-items:center;margin:4px 0 15px}.pc-text-back{border:0;background:transparent;color:#d6b765;font-size:9px;font-weight:900;letter-spacing:.8px;padding:8px 0;cursor:pointer}.pc-group-title,.pc-exercise-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;border:1px solid #c5a14b35;border-radius:15px;background:linear-gradient(120deg,#211d14,#111211 65%,#0d0e10)}.pc-group-title h2,.pc-exercise-hero h2{margin:5px 0;color:#f3eddd;font-size:clamp(20px,4vw,28px)}.pc-group-title p,.pc-exercise-hero p{margin:0;color:#969184;font-size:10px}.pc-group-score{font-size:23px;color:#e4c477;font-weight:900}.pc-group-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 17px}.pc-mini-stat{padding:10px;border:1px solid #ffffff15;border-radius:11px;background:#121315}.pc-mini-stat span{display:block;color:#8e8a80;font-size:8px;text-transform:uppercase}.pc-mini-stat strong{display:block;color:#ead18d;font-size:17px;margin-top:4px}.pc-exercise-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pc-exercise-tile{display:flex;align-items:center;gap:9px;min-width:0;text-align:left;padding:11px;border:1px solid #ffffff18;border-radius:12px;background:#141517;color:#eee9dc;cursor:pointer}.pc-exercise-index{flex:0 0 29px;height:29px;border-radius:9px;background:#c6a45a18;color:#d9ba70;display:grid;place-items:center;font-size:10px;font-weight:900}.pc-exercise-copy{min-width:0;flex:1}.pc-exercise-copy strong{display:block;font-size:10px;line-height:1.3}.pc-exercise-copy small{display:block;color:#898579;font-size:8px;margin-top:4px}.pc-exercise-change{font-size:10px;font-weight:900;color:#d9c17e;white-space:nowrap}.pc-exercise-change.up{color:#9ed4a7}.pc-exercise-change.down{color:#d9a18d}
+.pc-exercise-delta{font-size:20px;color:#a8d7a9;font-weight:900;white-space:nowrap}.pc-detail-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}.pc-metric{padding:12px 10px;border:1px solid #ffffff17;border-radius:12px;background:#131416}.pc-metric span{display:block;font-size:8px;color:#9d9788;letter-spacing:.8px}.pc-metric strong{display:block;font-size:20px;color:#f0d68f;margin:7px 0 3px}.pc-metric strong small{font-size:10px;color:#b8aa83}.pc-metric>small{font-size:8px;color:#77766f}.pc-chart-panel,.pc-section{padding:15px;border:1px solid #ffffff17;border-radius:14px;background:linear-gradient(145deg,#171817,#101113)}.pc-chart-head{display:flex;justify-content:space-between;align-items:center}.pc-chart-head h3,.pc-section h3{font-size:12px;color:#eee8d8;letter-spacing:1px;margin:5px 0}.pc-chart-unit{color:#d8bb73;font-size:10px;font-weight:900}.pc-chart-wrap{height:190px;margin-top:9px}.pc-chart{width:100%;height:100%;overflow:visible}.pc-chart-label{display:flex;justify-content:space-between;color:#77766f;font-size:8px}.pc-analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.pc-trend-copy{font-size:10px;line-height:1.6;color:#aaa596;margin-top:8px}.pc-trend-copy strong{color:#e4cb86}.pc-footnote{margin:14px 2px;color:#77756e;font-size:8px;line-height:1.6}.pc-load-status{margin-top:12px;color:#9b9588;font-size:9px;text-align:center}
+@media(max-width:560px){.pc-muscle-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.pc-muscle-tile{min-height:88px;padding:8px 6px}.pc-muscle-symbol{font-size:14px;margin-bottom:7px}.pc-muscle-tile strong{font-size:9px}.pc-muscle-tile small{font-size:7px}.pc-muscle-tile b{font-size:8px}.pc-kpis{gap:5px}.pc-kpi{padding:9px 6px}.pc-kpi span{font-size:7px}.pc-kpi small{font-size:7px}.pc-kpi strong{font-size:16px}.pc-detail-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-exercise-grid{grid-template-columns:1fr}.pc-analysis-grid{grid-template-columns:1fr}.pc-group-title,.pc-exercise-hero{padding:12px}.pc-group-score{font-size:19px}}
+@media(max-width:350px){.pc-muscle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pc-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body class="app-booting">
@@ -1805,36 +1818,35 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
     </section>
   </section>
 
-  <section id="warriorHall" class="hidden" aria-label="Centro de rendimiento" aria-modal="true" role="dialog">
- <div class="warrior-shell">
+  <section id="warriorHall" class="hidden" aria-label="Muscle Performance" aria-modal="true" role="dialog">
+ <div class="warrior-shell pc-shell">
   <button type="button" id="warriorHallBack" class="warrior-back">← VOLVER A MI RUTINA</button>
   <header class="pc-dashboard-head">
    <div class="pc-brandline"><span class="pc-brand-mark">A</span><span>ARNIFORCAMP <i>PERFORMANCE INTELLIGENCE</i></span></div>
-   <div class="pc-head-title"><div class="pc-overline">TU CENTRO DE RENDIMIENTO</div><h1>PERFORMANCE<br><em>OVERVIEW</em></h1><p>Datos reales. Progreso medible. Decisiones inteligentes.</p></div>
-   <div class="pc-live"><span></span> DATOS SINCRONIZADOS</div>
+   <div class="pc-head-title"><div class="pc-overline">ANÁLISIS DE RENDIMIENTO</div><h1>MUSCLE <em>PERFORMANCE</em></h1><p>Tu evolución, medida ejercicio a ejercicio.</p></div>
+   <div class="pc-live"><span></span> ESTADÍSTICAS PERSONALES</div>
   </header>
-  <div class="pc-kpis" id="pcKpis">
-   <div class="pc-kpi"><span>Ejercicios analizados</span><strong>—</strong><small>Registros disponibles</small></div>
-   <div class="pc-kpi"><span>Con mejora</span><strong>—</strong><small>Primera vs última carga</small></div>
-   <div class="pc-kpi"><span>Sin mejora reciente</span><strong>—</strong><small>Últimos 90 días</small></div>
-   <div class="pc-kpi"><span>Último registro</span><strong>—</strong><small>Fecha y carga</small></div>
+  <div class="pc-kpis" id="pcKpis"></div>
+  <div class="pc-view" id="pcOverviewView">
+   <div class="pc-section-head pc-muscle-heading"><div><div class="pc-overline">ANÁLISIS POR ZONA</div><h3>GRUPOS MUSCULARES</h3><p>Selecciona una zona para analizar sus ejercicios.</p></div><span class="pc-section-icon">▦</span></div>
+   <div id="pcMuscleGrid" class="pc-muscle-grid"><div class="pc-status">Preparando estadísticas…</div></div>
+   <div class="pc-footnote">Los indicadores se calculan a partir de las cargas y fechas guardadas en tus entrenamientos.</div>
   </div>
-  <section class="pc-feature">
-   <div class="pc-feature-copy"><div class="pc-overline">ANÁLISIS DE PROGRESIÓN</div><h2>La evolución<br><em>se demuestra.</em></h2><p>Visualiza cómo cambian tus cargas a lo largo del tiempo. Selecciona un ejercicio y consulta su tendencia real.</p>
-    <div class="pc-filter-row"><select id="pcExerciseSelect" class="pc-select" aria-label="Seleccionar ejercicio"><option value="">Selecciona un ejercicio</option></select></div>
-   </div>
-   <div class="pc-feature-chart"><div class="pc-chart-top"><span>EVOLUCIÓN DE CARGA</span><b id="pcChartUnit">KG</b></div><div class="pc-chart-wrap"><svg id="pcChart" class="pc-chart" viewBox="0 0 600 220" role="img" aria-label="Gráfico de evolución de carga"><text x="300" y="110" text-anchor="middle" fill="#9d9583" font-size="14">Selecciona un ejercicio</text></svg></div><div class="pc-chart-label"><span>PRIMER REGISTRO</span><span>ÚLTIMO REGISTRO</span></div></div>
-  </section>
-  <section class="pc-selected">
-   <div class="pc-selected-heading"><div><div class="pc-overline">EJERCICIO SELECCIONADO</div><h3 id="pcSelectedName">Selecciona un ejercicio</h3></div><div id="pcSelectedDelta" class="pc-delta">—</div></div>
-   <div id="pcExerciseDetail" class="pc-selected-metrics"><div class="pc-status">Selecciona un ejercicio para consultar su evolución.</div></div>
-  </section>
-  <div class="pc-analysis-grid">
-   <section class="pc-section pc-ranking"><div class="pc-section-head"><div><div class="pc-overline">RESULTADOS</div><h3>MAPA DE PROGRESO</h3><p>Ejercicios ordenados por variación histórica de carga.</p></div><div class="pc-section-icon">↗</div></div><div id="pcProgressSummary" class="pc-insights"><div class="pc-status">Cargando análisis…</div></div></section>
-   <section class="pc-section pc-stability"><div class="pc-section-head"><div><div class="pc-overline">SEGUIMIENTO</div><h3>ESTABILIDAD DE CARGA</h3><p>Registros recientes sin superar el máximo anterior.</p></div><div class="pc-section-icon">◎</div></div><div id="pcPlateaus" class="pc-insights"><div class="pc-status">Cargando análisis…</div></div></section>
+  <div class="pc-view hidden" id="pcGroupView">
+   <div class="pc-view-toolbar"><button type="button" class="pc-text-back" id="pcBackOverview">← TODOS LOS GRUPOS</button><span class="pc-overline">ANÁLISIS MUSCULAR</span></div>
+   <div class="pc-group-title"><div><div class="pc-overline">GRUPO SELECCIONADO</div><h2 id="pcGroupName">—</h2><p id="pcGroupMeta">—</p></div><div class="pc-group-score" id="pcGroupScore">—</div></div>
+   <div class="pc-group-kpis" id="pcGroupKpis"></div>
+   <div class="pc-section-head"><div><div class="pc-overline">RENDIMIENTO POR EJERCICIO</div><h3>REGISTROS Y EVOLUCIÓN</h3><p>Selecciona un ejercicio para abrir su análisis completo.</p></div></div>
+   <div id="pcGroupExercises" class="pc-exercise-grid"></div>
   </div>
-  <section class="pc-section pc-period-section"><div class="pc-section-head"><div><div class="pc-overline">COMPARATIVA TEMPORAL</div><h3>RENDIMIENTO POR PERIODOS</h3><p>Carga máxima de cada periodo frente al periodo anterior equivalente.</p></div><div class="pc-section-icon">◷</div></div><div id="pcPeriods" class="pc-insights"><div class="pc-status">Cargando comparativa…</div></div></section>
-  <div class="pc-footnote">Análisis calculado únicamente con las cargas guardadas. Las cargas de ejercicios distintos no se suman ni se comparan entre sí. No se estiman masa muscular, RIR/RPE ni 1RM.</div>
+  <div class="pc-view hidden" id="pcExerciseView">
+   <div class="pc-view-toolbar"><button type="button" class="pc-text-back" id="pcBackGroup">← VOLVER AL GRUPO</button><span class="pc-overline">FICHA DE RENDIMIENTO</span></div>
+   <div class="pc-exercise-hero"><div><div class="pc-overline" id="pcExerciseGroup">ANÁLISIS DEL EJERCICIO</div><h2 id="pcSelectedName">—</h2><p id="pcExerciseSub">Evolución de carga registrada</p></div><div class="pc-exercise-delta" id="pcSelectedDelta">—</div></div>
+   <div class="pc-detail-kpis" id="pcExerciseDetail"></div>
+   <section class="pc-chart-panel"><div class="pc-chart-head"><div><div class="pc-overline">HISTÓRICO DE CARGA</div><h3>CURVA DE PROGRESIÓN</h3></div><span class="pc-chart-unit" id="pcChartUnit">KG</span></div><div class="pc-chart-wrap"><svg id="pcChart" class="pc-chart" viewBox="0 0 600 220" role="img" aria-label="Gráfico de evolución de carga"></svg></div><div class="pc-chart-label"><span id="pcChartStart">PRIMER REGISTRO</span><span id="pcChartEnd">ÚLTIMO REGISTRO</span></div></section>
+   <div class="pc-analysis-grid pc-detail-analysis"><section class="pc-section"><div class="pc-overline">LECTURA DE TENDENCIA</div><h3>¿CÓMO VAS?</h3><div id="pcTrendAnalysis" class="pc-trend-copy"></div></section><section class="pc-section"><div class="pc-overline">PROYECCIÓN ORIENTATIVA</div><h3>POSIBLE EVOLUCIÓN</h3><div id="pcProjection" class="pc-trend-copy"></div></section></div>
+   <div class="pc-footnote">El análisis compara cargas registradas del mismo ejercicio. La proyección es una extrapolación orientativa, no una predicción. No se infieren 1RM, masa muscular ni esfuerzo percibido.</div>
+  </div>
   <div id="pcLoadStatus" class="pc-load-status" role="status"></div>
  </div>
 </section>
@@ -4169,12 +4181,7 @@ async function initializeSpotifyForApp(){
   },{passive:true});
 })();
 
-// PERFORMANCE CENTER: utiliza exclusivamente workout_weights; no modifica el registro.
-let pcRows=[];
-let pcExerciseMap=new Map();
-function pcFmt(value){return Number(value).toLocaleString("es-ES",{maximumFractionDigits:2});}
-function pcDate(value){if(!value)return "Fecha no disponible";const d=new Date(value);return Number.isNaN(d.getTime())?"Fecha no disponible":new Intl.DateTimeFormat("es-ES",{day:"2-digit",month:"short",year:"numeric"}).format(d);}
-function pcEscape(value){return escapeHTML(String(value??""));}
+// MUSCLE PERFORMANCE: lectura de workout_weights, sin alterar el registro de entrenamientos.
 async function openWarriorHall(){
   if(!currentUser || adminPreviewMode || !document.body.classList.contains("is-arniforcamp-theme"))return;
   const art=document.querySelector(".dashboard-art");
@@ -4184,72 +4191,58 @@ async function openWarriorHall(){
   await renderWarriorRecords();
 }
 function closeWarriorHall(){$("warriorHall").classList.add("hidden");document.body.style.overflow="";}
+let pcRows=[],pcExerciseMap=new Map(),pcCurrentGroup=null,pcCurrentExercise=null;
+function pcEscape(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function pcFmt(value){return Number(value).toLocaleString("es-ES",{maximumFractionDigits:1});}
+function pcDate(value){return new Intl.DateTimeFormat("es-ES",{day:"2-digit",month:"short",year:"2-digit"}).format(new Date(value));}
+function pcExercises(){return [...pcExerciseMap.entries()].map(([id,rows])=>({id,name:rows.at(-1).exercise_name||id,rows}));}
+function pcChange(rows){if(!rows.length)return null;const a=rows[0].weight,b=rows.at(-1).weight;return a>0?(b-a)/a*100:null;}
+function pcSetView(name){["pcOverviewView","pcGroupView","pcExerciseView"].forEach(id=>$(id).classList.toggle("hidden",id!==name));}
+function pcRenderOverview(){
+ const exercises=pcExercises(),count=exercises.length;
+ const improved=exercises.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;
+ const latest=pcRows.at(-1);
+ $("pcKpis").innerHTML=[["EJERCICIOS CON DATOS",count,"Historial registrado"],["EN PROGRESO",improved,count?`${pcFmt(improved/count*100)}% del total`:"Aún sin datos"],["REGISTROS",pcRows.length,"Cargas guardadas"],["ÚLTIMA ACTIVIDAD",latest?pcDate(latest.performed_at):"—",latest?pcEscape(latest.exercise_name||"Ejercicio"):"Sin registros"]].map(([a,b,c])=>`<div class="pc-kpi"><span>${a}</span><strong>${b}</strong><small>${c}</small></div>`).join("");
+ const icons={chest:"◈",back:"⌁",shoulders:"⬡",biceps:"◉",triceps:"◍",quadriceps:"▥",hamstrings:"⌇",glutes:"◆",calves:"∥",abs:"▤",forearms:"◌"};
+ $("pcMuscleGrid").innerHTML=MUSCLE_GROUPS.map(g=>{const groupEx=exerciseCatalog.filter(ex=>ex.category==="strength"&&exerciseMatchesGroup(ex,g));const ids=new Set(groupEx.map(x=>String(x.id)));const logged=exercises.filter(e=>ids.has(String(e.id))||groupEx.some(x=>String(x.name_es||"").toLowerCase()===e.name.toLowerCase()));const up=logged.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;return `<button type="button" class="pc-muscle-tile" data-pc-group="${pcEscape(g.id)}"><span class="pc-muscle-symbol">${icons[g.id]||"◈"}</span><strong>${pcEscape(g.name)}</strong><small>${logged.length} ejercicios con datos</small><b>${logged.length?`${up}/${logged.length} ↗`:"—"}</b></button>`;}).join("");
+ $("pcMuscleGrid").querySelectorAll("[data-pc-group]").forEach(b=>b.addEventListener("click",()=>pcOpenGroup(b.dataset.pcGroup)));
+}
+function pcOpenGroup(groupId){
+ const group=MUSCLE_GROUPS.find(g=>g.id===groupId);if(!group)return;pcCurrentGroup=group;
+ const catalog=exerciseCatalog.filter(ex=>ex.category==="strength"&&exerciseMatchesGroup(ex,group));
+ const exercises=pcExercises().filter(e=>catalog.some(x=>String(x.id)===String(e.id)||String(x.name_es||"").toLowerCase()===e.name.toLowerCase()));
+ const gains=exercises.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;
+ $("pcGroupName").textContent=group.name;$("pcGroupMeta").textContent=`${exercises.length} ejercicios con registros guardados · ${catalog.length} ejercicios en catálogo`;
+ $("pcGroupScore").textContent=exercises.length?`${Math.round(gains/exercises.length*100)}%`:"—";
+ $("pcGroupKpis").innerHTML=[["CON HISTORIAL",exercises.length],["EN MEJORA",gains],["CARGAS REGISTRADAS",exercises.reduce((n,e)=>n+e.rows.length,0)]].map(([a,b])=>`<div class="pc-mini-stat"><span>${a}</span><strong>${b}</strong></div>`).join("");
+ $("pcGroupExercises").innerHTML=exercises.length?exercises.map((e,i)=>{const pct=pcChange(e.rows),last=e.rows.at(-1);return `<button type="button" class="pc-exercise-tile" data-pc-exercise="${pcEscape(e.id)}"><span class="pc-exercise-index">${String(i+1).padStart(2,"0")}</span><span class="pc-exercise-copy"><strong>${pcEscape(e.name)}</strong><small>${pcFmt(last.weight)} kg · ${e.rows.length} registros · ${pcDate(last.performed_at)}</small></span><span class="pc-exercise-change ${pct>0?"up":pct<0?"down":""}">${pct===null?"—":`${pct>0?"+":""}${pcFmt(pct)}%`}</span></button>`;}).join(""):'<div class="pc-status">Todavía no hay cargas guardadas para este grupo. Registra ejercicios desde tu rutina para generar su análisis.</div>';
+ $("pcGroupExercises").querySelectorAll("[data-pc-exercise]").forEach(b=>b.addEventListener("click",()=>pcOpenExercise(b.dataset.pcExercise)));
+ pcSetView("pcGroupView");
+}
+function pcOpenExercise(id){pcCurrentExercise=id;pcRenderExercise(id);pcSetView("pcExerciseView");}
+function pcRenderExercise(id){
+ const rows=pcExerciseMap.get(id)||[];if(!rows.length)return;const first=rows[0],last=rows.at(-1),best=Math.max(...rows.map(r=>r.weight)),diff=last.weight-first.weight,pct=first.weight>0?diff/first.weight*100:null;
+ $("pcSelectedName").textContent=last.exercise_name||"Ejercicio";$("pcExerciseGroup").textContent=pcCurrentGroup?.name||"ANÁLISIS DEL EJERCICIO";$("pcExerciseSub").textContent=`${rows.length} registros · desde ${pcDate(first.performed_at)}`;$("pcSelectedDelta").textContent=`${diff>0?"+":""}${pcFmt(diff)} kg`;
+ $("pcExerciseDetail").innerHTML=[["ÚLTIMA CARGA",`${pcFmt(last.weight)}<small> kg</small>`,pcDate(last.performed_at)],["MEJOR CARGA",`${pcFmt(best)}<small> kg</small>`,`${rows.filter(r=>r.weight===best).length} registro(s)`],["CAMBIO NETO",`${diff>0?"+":""}${pcFmt(diff)}<small> kg</small>`,"Primera frente a última"],["VARIACIÓN",pct===null?"—":`${pct>0?"+":""}${pcFmt(pct)}%`,"Evolución histórica"]].map(([a,b,c])=>`<div class="pc-metric"><span>${a}</span><strong>${b}</strong><small>${c}</small></div>`).join("");
+ const vals=rows.map(r=>r.weight),min=Math.min(...vals),max=Math.max(...vals),range=max-min||Math.max(1,max*.15),x=i=>42+i*(516/Math.max(1,vals.length-1)),y=v=>174-(v-min)/range*132,points=vals.map((v,i)=>`${x(i)},${y(v)}`).join(" "),area=`${x(0)},174 ${points} ${x(vals.length-1)},174`,grid=[0,1,2,3].map(i=>`<line x1="38" y1="${30+i*48}" x2="565" y2="${30+i*48}" stroke="#ffffff13" stroke-dasharray="3 6"/>`).join(""),dots=vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===vals.length-1?5:3}" fill="${i===vals.length-1?"#fff0b8":"#d9b65f"}" stroke="#0b0b09" stroke-width="2"/>`).join("");
+ $("pcChart").innerHTML=`<defs><linearGradient id="pcGoldArea" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#d9b65f" stop-opacity=".34"/><stop offset="100%" stop-color="#d9b65f" stop-opacity="0"/></linearGradient><linearGradient id="pcGoldLine"><stop stop-color="#9b7028"/><stop offset="100%" stop-color="#ffedb0"/></linearGradient></defs>${grid}<polygon points="${area}" fill="url(#pcGoldArea)"/><polyline points="${points}" fill="none" stroke="url(#pcGoldLine)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>${dots}<text x="565" y="18" text-anchor="end" fill="#e6c879" font-size="10">${pcFmt(max)} kg</text>`;
+ $("pcChartStart").textContent=pcDate(first.performed_at);$("pcChartEnd").textContent=pcDate(last.performed_at);
+ let trend="La evolución todavía no permite establecer una tendencia: hacen falta al menos dos registros.";
+ if(rows.length>=2){trend=pct>0?`<strong>Tendencia positiva.</strong> La última carga está ${pcFmt(Math.abs(diff))} kg (${pcFmt(Math.abs(pct))}%) por encima del primer registro.`:pct<0?`<strong>Descenso de carga registrado.</strong> La última carga está ${pcFmt(Math.abs(diff))} kg (${pcFmt(Math.abs(pct))}%) por debajo del primer registro. Esto describe los registros, no determina por sí solo una pérdida de fuerza.`:`<strong>Carga estable.</strong> La primera y la última carga registrada son iguales.`;}
+ $("pcTrendAnalysis").innerHTML=trend;
+ let projection="No disponible: se necesitan al menos tres registros en fechas distintas para estimar una tendencia.";
+ if(rows.length>=3&&new Set(rows.map(r=>new Date(r.performed_at).toISOString().slice(0,10))).size>=3){const xs=rows.map(r=>r.time/86400000),ys=rows.map(r=>r.weight),mx=xs.reduce((a,b)=>a+b,0)/xs.length,my=ys.reduce((a,b)=>a+b,0)/ys.length,den=xs.reduce((a,v)=>a+(v-mx)**2,0),slope=den?xs.reduce((a,v,i)=>a+(v-mx)*(ys[i]-my),0)/den:0,days=Math.max(1,(last.time-first.time)/86400000),monthly=slope*30.4375;projection=`<strong>${monthly>=0?"+":""}${pcFmt(monthly)} kg/mes</strong> según la tendencia lineal de tus registros. Si se mantuviera durante 30 días, la referencia matemática sería aproximadamente ${pcFmt(last.weight+monthly)} kg. Es orientativa y puede variar con el entrenamiento.`;}
+ $("pcProjection").innerHTML=projection;
+}
 async function renderWarriorRecords(){
-  const status=$("pcLoadStatus");status.textContent="Consultando tus registros guardados…";
-  try{
-    if(!currentUser)throw new Error("Inicia sesión para consultar tus estadísticas.");
-    const {data,error}=await supabase.from("workout_weights").select("exercise_id,exercise_name,performed_at,weight,sets,reps").eq("user_id",currentUser.id).order("performed_at",{ascending:true});
-    if(error)throw error;
-    pcRows=(data||[]).map(r=>({...r,weight:Number(r.weight),time:new Date(r.performed_at).getTime()})).filter(r=>Number.isFinite(r.weight)&&Number.isFinite(r.time)).sort((a,b)=>a.time-b.time);
-    pcExerciseMap=new Map();
-    for(const row of pcRows){const key=String(row.exercise_id||row.exercise_name||"Ejercicio");if(!pcExerciseMap.has(key))pcExerciseMap.set(key,[]);pcExerciseMap.get(key).push(row);}
-    const exercises=[...pcExerciseMap.entries()].map(([id,rows])=>({id,name:rows.at(-1).exercise_name||id,rows}));
-    const select=$("pcExerciseSelect");select.innerHTML='<option value="">Selecciona un ejercicio</option>'+exercises.map(e=>`<option value="${pcEscape(e.id)}">${pcEscape(e.name)}</option>`).join("");
-    const improved=exercises.filter(e=>e.rows.at(-1).weight>e.rows[0].weight).length;
-    const latest=pcRows.at(-1);
-    $("pcKpis").innerHTML=[
-      ["Ejercicios analizados",exercises.length,"Con registros válidos"],
-      ["Con mejora",improved,exercises.length?`${pcFmt(improved/exercises.length*100)}% del total`:"Sin datos"],
-      ["Sin mejora reciente",exercises.filter(e=>{const recent=e.rows.filter(r=>Date.now()-r.time<=90*86400000);return recent.length>=2&&Math.max(...recent.map(r=>r.weight))===recent[0].weight;}).length,"Últimos 90 días · mínimo 2 anotaciones"],
-      ["Último registro",latest?pcDate(latest.performed_at):"—",latest?`${pcFmt(latest.weight)} kg · ${pcEscape(latest.exercise_name||"Ejercicio")}`:"Sin registros"]
-    ].map(([label,value,sub])=>`<div class="pc-kpi"><span>${label}</span><strong>${value}</strong><small>${sub}</small></div>`).join("");
-    const ranked=exercises.map(e=>{const first=e.rows[0].weight,last=e.rows.at(-1).weight,pct=first>0?(last-first)/first*100:0;return {...e,pct};}).sort((a,b)=>b.pct-a.pct);
-    const maxPct=Math.max(1,...ranked.map(e=>Math.abs(e.pct)));
-    $("pcProgressSummary").innerHTML=ranked.length?ranked.slice(0,8).map(e=>`<div class="pc-rank"><div class="pc-rank-top"><span class="pc-rank-name">${pcEscape(e.name)}</span><span class="pc-rank-value">${e.pct>0?"+":""}${pcFmt(e.pct)}%</span></div><div class="pc-rank-track"><div class="pc-rank-fill" style="width:${Math.max(2,Math.min(100,Math.abs(e.pct)/maxPct*100))}%"></div></div></div>`).join(""):'<div class="pc-status">Aún no hay registros suficientes para analizar la progresión.</div>';
-    const plateaus=exercises.map(e=>{const recent=e.rows.filter(r=>Date.now()-r.time<=90*86400000);return {name:e.name,rows:recent,max:Math.max(...recent.map(r=>r.weight))};}).filter(e=>e.rows.length>=2&&e.rows.at(-1).weight===e.max);
-    $("pcPlateaus").innerHTML=plateaus.length?plateaus.map(e=>`<div class="pc-insight"><strong>${pcEscape(e.name)}</strong><span>${e.rows.length} anotaciones · sin superar ${pcFmt(e.max)} kg</span></div>`).join(""):'<div class="pc-status">No se detectan posibles estancamientos con el criterio actual o faltan anotaciones recientes.</div>';
-    renderPcPeriods();
-    select.onchange=()=>renderPcExercise(select.value);
-    if(exercises.length) {select.value=exercises[0].id;renderPcExercise(select.value);}
-    else {renderPcExercise("");$("pcProgressSummary").innerHTML='<div class="pc-status">Guarda cargas desde tu rutina para empezar a generar estadísticas.</div>';}
-    status.textContent=`Panel actualizado · ${pcRows.length} registros analizados.`;
-  }catch(error){
-    console.error("No se pudo cargar Performance Center:",error);
-    status.textContent="No se han podido cargar las estadísticas: "+(error?.message||"comprueba la conexión y los permisos.");
-    $("pcProgressSummary").innerHTML='<div class="pc-status">No se han podido consultar los datos.</div>';
-    $("pcPlateaus").innerHTML='<div class="pc-status">No se han podido consultar los datos.</div>';
-    $("pcPeriods").innerHTML='<div class="pc-status">No se han podido consultar los datos.</div>';
-  }
+ const status=$("pcLoadStatus");status.textContent="Consultando tus registros guardados…";
+ try{if(!currentUser)throw new Error("Inicia sesión para consultar tus estadísticas.");const {data,error}=await supabase.from("workout_weights").select("exercise_id,exercise_name,performed_at,weight,sets,reps").eq("user_id",currentUser.id).order("performed_at",{ascending:true});if(error)throw error;
+ pcRows=(data||[]).map(r=>({...r,weight:Number(r.weight),time:new Date(r.performed_at).getTime()})).filter(r=>Number.isFinite(r.weight)&&Number.isFinite(r.time)).sort((a,b)=>a.time-b.time);pcExerciseMap=new Map();for(const row of pcRows){const key=String(row.exercise_id||row.exercise_name||"Ejercicio");if(!pcExerciseMap.has(key))pcExerciseMap.set(key,[]);pcExerciseMap.get(key).push(row);}
+ pcRenderOverview();pcSetView("pcOverviewView");status.textContent=`Panel actualizado · ${pcRows.length} registros analizados.`;
+ }catch(error){console.error("No se pudo cargar Muscle Performance:",error);status.textContent="No se han podido cargar las estadísticas: "+(error?.message||"comprueba la conexión y los permisos.");$("pcMuscleGrid").innerHTML='<div class="pc-status">No se han podido consultar los datos guardados.</div>';}
 }
-function renderPcExercise(id){
-  const rows=pcExerciseMap.get(id)||[];
-  const detail=$("pcExerciseDetail"),chart=$("pcChart");
-  if(!rows.length){
-    detail.innerHTML='<div class="pc-status">Selecciona un ejercicio para consultar su evolución.</div>';
-    $("pcSelectedName").textContent="Selecciona un ejercicio";$("pcSelectedDelta").textContent="—";
-    chart.innerHTML='<text x="300" y="110" text-anchor="middle" fill="#9d9583" font-size="14">Sin datos para mostrar</text>';return;
-  }
-  const first=rows[0],last=rows.at(-1),diff=last.weight-first.weight,pct=first.weight>0?diff/first.weight*100:null;
-  $("pcSelectedName").textContent=last.exercise_name||"Ejercicio";
-  $("pcSelectedDelta").textContent=`${diff>0?"+":""}${pcFmt(diff)} kg`;
-  detail.innerHTML=`<div class="pc-metric"><span>PRIMERA CARGA</span><strong>${pcFmt(first.weight)}<small> kg</small></strong><small>${pcDate(first.performed_at)}</small></div><div class="pc-metric"><span>ÚLTIMA CARGA</span><strong>${pcFmt(last.weight)}<small> kg</small></strong><small>${pcDate(last.performed_at)}</small></div><div class="pc-metric"><span>CAMBIO NETO</span><strong>${diff>0?"+":""}${pcFmt(diff)}<small> kg</small></strong><small>Primera frente a última</small></div><div class="pc-metric"><span>VARIACIÓN</span><strong>${pct===null?"—":`${pct>0?"+":""}${pcFmt(pct)}%`}</strong><small>${rows.length} registros guardados</small></div>`;
-  const vals=rows.map(r=>r.weight),min=Math.min(...vals),max=Math.max(...vals),range=max-min||Math.max(1,max*.15);
-  const x=i=>42+i*(516/Math.max(1,vals.length-1));
-  const y=v=>174-(v-min)/range*132;
-  const points=vals.map((v,i)=>`${x(i)},${y(v)}`).join(" ");
-  const area=`${x(0)},174 ${points} ${x(vals.length-1)},174`;
-  const grid=[0,1,2,3].map(i=>{const yy=30+i*48;return `<line x1="38" y1="${yy}" x2="565" y2="${yy}" stroke="#ffffff13" stroke-dasharray="3 6"/>`;}).join("");
-  const labels=[0,1,2,3].map(i=>{const value=max-(max-min)*i/3;return `<text x="31" y="${34+i*48}" text-anchor="end" fill="#8e8778" font-size="9">${pcFmt(value)}</text>`;}).join("");
-  const dots=vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===vals.length-1?5:3}" fill="${i===vals.length-1?"#fff0b8":"#d9b65f"}" stroke="#0b0b09" stroke-width="2"/>`).join("");
-  const dateStart=pcDate(first.performed_at),dateEnd=pcDate(last.performed_at);
-  chart.innerHTML=`<defs><linearGradient id="pcGoldArea" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#d9b65f" stop-opacity=".34"/><stop offset="100%" stop-color="#d9b65f" stop-opacity="0"/></linearGradient><linearGradient id="pcGoldLine"><stop stop-color="#9b7028"/><stop offset="100%" stop-color="#ffedb0"/></linearGradient></defs>${grid}${labels}<polygon points="${area}" fill="url(#pcGoldArea)"/><polyline points="${points}" fill="none" stroke="url(#pcGoldLine)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>${dots}<text x="565" y="18" text-anchor="end" fill="#e6c879" font-size="10">${pcFmt(max)} kg</text>`;
-  $("pcChartUnit").textContent="KG";
-  document.querySelector(".pc-chart-label").innerHTML=`<span>${dateStart}</span><span>${dateEnd}</span>`;
-}
-function renderPcPeriods(){
-  const now=Date.now(),day=86400000,periods=[30,60,90];
-  $("pcPeriods").innerHTML=periods.map(n=>{const current=pcRows.filter(r=>r.time>=now-n*day),previous=pcRows.filter(r=>r.time>=now-2*n*day&&r.time<now-n*day);const maxOf=a=>a.length?Math.max(...a.map(r=>r.weight)):null;const c=maxOf(current),p=maxOf(previous);const delta=c!==null&&p!==null?c-p:null;return `<div class="pc-insight"><strong>Últimos ${n} días</strong><span>${c===null?"Sin registros":`${pcFmt(c)} kg`}${delta===null?"":` · ${delta>0?"+":""}${pcFmt(delta)} kg vs periodo anterior`}</span></div>`;}).join("");
-}
+$("pcBackOverview")?.addEventListener("click",()=>pcSetView("pcOverviewView"));
+$("pcBackGroup")?.addEventListener("click",()=>pcSetView("pcGroupView"));
 $("helmetHallBtn")?.addEventListener("click",openWarriorHall);
 $("warriorHallBack")?.addEventListener("click",closeWarriorHall);
 
