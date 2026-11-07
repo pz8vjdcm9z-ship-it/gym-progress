@@ -1599,6 +1599,16 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 .pc-muscle-tile{min-height:142px!important;padding:7px 8px 10px!important;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end}.pc-muscle-tile:after{width:70px;height:70px;right:-24px;top:-30px}.pc-muscle-art{position:absolute;left:50%;top:2px;transform:translateX(-50%);width:92px;height:83px;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:.95}.pc-muscle-art img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 8px #d3ad5333)}.pc-muscle-art>span{font-size:8px;color:#d8b968;letter-spacing:1px}.pc-muscle-tile strong{position:relative;z-index:1;font-size:10px!important}.pc-muscle-tile small{position:relative;z-index:1;font-size:8px!important}.pc-muscle-tile b{z-index:1}
 @media(max-width:560px){.pc-photo-center{padding:12px;margin:14px 0 20px}.pc-photo-head{align-items:flex-start;flex-direction:column}.pc-photo-head h2{font-size:19px}.pc-photo-add{width:100%}.pc-photo-inputs{gap:5px}.pc-photo-drop{min-height:91px;padding:5px}.pc-photo-drop b{font-size:8px}.pc-photo-drop small{font-size:7px}.pc-muscle-tile{min-height:122px!important;padding:6px!important}.pc-muscle-art{width:75px;height:72px;top:0}.pc-muscle-tile strong{font-size:9px!important}.pc-muscle-tile small{font-size:7px!important}.pc-photo-entry{padding:8px}}
 
+
+/* Final UX correction: focus on Body Progress, no redundant personal-stat strip */
+.pc-live,.pc-kpis{display:none!important}
+.pc-photo-center{position:relative;z-index:3;pointer-events:auto}
+.pc-photo-head,.pc-photo-form,.pc-photo-add,.pc-photo-drop,.pc-photo-actions{pointer-events:auto}
+.pc-photo-add,.pc-photo-save,.pc-photo-cancel{touch-action:manipulation;cursor:pointer}
+.pc-photo-form.hidden{display:none!important}
+.pc-photo-form:not(.hidden){display:block!important}
+.pc-photo-drop input{z-index:2}
+
 </style>
 </head>
 <body class="app-booting">
@@ -1835,9 +1845,7 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
   <header class="pc-dashboard-head">
    <div class="pc-brandline"><span class="pc-brand-mark">A</span><span>ARNIFORCAMP <i>PERFORMANCE INTELLIGENCE</i></span></div>
    <div class="pc-head-title"><div class="pc-overline">ANÁLISIS DE RENDIMIENTO</div><h1>MUSCLE <em>PERFORMANCE</em></h1><p>Tu evolución, medida ejercicio a ejercicio.</p></div>
-   <div class="pc-live"><span></span> ESTADÍSTICAS PERSONALES</div>
   </header>
-  <div class="pc-kpis" id="pcKpis"></div>
   <div class="pc-photo-center">
    <div class="pc-photo-head"><div><div class="pc-overline">EVOLUCIÓN CORPORAL</div><h2>BODY <em>PROGRESS</em></h2><p>Compara tus fotografías a lo largo del tiempo.</p></div><button type="button" class="pc-photo-add" id="pcOpenPhotoForm">＋ AÑADIR PROGRESO</button></div>
    <div class="pc-photo-form hidden" id="pcPhotoForm">
