@@ -4256,10 +4256,7 @@ function pcNavigateBack(){
  hall.addEventListener("touchcancel",()=>{tracking=false;},{passive:true});
 })();
 function pcRenderOverview(){
- const exercises=pcExercises(),count=exercises.length;
- const improved=exercises.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;
- const latest=pcRows.at(-1);
- $("pcKpis").innerHTML=[["EJERCICIOS CON DATOS",count,"Historial registrado"],["EN PROGRESO",improved,count?`${pcFmt(improved/count*100)}% del total`:"Aún sin datos"],["REGISTROS",pcRows.length,"Cargas guardadas"],["ÚLTIMA ACTIVIDAD",latest?pcDate(latest.performed_at):"—",latest?pcEscape(latest.exercise_name||"Ejercicio"):"Sin registros"]].map(([a,b,c])=>`<div class="pc-kpi"><span>${a}</span><strong>${b}</strong><small>${c}</small></div>`).join("");
+ const exercises=pcExercises();
  $("pcMuscleGrid").innerHTML=MUSCLE_GROUPS.map(g=>{const groupEx=exerciseCatalog.filter(ex=>ex.category==="strength"&&exerciseMatchesGroup(ex,g));const ids=new Set(groupEx.map(x=>String(x.id)));const logged=exercises.filter(e=>ids.has(String(e.id))||groupEx.some(x=>String(x.name_es||"").toLowerCase()===e.name.toLowerCase()));const up=logged.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;return `<button type="button" class="pc-muscle-tile" data-pc-group="${pcEscape(g.id)}"><span class="pc-muscle-art">${g.art?`<img src="${g.art}" alt="Ilustración anatómica de ${pcEscape(g.name)}" loading="lazy">`:"<span>ANATOMÍA</span>"}</span><strong>${pcEscape(g.name)}</strong><small>${logged.length} ejercicios con datos</small><b>${logged.length?`${up}/${logged.length} ↗`:"—"}</b></button>`;}).join("");
  $("pcMuscleGrid").querySelectorAll("[data-pc-group]").forEach(b=>b.addEventListener("click",()=>pcOpenGroup(b.dataset.pcGroup)));
 }
