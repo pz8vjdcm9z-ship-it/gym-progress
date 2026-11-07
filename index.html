@@ -4257,7 +4257,7 @@ function pcNavigateBack(){
 })();
 function pcRenderOverview(){
  const exercises=pcExercises();
- $("pcMuscleGrid").innerHTML=MUSCLE_GROUPS.map(g=>{const groupEx=exerciseCatalog.filter(ex=>ex.category==="strength"&&exerciseMatchesGroup(ex,g));const ids=new Set(groupEx.map(x=>String(x.id)));const logged=exercises.filter(e=>ids.has(String(e.id))||groupEx.some(x=>String(x.name_es||"").toLowerCase()===e.name.toLowerCase()));const up=logged.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;return `<button type="button" class="pc-muscle-tile" data-pc-group="${pcEscape(g.id)}"><span class="pc-muscle-art">${g.art?`<img src="${g.art}" alt="Ilustración anatómica de ${pcEscape(g.name)}" loading="lazy">`:"<span>ANATOMÍA</span>"}</span><strong>${pcEscape(g.name)}</strong><small>${logged.length} ejercicios con datos</small><b>${logged.length?`${up}/${logged.length} ↗`:"—"}</b></button>`;}).join("");
+ $("pcMuscleGrid").innerHTML=MUSCLE_GROUPS.map(g=>{const groupEx=exerciseCatalog.filter(ex=>ex.category==="strength"&&exerciseMatchesGroup(ex,g));const ids=new Set(groupEx.map(x=>String(x.id)));const logged=exercises.filter(e=>ids.has(String(e.id))||groupEx.some(x=>String(x.name_es||"").toLowerCase()===e.name.toLowerCase()));const up=logged.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;return `<button type="button" class="pc-muscle-tile" data-pc-group="${pcEscape(g.id)}"><span class="pc-muscle-art">${g.art?`<img src="${g.art}" alt="Ilustración anatómica de ${pcEscape(g.name)}" loading="lazy">`:"<span>ANATOMÍA</span>"}</span><strong>${pcEscape(g.name)}</strong><small>${logged.length} ejercicios con datos</small></button>`;}).join("");
  $("pcMuscleGrid").querySelectorAll("[data-pc-group]").forEach(b=>b.addEventListener("click",()=>pcOpenGroup(b.dataset.pcGroup)));
 }
 function pcOpenGroup(groupId){
@@ -4342,7 +4342,9 @@ async function pcLoadPhotoReviews(){
  }catch(error){console.error("Error cargando Body Progress:",error);host.innerHTML=`<div class="pc-photo-empty">No se han podido cargar las fotografías: ${pcEscape(error.message||"comprueba Supabase")}.</div>`;}
 }
 
+let pcPhotoEventsBound=false;
 async function renderWarriorRecords(){
+ if(!pcPhotoEventsBound){pcPhotoBind();pcPhotoEventsBound=true;}
  const status=$("pcLoadStatus");status.textContent="Consultando tus registros guardados…";
  try{if(!currentUser)throw new Error("Inicia sesión para consultar tus estadísticas.");const {data,error}=await supabase.from("workout_weights").select("exercise_id,exercise_name,performed_at,weight,sets,reps").eq("user_id",currentUser.id).order("performed_at",{ascending:true});if(error)throw error;
  pcRows=(data||[]).map(r=>({...r,weight:Number(r.weight),time:new Date(r.performed_at).getTime()})).filter(r=>Number.isFinite(r.weight)&&Number.isFinite(r.time)).sort((a,b)=>a.time-b.time);pcExerciseMap=new Map();for(const row of pcRows){const key=String(row.exercise_id||row.exercise_name||"Ejercicio");if(!pcExerciseMap.has(key))pcExerciseMap.set(key,[]);pcExerciseMap.get(key).push(row);}
