@@ -4232,6 +4232,20 @@ function pcFmt(value){return Number(value).toLocaleString("es-ES",{maximumFracti
 function pcDate(value){return new Intl.DateTimeFormat("es-ES",{day:"2-digit",month:"short",year:"2-digit"}).format(new Date(value));}
 function pcExercises(){return [...pcExerciseMap.entries()].map(([id,rows])=>({id,name:rows.at(-1).exercise_name||id,rows}));}
 function pcChange(rows){if(!rows.length)return null;const a=rows[0].weight,b=rows.at(-1).weight;return a>0?(b-a)/a*100:null;}
+// En análisis, un ejercicio pertenece únicamente al grupo de su músculo principal.
+// Los músculos secundarios se reservan para información complementaria y nunca mezclan grupos.
+function pcNormalizeMuscle(value){return String(value??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[\s-]+/g,"_").trim();}
+function pcExerciseBelongsToGroup(ex,group){
+ const primary=(ex.primary_muscles||[]).map(pcNormalizeMuscle).filter(Boolean);
+ const aliases=new Set((group.aliases||[]).map(pcNormalizeMuscle));
+ return primary.some(m=>aliases.has(m));
+}
+function pcCatalogForGroup(group){return exerciseCatalog.filter(ex=>ex.category==="strength"&&pcExerciseBelongsToGroup(ex,group));}
+function pcLoggedForCatalog(catalog){
+ const ids=new Set(catalog.map(ex=>String(ex.id)));
+ const names=new Set(catalog.map(ex=>String(ex.name_es||ex.name_en||"").trim().toLocaleLowerCase("es")));
+ return pcExercises().filter(e=>ids.has(String(e.id))||names.has(String(e.name||"").trim().toLocaleLowerCase("es")));
+}
 function pcSetView(name){["pcOverviewView","pcGroupView","pcExerciseView"].forEach(id=>$(id).classList.toggle("hidden",id!==name));}
 // Navegación táctil: deslizar de izquierda a derecha equivale a "volver".
 function pcNavigateBack(){
@@ -4256,14 +4270,13 @@ function pcNavigateBack(){
  hall.addEventListener("touchcancel",()=>{tracking=false;},{passive:true});
 })();
 function pcRenderOverview(){
- const exercises=pcExercises();
- $("pcMuscleGrid").innerHTML=MUSCLE_GROUPS.map(g=>{const groupEx=exerciseCatalog.filter(ex=>ex.category==="strength"&&exerciseMatchesGroup(ex,g));const ids=new Set(groupEx.map(x=>String(x.id)));const logged=exercises.filter(e=>ids.has(String(e.id))||groupEx.some(x=>String(x.name_es||"").toLowerCase()===e.name.toLowerCase()));const up=logged.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;return `<button type="button" class="pc-muscle-tile" data-pc-group="${pcEscape(g.id)}"><span class="pc-muscle-art">${g.art?`<img src="${g.art}" alt="Ilustración anatómica de ${pcEscape(g.name)}" loading="lazy">`:"<span>ANATOMÍA</span>"}</span><strong>${pcEscape(g.name)}</strong><small>${logged.length} ejercicios con datos</small></button>`;}).join("");
+ $("pcMuscleGrid").innerHTML=MUSCLE_GROUPS.map(g=>{const groupEx=pcCatalogForGroup(g);const logged=pcLoggedForCatalog(groupEx);return `<button type="button" class="pc-muscle-tile" data-pc-group="${pcEscape(g.id)}"><span class="pc-muscle-art">${g.art?`<img src="${g.art}" alt="Ilustración anatómica de ${pcEscape(g.name)}" loading="lazy">`:"<span>ANATOMÍA</span>"}</span><strong>${pcEscape(g.name)}</strong><small>${logged.length} ejercicios con datos</small></button>`;}).join("");
  $("pcMuscleGrid").querySelectorAll("[data-pc-group]").forEach(b=>b.addEventListener("click",()=>pcOpenGroup(b.dataset.pcGroup)));
 }
 function pcOpenGroup(groupId){
  const group=MUSCLE_GROUPS.find(g=>g.id===groupId);if(!group)return;pcCurrentGroup=group;
- const catalog=exerciseCatalog.filter(ex=>ex.category==="strength"&&exerciseMatchesGroup(ex,group));
- const exercises=pcExercises().filter(e=>catalog.some(x=>String(x.id)===String(e.id)||String(x.name_es||"").toLowerCase()===e.name.toLowerCase()));
+ const catalog=pcCatalogForGroup(group);
+ const exercises=pcLoggedForCatalog(catalog);
  const gains=exercises.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;
  $("pcGroupName").textContent=group.name;$("pcGroupMeta").textContent=`${exercises.length} ejercicios con registros guardados · ${catalog.length} ejercicios en catálogo`;
  $("pcGroupScore").textContent=exercises.length?`${Math.round(gains/exercises.length*100)}%`:"—";
