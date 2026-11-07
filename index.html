@@ -1155,15 +1155,15 @@ body.admin-account-mode .dashboard-art{background:linear-gradient(145deg,rgba(25
 
 /* Pantalla de bienvenida: evita mostrar el formulario mientras se restaura la sesión. */
 body.app-booting{overflow:hidden}
-#brandBootScreen{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 42%,rgba(85,223,189,.12),transparent 36%),linear-gradient(155deg,#091321,#101c2d 58%,#080e18);opacity:1;visibility:visible;transition:opacity .28s ease,visibility .28s ease}
+#brandBootScreen{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 42%,rgba(198,164,92,.10),transparent 36%),linear-gradient(155deg,#08090b,#151515 58%,#08090b);opacity:1;visibility:visible;transition:opacity .28s ease,visibility .28s ease}
 #brandBootScreen.is-leaving{opacity:0;visibility:hidden;pointer-events:none}
 .boot-content{display:grid;justify-items:center;gap:18px;text-align:center}
-.boot-logo{width:112px;height:112px;display:grid;place-items:center;border:1px solid rgba(85,223,189,.38);border-radius:32px;background:linear-gradient(145deg,rgba(85,223,189,.17),rgba(85,223,189,.035));box-shadow:0 0 48px rgba(85,223,189,.13),inset 0 1px rgba(255,255,255,.08);color:#55dfbd;animation:boot-breathe 1.8s ease-in-out infinite}
+.boot-logo{width:112px;height:112px;display:grid;place-items:center;border:1px solid rgba(198,164,92,.38);border-radius:32px;background:linear-gradient(145deg,rgba(198,164,92,.14),rgba(198,164,92,.025));box-shadow:0 0 42px rgba(198,164,92,.10),inset 0 1px rgba(255,255,255,.08);color:#c6a45c;animation:boot-breathe 1.8s ease-in-out infinite}
 .boot-logo svg{width:68px;height:68px;filter:drop-shadow(0 5px 12px currentColor)}
-.boot-logo img{width:100%;height:100%;padding:7px;object-fit:contain;border-radius:25px}
+.boot-logo img{width:100%;height:100%;padding:7px;object-fit:contain;border-radius:25px}.boot-logo:empty{display:none}
 .boot-brand{font-size:13px;font-weight:950;letter-spacing:3px;color:#f3f7fc}
 .boot-caption{margin-top:-12px;color:#9eafc3;font-size:10px;letter-spacing:2px}
-.boot-spinner{width:25px;height:25px;margin-top:8px;border:2px solid rgba(255,255,255,.16);border-top-color:currentColor;border-radius:50%;animation:boot-spin .8s linear infinite;color:#55dfbd}
+.boot-spinner{width:25px;height:25px;margin-top:8px;border:2px solid rgba(255,255,255,.16);border-top-color:currentColor;border-radius:50%;animation:boot-spin .8s linear infinite;color:#c6a45c}
 #brandBootScreen[data-theme="pink"] .boot-logo{color:#d979a5;border-color:rgba(217,121,165,.42);background:linear-gradient(145deg,rgba(243,169,197,.2),rgba(243,169,197,.04));box-shadow:0 0 48px rgba(243,169,197,.13)}
 #brandBootScreen[data-theme="pink"] .boot-spinner{color:#d979a5}
 #brandBootScreen[data-theme="gold"] .boot-logo{color:#e2b75c;border-color:rgba(226,183,92,.45);background:linear-gradient(145deg,rgba(214,173,85,.2),rgba(214,173,85,.04));box-shadow:0 0 48px rgba(214,173,85,.13)}
@@ -4198,6 +4198,28 @@ function pcDate(value){return new Intl.DateTimeFormat("es-ES",{day:"2-digit",mon
 function pcExercises(){return [...pcExerciseMap.entries()].map(([id,rows])=>({id,name:rows.at(-1).exercise_name||id,rows}));}
 function pcChange(rows){if(!rows.length)return null;const a=rows[0].weight,b=rows.at(-1).weight;return a>0?(b-a)/a*100:null;}
 function pcSetView(name){["pcOverviewView","pcGroupView","pcExerciseView"].forEach(id=>$(id).classList.toggle("hidden",id!==name));}
+// Navegación táctil: deslizar de izquierda a derecha equivale a "volver".
+function pcNavigateBack(){
+ const hall=$("warriorHall");if(!hall||hall.classList.contains("hidden"))return;
+ if(!$("pcExerciseView").classList.contains("hidden")){pcSetView("pcGroupView");return;}
+ if(!$("pcGroupView").classList.contains("hidden")){pcSetView("pcOverviewView");return;}
+ closeWarriorHall();
+}
+(function setupMuscleSwipeBack(){
+ const hall=$("warriorHall");if(!hall)return;let startX=0,startY=0,tracking=false;
+ hall.addEventListener("touchstart",e=>{
+  if(hall.classList.contains("hidden")||e.touches.length!==1){tracking=false;return;}
+  startX=e.touches[0].clientX;startY=e.touches[0].clientY;tracking=true;
+ },{passive:true});
+ hall.addEventListener("touchend",e=>{
+  if(!tracking||!e.changedTouches.length){tracking=false;return;}
+  const dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY;
+  tracking=false;
+  // Exige un desplazamiento horizontal claro para no interferir con el scroll vertical.
+  if(dx>75&&dx>Math.abs(dy)*1.35)pcNavigateBack();
+ },{passive:true});
+ hall.addEventListener("touchcancel",()=>{tracking=false;},{passive:true});
+})();
 function pcRenderOverview(){
  const exercises=pcExercises(),count=exercises.length;
  const improved=exercises.filter(e=>e.rows.length>1&&e.rows.at(-1).weight>e.rows[0].weight).length;
@@ -4248,7 +4270,7 @@ $("warriorHallBack")?.addEventListener("click",closeWarriorHall);
 
 (async function init(){
   $("headerDate").textContent=new Intl.DateTimeFormat("es-ES",{day:"numeric",month:"short",year:"numeric"}).format(new Date());
-  setBootBrand(null);
+  // No mostrar un logotipo provisional: primero se identifica la cuenta guardada.
   try{
     const {data,error}=await supabase.auth.getSession();
     if(error)throw error;
