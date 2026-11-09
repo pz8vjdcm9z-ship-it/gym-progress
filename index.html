@@ -2684,9 +2684,14 @@ function renderWorkout(){
   const exercises=activeRoutine.length?activeRoutine:baseRoutine(selectedDay);
   $("routineTitle").textContent=day.title;
   $("routineDescription").textContent=day.desc;
-  $("routineCount").textContent=`${exercises.length} ejercicios · ${completedIds.size}/${exercises.length} completados`;
-  const pendingCount=exercises.filter(x=>!completedIds.has(x.id)).length;
-  $("pendingCount").textContent=pendingCount; $("completedCount").textContent=completedIds.size;
+  // Cuenta únicamente los ejercicios que pertenecen a la rutina visible.
+  // completedIds puede contener IDs antiguos de ejercicios sustituidos o de otra
+  // versión de la rutina; no deben inflar el contador de completados.
+  const completedCount=exercises.filter(exercise=>completedIds.has(exercise.id)).length;
+  const pendingCount=exercises.length-completedCount;
+  $("routineCount").textContent=`${exercises.length} ejercicios · ${completedCount}/${exercises.length} completados`;
+  $("pendingCount").textContent=pendingCount;
+  $("completedCount").textContent=completedCount;
   $("pendingTab").classList.toggle("active",exerciseView==="pending"); $("completedTab").classList.toggle("active",exerciseView==="completed");
   const visibleExercises=exercises.map((exercise,index)=>({exercise,index})).filter(({exercise})=>exerciseView==="completed"?completedIds.has(exercise.id):!completedIds.has(exercise.id));
   $("exerciseList").innerHTML=visibleExercises.map(({exercise,index})=>{
