@@ -2530,88 +2530,6 @@ function syncRestNotificationButton(){
 
 const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const localDate = () => {const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;};
-
-// Persistencia de ejercicios completados en Supabase, por usuario, fecha y día de rutina.
-// Cada cambio se escribe PRIMERO en una cola local; así cerrar la app mientras
-// la petición de red está en curso no puede perder la última modificación.
-const completionQueueKey = userId => `gym_progress_completion_queue_${userId}`;
-let completionQueueFlushPromise = null;
-function completionRow(day,exerciseId,completed){
-  return {user_id:currentUser.id,training_date:localDate(),routine_day:Number(day),exercise_id:String(exerciseId),completed:!!completed,updated_at:new Date().toISOString()};
-}
-function readCompletionQueue(key){
-  try{const value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value:[];}catch(e){return [];}
-}
-function writeCompletionQueueRow(row){
-  const key=completionQueueKey(row.user_id);
-  const queue=readCompletionQueue(key);
-  const identity=x=>x.training_date===row.training_date&&Number(x.routine_day)===Number(row.routine_day)&&String(x.exercise_id)===String(row.exercise_id);
-  const next=queue.filter(x=>!identity(x));
-  next.push(row);
-  localStorage.setItem(key,JSON.stringify(next));
-}
-async function flushCompletionQueue(){
-  if(!currentUser||!navigator.onLine||adminPreviewMode)return;
-  if(completionQueueFlushPromise)return completionQueueFlushPromise;
-  completionQueueFlushPromise=(async()=>{
-    const userId=currentUser.id;
-    const key=completionQueueKey(userId);
-    const same=(a,b)=>a.training_date===b.training_date&&Number(a.routine_day)===Number(b.routine_day)&&String(a.exercise_id)===String(b.exercise_id);
-    // Repite si se han añadido cambios mientras se enviaba el lote anterior.
-    while(navigator.onLine&&currentUser?.id===userId){
-      const snapshot=readCompletionQueue(key);
-      if(!snapshot.length)break;
-      const {error}=await supabase.from("workout_completions").upsert(snapshot,{onConflict:"user_id,training_date,routine_day,exercise_id"});
-      if(error)throw error;
-      // No borrar cambios más recientes añadidos mientras la petición estaba en curso.
-      const latest=readCompletionQueue(key);
-      const remaining=latest.filter(item=>!snapshot.some(sent=>same(item,sent)&&item.updated_at===sent.updated_at&&item.completed===sent.completed));
-      if(remaining.length)localStorage.setItem(key,JSON.stringify(remaining));
-      else localStorage.removeItem(key);
-    }
-  })();
-  try{await completionQueueFlushPromise;}finally{completionQueueFlushPromise=null;}
-}
-async function saveCompletionState(day,exerciseId,completed){
-  if(!currentUser||adminPreviewMode)return;
-  const row=completionRow(day,exerciseId,completed);
-  // Escritura local síncrona ANTES de cualquier await o llamada de red.
-  writeCompletionQueueRow(row);
-  if(!navigator.onLine)return;
-  try{await flushCompletionQueue();}
-  catch(error){
-    console.warn("El estado del ejercicio queda pendiente de sincronización:",error);
-    showStatus($("saveStatus"),"Estado guardado en este dispositivo. Se sincronizará con Supabase cuando haya conexión.",true);
-  }
-}
-async function loadCompletedExercises(day){
-  if(!currentUser||adminPreviewMode){completedIds=new Set();return;}
-  const key=completionKey(day);
-  let localIds=[];try{localIds=JSON.parse(localStorage.getItem(key)||"[]");if(!Array.isArray(localIds))localIds=[];}catch(e){}
-  if(!navigator.onLine){completedIds=new Set(localIds);return;}
-  try{
-    await flushCompletionQueue();
-    const {data,error}=await supabase.from("workout_completions")
-      .select("exercise_id,completed")
-      .eq("user_id",currentUser.id).eq("training_date",localDate()).eq("routine_day",Number(day));
-    if(error)throw error;
-    const remote=new Set((data||[]).filter(x=>x.completed).map(x=>String(x.exercise_id)));
-    // Migra los completados locales de hoy sin sobrescribir estados ya guardados en la nube.
-    const remoteIds=new Set((data||[]).map(x=>String(x.exercise_id)));
-    const legacyRows=localIds.filter(id=>!remoteIds.has(String(id))).map(id=>completionRow(day,id,true));
-    if(legacyRows.length){
-      const {error:insertError}=await supabase.from("workout_completions").upsert(legacyRows,{onConflict:"user_id,training_date,routine_day,exercise_id"});
-      if(insertError)throw insertError;
-      legacyRows.forEach(x=>remote.add(String(x.exercise_id)));
-    }
-    completedIds=remote;
-    localStorage.setItem(key,JSON.stringify([...completedIds]));
-  }catch(error){
-    console.warn("No se pudieron recuperar los completados desde Supabase; se usa la copia local:",error);
-    completedIds=new Set(localIds);
-  }
-}
-window.addEventListener("online",()=>{flushCompletionQueue().catch(error=>console.warn("Pendiente de sincronizar completados:",error));});
 const prettyDate = value => {if(!value)return "";const d=new Date(value);return new Intl.DateTimeFormat("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"}).format(d);};
 
 function showStatus(target,message,error=false){
@@ -2648,13 +2566,12 @@ function renderDays(){
       ${dayConfig(day).short}<small>${dayConfig(day).title.replace(" + "," + ")}</small>
     </button>`).join("");
   $("daySelector").querySelectorAll("[data-day]").forEach(button=>{
-    button.addEventListener("click",async()=>{
+    button.addEventListener("click",()=>{
       persistVisibleWeightInputs(selectedDay);
       selectedDay=Number(button.dataset.day);
       activeRoutine=loadActiveRoutine(selectedDay);
-      try{exerciseSwapHistory=JSON.parse(localStorage.getItem(swapHistoryKey(selectedDay))||"{}");}catch(e){exerciseSwapHistory={};}
-      completedIds=new Set();
-      await loadCompletedExercises(selectedDay);
+    try{exerciseSwapHistory=JSON.parse(localStorage.getItem(swapHistoryKey(selectedDay))||"{}");}catch(e){exerciseSwapHistory={};}
+      try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
       renderWorkout();
       setupPlanCardio();
     });
@@ -2889,29 +2806,38 @@ function renderStreakCalendar(){
 }
 function changeStreakMonth(delta){const next=new Date(streakViewDate.getFullYear(),streakViewDate.getMonth()+delta,1);const now=new Date();if(next>new Date(now.getFullYear(),now.getMonth(),1))return;streakViewDate=next;sportsSelectedDate=`${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,"0")}-01`;renderStreakCalendar();sportsLoadMonth();}
 
-async function toggleComplete(id){
+function toggleComplete(id){
   if(adminPreviewMode)return;
   const wasComplete=completedIds.has(id);
-  if(wasComplete){completedIds.delete(id);exerciseView="pending";}
-  else{completedIds.add(id);exerciseView="pending";}
+  if(wasComplete){
+    completedIds.delete(id);
+    exerciseView="pending";
+  }else{
+    completedIds.add(id);
+    exerciseView="pending";
+  }
   localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
-  renderWorkout();
-  await saveCompletionState(selectedDay,id,!wasComplete);
   const allExercisesComplete=activeRoutine.length>0&&activeRoutine.every(exercise=>completedIds.has(exercise.id));
   if(allExercisesComplete&&!wasComplete){
     registerWorkoutDay();
+    // Al completar el último ejercicio, mostrar la pestaña de completados
+    // y llevar el botón de guardar pesos a una posición visible.
     exerciseView="completed";
     renderWorkout();
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      const savePanel=document.querySelector(".save-panel");
-      const saveButton=$("saveWeightsBtn");
-      (savePanel||saveButton)?.scrollIntoView({behavior:"smooth",block:"center"});
-      if($("saveStatus")){
-        $("saveStatus").classList.remove("hidden");
-        $("saveStatus").textContent="¡Rutina completada! Revisa los pesos registrados y pulsa GUARDAR PESOS.";
-      }
-    }));
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const savePanel=document.querySelector(".save-panel");
+        const saveButton=$("saveWeightsBtn");
+        (savePanel||saveButton)?.scrollIntoView({behavior:"smooth",block:"center"});
+        if($("saveStatus")){
+          $("saveStatus").classList.remove("hidden");
+          $("saveStatus").textContent="¡Rutina completada! Revisa los pesos registrados y pulsa GUARDAR PESOS.";
+        }
+      });
+    });
+    return;
   }
+  renderWorkout();
 }
 function forbiddenExercise(ex){
   const text=[ex.name_es,ex.name_en,ex.id].join(" ").toLowerCase();
@@ -3318,7 +3244,6 @@ function applyExerciseVersion(index,version){
   activeRoutine[index]={...version};
   completedIds.delete(previous.id);
   localStorage.setItem(completionKey(selectedDay),JSON.stringify([...completedIds]));
-  saveCompletionState(selectedDay,previous.id,false).catch(error=>console.warn("No se pudo actualizar el estado del ejercicio sustituido:",error));
   persistRoutine();
   saveSwapHistory();
   renderWorkout();
@@ -3932,8 +3857,7 @@ async function enterApp(user){
     renderMuscleHome();
     activeRoutine=loadActiveRoutine(selectedDay);
     try{exerciseSwapHistory=JSON.parse(localStorage.getItem(swapHistoryKey(selectedDay))||"{}");}catch(e){exerciseSwapHistory={};}
-    completedIds=new Set();
-    await loadCompletedExercises(selectedDay);
+    try{completedIds=new Set(JSON.parse(localStorage.getItem(completionKey(selectedDay))||"[]"));}catch(e){completedIds=new Set();}
     if(navigator.onLine){
       try{await migrateOldLocalRecords();}
       catch(migrationError){console.warn("No se pudo completar la migración del historial:",migrationError);}
