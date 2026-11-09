@@ -1160,7 +1160,7 @@ body.app-booting{overflow:hidden}
 .boot-content{display:grid;justify-items:center;gap:18px;text-align:center}
 .boot-logo{width:112px;height:112px;display:grid;place-items:center;border:1px solid rgba(198,164,92,.38);border-radius:32px;background:linear-gradient(145deg,rgba(198,164,92,.14),rgba(198,164,92,.025));box-shadow:0 0 42px rgba(198,164,92,.10),inset 0 1px rgba(255,255,255,.08);color:#c6a45c;animation:boot-breathe 1.8s ease-in-out infinite}
 .boot-logo svg{width:68px;height:68px;filter:drop-shadow(0 5px 12px currentColor)}
-.boot-logo img{width:100%;height:100%;padding:7px;object-fit:contain;border-radius:25px}.boot-logo:empty{display:none}
+.boot-logo img{width:100%;height:100%;padding:7px;object-fit:contain;border-radius:25px}.boot-logo:empty{display:grid}.boot-logo:empty:before{content:"G";display:grid;place-items:center;width:100%;height:100%;font-size:64px;font-weight:950;letter-spacing:-5px;color:currentColor;text-shadow:0 4px 18px currentColor}
 .boot-brand{font-size:13px;font-weight:950;letter-spacing:3px;color:#f3f7fc}
 .boot-caption{margin-top:-12px;color:#9eafc3;font-size:10px;letter-spacing:2px}
 .boot-spinner{width:25px;height:25px;margin-top:8px;border:2px solid rgba(255,255,255,.16);border-top-color:currentColor;border-radius:50%;animation:boot-spin .8s linear infinite;color:#c6a45c}
@@ -1593,6 +1593,7 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 .pc-photo-center{margin:18px 0 26px;padding:16px;border:1px solid #c7a85c38;border-radius:18px;background:radial-gradient(ellipse at 95% 0%,#6e55231c,transparent 45%),linear-gradient(145deg,#171612,#0d0e0f 72%);box-shadow:0 12px 34px #0005}
 .pc-photo-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.pc-photo-head h2{font-size:21px;letter-spacing:-.8px;margin:5px 0;color:#f5f1e8}.pc-photo-head h2 em{font-style:normal;color:#d9b65f}.pc-photo-head p{font-size:11px;color:#a49e91;margin:0}.pc-photo-add,.pc-photo-save{border:1px solid #d4b45e;background:linear-gradient(135deg,#e6c975,#a67b2e);color:#17130a;border-radius:10px;padding:11px 13px;font-weight:900;font-size:9px;letter-spacing:.7px;white-space:nowrap}
 .pc-photo-form{margin-top:15px;padding:14px;border:1px solid #c9a65a45;border-radius:13px;background:#090a0b}.pc-photo-form-title strong{display:block;color:#e8cd83;font-size:10px;letter-spacing:1.4px}.pc-photo-form-title span{display:block;color:#969084;font-size:10px;margin-top:5px}.pc-photo-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.pc-photo-fields label{font-size:9px;letter-spacing:1px;color:#c9b77f;font-weight:800}.pc-photo-fields input{display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:11px;border-radius:8px;border:1px solid #ffffff24;background:#151515;color:#fff;font:inherit;color-scheme:dark}
+.pc-photo-fields{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.pc-photo-fields label{display:block;min-width:0}.pc-photo-fields input[type="date"]{min-width:0;max-width:100%;height:44px;padding:8px 7px;font-size:12px;line-height:1.2;appearance:none;-webkit-appearance:none}.pc-photo-fields input[type="date"]::-webkit-calendar-picker-indicator{width:15px;height:15px;margin:0 0 0 3px;padding:0;opacity:.8;flex:0 0 15px}
 .pc-photo-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pc-photo-drop{min-height:100px;border:1px dashed #b99a50a8;border-radius:10px;background:#171611;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;position:relative;overflow:hidden;padding:7px}.pc-photo-drop>span{font-size:23px;color:#d9b65f}.pc-photo-drop b{font-size:9px;letter-spacing:1px;color:#f2e6c5}.pc-photo-drop small{font-size:8px;color:#aaa293;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pc-photo-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
 .pc-photo-privacy{font-size:9px;color:#858174;margin:11px 0}.pc-photo-actions{display:flex;justify-content:flex-end;gap:8px}.pc-photo-cancel{border:1px solid #ffffff30;background:transparent;color:#c8c0ad;border-radius:9px;padding:10px 13px;font-size:9px;font-weight:800}.pc-photo-message{font-size:10px;color:#e7ca79;margin-top:9px;min-height:14px}
 .pc-photo-history{margin-top:14px}.pc-photo-empty{padding:18px;border:1px dashed #b99a5044;border-radius:12px;text-align:center;color:#9b9588;font-size:11px;line-height:1.6}.pc-photo-entry{border:1px solid #ffffff19;border-radius:13px;padding:11px;margin-top:10px;background:#111211}.pc-photo-entry-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}.pc-photo-entry-head strong{font-size:12px;color:#f2e4bd}.pc-photo-entry-head span{font-size:11px;color:#d8bb6c}.pc-photo-thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.pc-photo-thumbs figure{margin:0;min-width:0}.pc-photo-thumbs img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;background:#242424}.pc-photo-thumbs figcaption{text-align:center;font-size:8px;letter-spacing:.8px;color:#aaa18d;margin-top:5px}
@@ -1609,6 +1610,19 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 .pc-photo-form:not(.hidden){display:block!important}
 .pc-photo-drop input{z-index:2}
 
+
+
+/* Gestión del calendario: acordeón compacto, situado antes de la cuadrícula mensual. */
+.calendar-management-details{margin:0 0 12px;border:1px solid rgba(255,135,56,.32);border-radius:15px;background:linear-gradient(145deg,rgba(255,135,56,.09),rgba(255,255,255,.025));overflow:hidden}
+.calendar-management-details>summary{display:flex;align-items:center;gap:11px;min-height:66px;padding:12px 14px;list-style:none;cursor:pointer;touch-action:manipulation}
+.calendar-management-details>summary::-webkit-details-marker{display:none}
+.calendar-management-details>summary>span:last-child{display:flex;flex-direction:column;gap:4px;min-width:0}
+.calendar-management-details>summary strong{font-size:11px;letter-spacing:1px;color:#ffad75}
+.calendar-management-details>summary small{font-size:10px;line-height:1.35;color:var(--muted,#9aa8b8)}
+.calendar-management-chevron{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid rgba(255,135,56,.42);border-radius:50%;color:#ffad75;font-size:21px;transition:transform .2s ease}
+.calendar-management-details[open] .calendar-management-chevron{transform:rotate(180deg)}
+.calendar-management-details .calendar-day-editor{margin:0 12px 12px;border-color:rgba(255,135,56,.2);background:rgba(0,0,0,.16)}
+@media(max-width:390px){.calendar-day-status-actions{grid-template-columns:1fr 1fr}.calendar-management-details>summary{padding:11px;gap:9px}.calendar-management-details>summary small{font-size:9px}}
 
 /* ACTIVIDADES DEPORTIVAS MANUALES: calendario compartido por todos los usuarios */
 .sports-calendar-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:16px 0 12px}
@@ -1647,6 +1661,7 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 .sports-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .sports-form-grid label{display:grid;gap:5px;color:#b9c0cb;font-size:10px;font-weight:800;letter-spacing:.35px}
 .sports-form-grid input,.sports-form-grid select,.sports-form-grid textarea{width:100%;min-width:0;border:1px solid #ffffff22;border-radius:8px;background:#151920;color:#fff;padding:10px;font:inherit;font-size:12px;box-sizing:border-box}
+.sports-form-grid input[type="date"]{min-width:0;max-width:100%;height:44px;padding:8px 7px;appearance:none;-webkit-appearance:none}.sports-form-grid input[type="date"]::-webkit-calendar-picker-indicator{width:15px;height:15px;margin:0 0 0 3px;padding:0;opacity:.8}
 .sports-form-grid textarea{min-height:72px;resize:vertical;grid-column:1/-1}
 .sports-form-grid .sports-full{grid-column:1/-1}
 .sports-form-actions{display:flex;gap:8px;margin-top:12px}
@@ -1875,22 +1890,25 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
       <h2 class="library-title">Tu progreso</h2>
       <p class="library-intro">Consulta tus entrenamientos completados y tu actividad durante el año.</p>
       <div class="streak-summary"><div class="streak-total-card"><span class="streak-total-label">Entrenamientos este año</span><strong class="streak-total-number" id="streakYearTotal">0</strong><span class="streak-total-caption" id="streakYearCaption">Días completados en 2026</span></div></div>
+      <details class="calendar-management-details">
+        <summary><span class="calendar-management-chevron" aria-hidden="true">⌄</span><span><strong>GESTIÓN DEL CALENDARIO</strong><small>Editar entrenamientos, descansos y días no realizados</small></span></summary>
+        <section class="calendar-day-editor" aria-label="Editar estado del día">
+          <div class="calendar-day-editor-head"><div><span class="calendar-editor-kicker">DÍA SELECCIONADO</span><h3 id="calendarEditorDate">Selecciona un día</h3><p id="calendarEditorCurrent">Estado automático</p></div></div>
+          <div class="calendar-day-status-actions">
+            <button type="button" data-calendar-status="done">ENTRENAMIENTO REALIZADO</button>
+            <button type="button" data-calendar-status="rest">DÍA DE DESCANSO</button>
+            <button type="button" data-calendar-status="missed">NO REALIZADO</button>
+            <button type="button" data-calendar-status="auto">AUTOMÁTICO</button>
+          </div>
+          <p id="calendarEditorMessage" class="calendar-editor-message" role="status">Selecciona una fecha del calendario para modificarla.</p>
+        </section>
+      </details>
       <div class="streak-calendar-card">
         <div class="streak-month-row"><strong class="streak-month-title" id="streakMonthTitle">Mes</strong><div class="streak-month-controls"><button type="button" id="streakPrevMonth" aria-label="Mes anterior">‹</button><button type="button" id="streakNextMonth" aria-label="Mes siguiente">›</button></div></div>
         <div class="streak-weekdays"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
         <div class="streak-days-grid" id="streakCalendarGrid"></div>
         <div class="streak-legend"><span><i style="background:#41c691"></i>Entrenamiento completado</span><span><i style="background:#ff6969"></i>No realizado</span><span><i style="background:#777"></i>Descanso</span></div>
       </div>
-      <section class="calendar-day-editor" aria-label="Editar estado del día">
-        <div class="calendar-day-editor-head"><div><span class="calendar-editor-kicker">GESTIÓN DEL CALENDARIO</span><h3 id="calendarEditorDate">Selecciona un día</h3><p id="calendarEditorCurrent">Estado automático</p></div></div>
-        <div class="calendar-day-status-actions">
-          <button type="button" data-calendar-status="done">ENTRENAMIENTO REALIZADO</button>
-          <button type="button" data-calendar-status="rest">DÍA DE DESCANSO</button>
-          <button type="button" data-calendar-status="missed">NO REALIZADO</button>
-          <button type="button" data-calendar-status="auto">AUTOMÁTICO</button>
-        </div>
-        <p id="calendarEditorMessage" class="calendar-editor-message" role="status">Selecciona una fecha del calendario para modificarla.</p>
-      </section>
       <div class="streak-week-progress"><div><strong>Esta semana</strong><br><span>Entrenamientos completados</span></div><strong id="streakWeekTotal">0 / 4</strong></div>
       <div id="streakStatus" class="streak-error hidden" role="status"></div>
       <div class="sports-calendar-tools"><p>Registra tus deportes y actividades. Cada usuario verá únicamente sus propios registros.</p><button type="button" class="sports-add-btn" id="sportsAddActivity">＋ AÑADIR ACTIVIDAD</button></div>
