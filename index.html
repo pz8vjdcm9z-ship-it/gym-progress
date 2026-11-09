@@ -2514,37 +2514,54 @@ const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&am
 const localDate = () => {const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;};
 
 // Persistencia de ejercicios completados en Supabase, por usuario, fecha y día de rutina.
+// Cada cambio se escribe PRIMERO en una cola local; así cerrar la app mientras
+// la petición de red está en curso no puede perder la última modificación.
 const completionQueueKey = userId => `gym_progress_completion_queue_${userId}`;
+let completionQueueFlushPromise = null;
 function completionRow(day,exerciseId,completed){
   return {user_id:currentUser.id,training_date:localDate(),routine_day:Number(day),exercise_id:String(exerciseId),completed:!!completed,updated_at:new Date().toISOString()};
 }
+function readCompletionQueue(key){
+  try{const value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value:[];}catch(e){return [];}
+}
+function writeCompletionQueueRow(row){
+  const key=completionQueueKey(row.user_id);
+  const queue=readCompletionQueue(key);
+  const identity=x=>x.training_date===row.training_date&&Number(x.routine_day)===Number(row.routine_day)&&String(x.exercise_id)===String(row.exercise_id);
+  const next=queue.filter(x=>!identity(x));
+  next.push(row);
+  localStorage.setItem(key,JSON.stringify(next));
+}
 async function flushCompletionQueue(){
   if(!currentUser||!navigator.onLine||adminPreviewMode)return;
-  const key=completionQueueKey(currentUser.id);
-  let queue=[];try{queue=JSON.parse(localStorage.getItem(key)||"[]");}catch(e){}
-  if(!queue.length)return;
-  const {error}=await supabase.from("workout_completions").upsert(queue,{onConflict:"user_id,training_date,routine_day,exercise_id"});
-  if(error)throw error;
-  localStorage.removeItem(key);
+  if(completionQueueFlushPromise)return completionQueueFlushPromise;
+  completionQueueFlushPromise=(async()=>{
+    const userId=currentUser.id;
+    const key=completionQueueKey(userId);
+    const same=(a,b)=>a.training_date===b.training_date&&Number(a.routine_day)===Number(b.routine_day)&&String(a.exercise_id)===String(b.exercise_id);
+    // Repite si se han añadido cambios mientras se enviaba el lote anterior.
+    while(navigator.onLine&&currentUser?.id===userId){
+      const snapshot=readCompletionQueue(key);
+      if(!snapshot.length)break;
+      const {error}=await supabase.from("workout_completions").upsert(snapshot,{onConflict:"user_id,training_date,routine_day,exercise_id"});
+      if(error)throw error;
+      // No borrar cambios más recientes añadidos mientras la petición estaba en curso.
+      const latest=readCompletionQueue(key);
+      const remaining=latest.filter(item=>!snapshot.some(sent=>same(item,sent)&&item.updated_at===sent.updated_at&&item.completed===sent.completed));
+      if(remaining.length)localStorage.setItem(key,JSON.stringify(remaining));
+      else localStorage.removeItem(key);
+    }
+  })();
+  try{await completionQueueFlushPromise;}finally{completionQueueFlushPromise=null;}
 }
 async function saveCompletionState(day,exerciseId,completed){
   if(!currentUser||adminPreviewMode)return;
   const row=completionRow(day,exerciseId,completed);
-  if(!navigator.onLine){
-    const key=completionQueueKey(currentUser.id);let queue=[];
-    try{queue=JSON.parse(localStorage.getItem(key)||"[]");}catch(e){}
-    queue=queue.filter(x=>!(x.training_date===row.training_date&&Number(x.routine_day)===row.routine_day&&x.exercise_id===row.exercise_id));
-    queue.push(row);localStorage.setItem(key,JSON.stringify(queue));return;
-  }
-  try{
-    await flushCompletionQueue();
-    const {error}=await supabase.from("workout_completions").upsert(row,{onConflict:"user_id,training_date,routine_day,exercise_id"});
-    if(error)throw error;
-  }catch(error){
-    const key=completionQueueKey(currentUser.id);let queue=[];
-    try{queue=JSON.parse(localStorage.getItem(key)||"[]");}catch(e){}
-    queue=queue.filter(x=>!(x.training_date===row.training_date&&Number(x.routine_day)===row.routine_day&&x.exercise_id===row.exercise_id));
-    queue.push(row);localStorage.setItem(key,JSON.stringify(queue));
+  // Escritura local síncrona ANTES de cualquier await o llamada de red.
+  writeCompletionQueueRow(row);
+  if(!navigator.onLine)return;
+  try{await flushCompletionQueue();}
+  catch(error){
     console.warn("El estado del ejercicio queda pendiente de sincronización:",error);
     showStatus($("saveStatus"),"Estado guardado en este dispositivo. Se sincronizará con Supabase cuando haya conexión.",true);
   }
