@@ -1616,16 +1616,27 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 .sports-add-btn,.sports-save-btn{border:1px solid #d4b45e;background:linear-gradient(135deg,#e6c975,#a67b2e);color:#17130a;border-radius:10px;padding:11px 14px;font-weight:900;font-size:10px;letter-spacing:.5px;cursor:pointer}
 .sports-day-hint{margin:10px 0;color:var(--muted,#9aa8b8);font-size:11px}
 .streak-day{cursor:pointer;position:relative;border:0;padding:0;font-family:inherit;width:100%}
-.streak-day.sports-day:after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:#e7bd55;bottom:4px;left:50%;transform:translateX(-50%);box-shadow:0 0 7px #e7bd5580}
-.streak-day.selected-sports-day{outline:2px solid #e7bd55;outline-offset:1px}
-.sports-activity-panel{margin-top:16px;padding:16px;border:1px solid rgba(231,189,85,.22);border-radius:16px;background:linear-gradient(145deg,rgba(231,189,85,.07),rgba(255,255,255,.025))}
+.streak-day.sports-day:after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:#ff8738;bottom:4px;left:50%;transform:translateX(-50%);box-shadow:0 0 8px #ff873880}
+.streak-day.selected-sports-day{outline:2px solid #ff8738;outline-offset:1px}
+.calendar-day-editor{margin-top:14px;padding:15px;border:1px solid rgba(255,255,255,.12);border-radius:15px;background:rgba(255,255,255,.035)}
+.calendar-day-editor-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.calendar-editor-kicker{font-size:9px;letter-spacing:1.1px;font-weight:900;color:var(--muted,#9aa8b8)}
+.calendar-day-editor h3{margin:4px 0;font-size:15px;text-transform:capitalize}
+.calendar-day-editor p{margin:4px 0 0;color:var(--muted,#9aa8b8);font-size:11px}
+.calendar-day-status-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.calendar-day-status-actions button{min-height:40px;padding:9px 10px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(255,255,255,.045);color:inherit;font-size:9px;font-weight:900;letter-spacing:.25px;cursor:pointer}
+.calendar-day-status-actions button.active{border-color:#ff8738;background:rgba(255,135,56,.16);color:#ffad75}
+.calendar-day-status-actions button:disabled{opacity:.5;cursor:wait}
+.calendar-editor-message{min-height:14px;margin-top:10px!important}
+
+.sports-activity-panel{margin-top:16px;padding:16px;border:1px solid rgba(255,135,56,.24);border-radius:16px;background:linear-gradient(145deg,rgba(255,135,56,.075),rgba(255,255,255,.025))}
 .sports-activity-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
 .sports-activity-head h3{margin:0;color:var(--text,#f5f5f5);font-size:15px}
 .sports-activity-list{display:grid;gap:10px}
 .sports-activity-card{padding:12px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(0,0,0,.16)}
 .sports-activity-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .sports-activity-card strong{font-size:13px;color:var(--text,#fff)}
-.sports-activity-type{font-size:10px;color:#e7bd55;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.sports-activity-type{font-size:10px;color:#ff9a55;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
 .sports-activity-stats{display:flex;flex-wrap:wrap;gap:7px 14px;margin-top:9px;color:var(--muted,#aeb6c2);font-size:11px}
 .sports-activity-notes{margin:8px 0 0;color:var(--muted,#aeb6c2);font-size:11px;white-space:pre-wrap}
 .sports-activity-photos{display:flex;gap:7px;overflow-x:auto;margin-top:10px}
@@ -1642,7 +1653,7 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 .sports-cancel-btn{border:1px solid #ffffff28;background:#ffffff0b;color:#fff;border-radius:9px;padding:10px 13px;font-size:10px;font-weight:800}
 .sports-form-message,.sports-empty{margin:10px 0 0;color:var(--muted,#9aa8b8);font-size:11px;line-height:1.5}
 .sports-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;color:var(--muted,#9aa8b8);font-size:10px}
-.sports-legend i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#e7bd55;margin-right:5px}
+.sports-legend i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff8738;margin-right:5px}
 @media(max-width:480px){.sports-form-grid{grid-template-columns:1fr}.sports-form-grid textarea,.sports-form-grid .sports-full{grid-column:auto}.sports-calendar-tools{align-items:stretch}.sports-add-btn{width:100%}.sports-activity-panel{padding:11px}}
 
 </style>
@@ -1870,6 +1881,16 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
         <div class="streak-days-grid" id="streakCalendarGrid"></div>
         <div class="streak-legend"><span><i style="background:#41c691"></i>Entrenamiento completado</span><span><i style="background:#ff6969"></i>No realizado</span><span><i style="background:#777"></i>Descanso</span></div>
       </div>
+      <section class="calendar-day-editor" aria-label="Editar estado del día">
+        <div class="calendar-day-editor-head"><div><span class="calendar-editor-kicker">GESTIÓN DEL CALENDARIO</span><h3 id="calendarEditorDate">Selecciona un día</h3><p id="calendarEditorCurrent">Estado automático</p></div></div>
+        <div class="calendar-day-status-actions">
+          <button type="button" data-calendar-status="done">ENTRENAMIENTO REALIZADO</button>
+          <button type="button" data-calendar-status="rest">DÍA DE DESCANSO</button>
+          <button type="button" data-calendar-status="missed">NO REALIZADO</button>
+          <button type="button" data-calendar-status="auto">AUTOMÁTICO</button>
+        </div>
+        <p id="calendarEditorMessage" class="calendar-editor-message" role="status">Selecciona una fecha del calendario para modificarla.</p>
+      </section>
       <div class="streak-week-progress"><div><strong>Esta semana</strong><br><span>Entrenamientos completados</span></div><strong id="streakWeekTotal">0 / 4</strong></div>
       <div id="streakStatus" class="streak-error hidden" role="status"></div>
       <div class="sports-calendar-tools"><p>Registra tus deportes y actividades. Cada usuario verá únicamente sus propios registros.</p><button type="button" class="sports-add-btn" id="sportsAddActivity">＋ AÑADIR ACTIVIDAD</button></div>
@@ -2651,6 +2672,7 @@ function registerWorkoutDay(){
 }
 // ACTIVIDADES DEPORTIVAS: módulo común a todos los usuarios, con datos privados por user_id.
 let sportsActivities=[];
+let calendarDayOverrides=[];
 let sportsSelectedDate=localDate();
 let sportsEditingId=null;
 let sportsMonthRequest=0;
@@ -2671,7 +2693,7 @@ async function sportsLoadMonth(){
  const host=$("sportsActivityList");if(!currentUser){host.innerHTML='<p class="sports-empty">Inicia sesión para ver tus actividades.</p>';return;}if(adminPreviewMode){host.innerHTML='<p class="sports-empty">La vista administrativa es de solo lectura y no muestra actividades privadas. Entra en la cuenta del usuario para consultar sus registros.</p>';return;}
  const request=++sportsMonthRequest;const y=streakViewDate.getFullYear(),m=streakViewDate.getMonth();const start=`${y}-${String(m+1).padStart(2,"0")}-01`;const endDate=new Date(y,m+1,0);const end=`${y}-${String(m+1).padStart(2,"0")}-${String(endDate.getDate()).padStart(2,"0")}`;
  host.innerHTML='<p class="sports-empty">Cargando actividades…</p>';
- try{const {data,error}=await supabase.from("sports_activities").select("id,user_id,activity_date,sport_type,title,distance_km,duration_minutes,elevation_m,calories,notes,photo_paths,created_at").eq("user_id",currentUser.id).gte("activity_date",start).lte("activity_date",end).order("activity_date",{ascending:false}).order("created_at",{ascending:false});if(error)throw error;if(request!==sportsMonthRequest)return;sportsActivities=data||[];sportsRenderSelectedDay();renderStreakCalendar();}
+ try{const [activitiesResult,overridesResult]=await Promise.all([supabase.from("sports_activities").select("id,user_id,activity_date,sport_type,title,distance_km,duration_minutes,elevation_m,calories,notes,photo_paths,created_at").eq("user_id",currentUser.id).gte("activity_date",start).lte("activity_date",end).order("activity_date",{ascending:false}).order("created_at",{ascending:false}),supabase.from("calendar_day_overrides").select("activity_date,status").eq("user_id",currentUser.id).gte("activity_date",start).lte("activity_date",end)]);if(activitiesResult.error)throw activitiesResult.error;if(overridesResult.error)throw overridesResult.error;if(request!==sportsMonthRequest)return;sportsActivities=activitiesResult.data||[];calendarDayOverrides=overridesResult.data||[];sportsRenderSelectedDay();renderStreakCalendar();renderCalendarDayEditor();}
  catch(error){if(request!==sportsMonthRequest)return;console.error("No se pudieron cargar las actividades deportivas:",error);host.innerHTML=`<p class="sports-empty">No se han podido cargar las actividades. ${pcEscape(error.message||"Comprueba que se ha ejecutado el SQL de configuración.")}</p>`;}
 }
 async function sportsRenderSelectedDay(){
@@ -2697,12 +2719,35 @@ async function sportsSaveActivity(event){
  finally{button.disabled=false;button.textContent=sportsEditingId?"GUARDAR CAMBIOS":"GUARDAR ACTIVIDAD";}
 }
 async function sportsDeleteActivity(id){if(!currentUser||adminPreviewMode)return;const activity=sportsActivities.find(x=>x.id===id);if(!activity)return;if(!confirm("¿Quieres eliminar esta actividad y sus fotografías? Esta acción no se puede deshacer."))return;try{const {error}=await supabase.from("sports_activities").delete().eq("id",id).eq("user_id",currentUser.id);if(error)throw error;const paths=Array.isArray(activity.photo_paths)?activity.photo_paths:[];if(paths.length){const removed=await supabase.storage.from(sportsBucket).remove(paths);if(removed.error)console.warn("La actividad se eliminó, pero no se pudieron borrar algunas fotos:",removed.error);}await sportsLoadMonth();}catch(error){alert(`No se ha podido eliminar la actividad: ${error.message||"error desconocido"}`);}}
+function calendarDefaultStatus(key,records){
+ const override=calendarDayOverrides.find(x=>x.activity_date===key);if(override?.status)return override.status;
+ if(records.some(x=>x.date===key))return "done";
+ const [yy,mm,dd]=key.split("-").map(Number);const date=new Date(yy,mm-1,dd);const weekday=date.getDay();const planWeekday=weekday===0?7:weekday;
+ const trainingDay=customTrainingPlan?!!customTrainingPlan.days?.[planWeekday]?.enabled:(weekday>=1&&weekday<=4);
+ const now=new Date();const future=date>new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ return !trainingDay?"rest":future?"pending":"missed";
+}
+function calendarStatusLabel(status){return ({done:"Entrenamiento realizado",rest:"Día de descanso",missed:"Entrenamiento no realizado",pending:"Pendiente según el horario",auto:"Automático"})[status]||"Automático";}
+function renderCalendarDayEditor(){
+ const title=$("calendarEditorDate"),current=$("calendarEditorCurrent"),message=$("calendarEditorMessage");if(!title||!current)return;
+ title.textContent=sportsDateLabel(sportsSelectedDate);const records=readWorkoutDays();const override=calendarDayOverrides.find(x=>x.activity_date===sportsSelectedDate);const status=calendarDefaultStatus(sportsSelectedDate,records);
+ current.textContent=`Estado actual: ${calendarStatusLabel(status)}${override?" · Modificado manualmente":" · Según tu horario y registros"}`;
+ document.querySelectorAll("[data-calendar-status]").forEach(button=>{button.classList.toggle("active",button.dataset.calendarStatus===(override?.status||"auto"));button.disabled=!currentUser||adminPreviewMode;});
+ if(message&&!message.dataset.busy)message.textContent=adminPreviewMode?"Vista administrativa: edición desactivada.":"Puedes corregir cualquier fecha pasada o futura. Automático recupera el horario habitual.";
+}
+async function saveCalendarDayStatus(status){
+ if(!currentUser||adminPreviewMode)return;const message=$("calendarEditorMessage");const buttons=[...document.querySelectorAll("[data-calendar-status]")];buttons.forEach(b=>b.disabled=true);if(message){message.dataset.busy="1";message.textContent="Guardando cambio…";}
+ try{if(status==="auto"){const {error}=await supabase.from("calendar_day_overrides").delete().eq("user_id",currentUser.id).eq("activity_date",sportsSelectedDate);if(error)throw error;}else{const {error}=await supabase.from("calendar_day_overrides").upsert({user_id:currentUser.id,activity_date:sportsSelectedDate,status},{onConflict:"user_id,activity_date"});if(error)throw error;}
+  await sportsLoadMonth();if(message){delete message.dataset.busy;message.textContent="Calendario actualizado correctamente.";}
+ }catch(error){console.error("No se pudo modificar el día del calendario:",error);if(message){delete message.dataset.busy;message.textContent=`No se pudo guardar: ${error.message||"comprueba la tabla calendar_day_overrides en Supabase"}`;}renderCalendarDayEditor();}
+}
 function sportsBind(){
  $("sportsAddActivity")?.addEventListener("click",()=>sportsOpenForm());
  $("sportsCancelBtn")?.addEventListener("click",()=>{$("sportsActivityForm").classList.add("hidden");sportsResetForm();});
  $("sportsActivityForm")?.addEventListener("submit",sportsSaveActivity);
  $("sportsActivityList")?.addEventListener("click",event=>{const edit=event.target.closest("[data-sports-edit]");const del=event.target.closest("[data-sports-delete]");if(edit){const activity=sportsActivities.find(x=>x.id===edit.dataset.sportsEdit);if(activity)sportsOpenForm(activity);}if(del)sportsDeleteActivity(del.dataset.sportsDelete);});
- $("streakCalendarGrid")?.addEventListener("click",event=>{const day=event.target.closest("[data-date]");if(!day)return;sportsSelectedDate=day.dataset.date;sportsRenderSelectedDay();renderStreakCalendar();});
+ $("streakCalendarGrid")?.addEventListener("click",event=>{const day=event.target.closest("[data-date]");if(!day)return;sportsSelectedDate=day.dataset.date;sportsRenderSelectedDay();renderStreakCalendar();renderCalendarDayEditor();});
+ document.querySelectorAll("[data-calendar-status]").forEach(button=>button.addEventListener("click",()=>saveCalendarDayStatus(button.dataset.calendarStatus)));
 }
 
 function renderStreakCalendar(){
@@ -2710,7 +2755,7 @@ function renderStreakCalendar(){
     const now=new Date();const year=now.getFullYear();const records=readWorkoutDays();
     const dates=new Set(records.map(x=>x.date));
     const sportsDates=new Set(sportsActivities.map(x=>x.activity_date));
-    const yearCount=records.filter(x=>Number(x.date.slice(0,4))===year).length;
+    const yearCount=Array.from(new Set([...records.map(x=>x.date),...calendarDayOverrides.filter(x=>x.status==="done").map(x=>x.activity_date)])).filter(key=>Number(key.slice(0,4))===year&&calendarDefaultStatus(key,records)==="done").length;
     $("streakYearTotal").textContent=String(yearCount);
     $("streakYearCaption").textContent=`Días completados en ${year}`;
     const y=streakViewDate.getFullYear(),m=streakViewDate.getMonth();
@@ -2721,11 +2766,13 @@ function renderStreakCalendar(){
     for(let day=1;day<=total;day++){
       const date=new Date(y,m,day);const key=`${y}-${String(m+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
       const weekday=date.getDay();const planWeekday=weekday===0?7:weekday;const trainingDay=customTrainingPlan?!!customTrainingPlan.days?.[planWeekday]?.enabled:(weekday>=1&&weekday<=4);const future=date>new Date(now.getFullYear(),now.getMonth(),now.getDate());
-      let cls="streak-day";if(dates.has(key))cls+=" done";else if(!trainingDay)cls+=" rest";else if(!future)cls+=" missed";
+      const dayStatus=calendarDefaultStatus(key,records);
+      let cls="streak-day";if(dayStatus==="done")cls+=" done";else if(dayStatus==="rest")cls+=" rest";else if(dayStatus==="missed")cls+=" missed";
+      if(calendarDayOverrides.some(x=>x.activity_date===key))cls+=" manually-edited";
       if(key===localDate())cls+=" today";
       if(sportsDates.has(key))cls+=" sports-day";
       if(key===sportsSelectedDate)cls+=" selected-sports-day";
-      const title=[dates.has(key)?"Entrenamiento completado":!trainingDay?"Día de descanso":future?"Pendiente":"Entrenamiento no realizado",sportsDates.has(key)?"Actividad deportiva registrada":"Pulsa para seleccionar el día"].join(" · ");
+      const title=[calendarStatusLabel(dayStatus),calendarDayOverrides.some(x=>x.activity_date===key)?"Estado modificado manualmente":"Estado automático",sportsDates.has(key)?"Actividad deportiva registrada":"Pulsa para seleccionar el día"].join(" · ");
       html+=`<button type="button" class="${cls}" data-date="${key}" title="${title}" aria-label="${key}">${day}</button>`;
     }
     $("streakCalendarGrid").innerHTML=html;
@@ -2736,9 +2783,10 @@ function renderStreakCalendar(){
     const weekCount=new Set(records.filter(x=>x.date>=weekStartKey&&x.date<=weekEndKey).map(x=>x.date)).size;
     $("streakWeekTotal").textContent=`${Math.min(weekCount,4)} / 4`;
     $("streakStatus").classList.add("hidden");
+    renderCalendarDayEditor();
   }catch(error){console.warn("Error al mostrar el calendario:",error);const status=$("streakStatus");if(status){status.textContent="No se ha podido mostrar el calendario. El resto de la aplicación sigue funcionando.";status.classList.remove("hidden");}}
 }
-function changeStreakMonth(delta){const next=new Date(streakViewDate.getFullYear(),streakViewDate.getMonth()+delta,1);const now=new Date();if(next>new Date(now.getFullYear(),now.getMonth(),1))return;streakViewDate=next;renderStreakCalendar();sportsSelectedDate=`${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,"0")}-01`;sportsLoadMonth();}
+function changeStreakMonth(delta){const next=new Date(streakViewDate.getFullYear(),streakViewDate.getMonth()+delta,1);const now=new Date();if(next>new Date(now.getFullYear(),now.getMonth(),1))return;streakViewDate=next;sportsSelectedDate=`${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,"0")}-01`;renderStreakCalendar();sportsLoadMonth();}
 
 function toggleComplete(id){
   if(adminPreviewMode)return;
