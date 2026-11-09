@@ -1619,8 +1619,8 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
 .calendar-management-details>summary>span:last-child{display:flex;flex-direction:column;gap:4px;min-width:0}
 .calendar-management-details>summary strong{font-size:11px;letter-spacing:1px;color:#ffad75}
 .calendar-management-details>summary small{font-size:10px;line-height:1.35;color:var(--muted,#9aa8b8)}
-.calendar-management-chevron{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid rgba(255,135,56,.42);border-radius:50%;color:#ffad75;font-size:21px;transition:transform .2s ease}
-.calendar-management-details[open] .calendar-management-chevron{transform:rotate(180deg)}
+.calendar-management-chevron{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border:1px solid rgba(255,135,56,.42);border-radius:50%;color:#ffad75;font-size:20px;line-height:1;transition:transform .25s ease,color .2s ease,border-color .2s ease}
+.calendar-management-details[open] .calendar-management-chevron{transform:rotate(45deg);color:#ffd18a;border-color:rgba(255,209,138,.75)}
 .calendar-management-details .calendar-day-editor{margin:0 12px 12px;border-color:rgba(255,135,56,.2);background:rgba(0,0,0,.16)}
 @media(max-width:390px){.calendar-day-status-actions{grid-template-columns:1fr 1fr}.calendar-management-details>summary{padding:11px;gap:9px}.calendar-management-details>summary small{font-size:9px}}
 
@@ -1891,7 +1891,7 @@ body.is-arniforcamp-theme .dashboard-art.helmet-awaken{animation:helmet-awaken .
       <p class="library-intro">Consulta tus entrenamientos completados y tu actividad durante el año.</p>
       <div class="streak-summary"><div class="streak-total-card"><span class="streak-total-label">Entrenamientos este año</span><strong class="streak-total-number" id="streakYearTotal">0</strong><span class="streak-total-caption" id="streakYearCaption">Días completados en 2026</span></div></div>
       <details class="calendar-management-details">
-        <summary><span class="calendar-management-chevron" aria-hidden="true">⌄</span><span><strong>GESTIÓN DEL CALENDARIO</strong><small>Editar entrenamientos, descansos y días no realizados</small></span></summary>
+        <summary><span class="calendar-management-chevron" aria-hidden="true">⚙</span><span><strong>GESTIÓN DEL CALENDARIO</strong><small>Editar entrenamientos, descansos y días no realizados</small></span></summary>
         <section class="calendar-day-editor" aria-label="Editar estado del día">
           <div class="calendar-day-editor-head"><div><span class="calendar-editor-kicker">DÍA SELECCIONADO</span><h3 id="calendarEditorDate">Selecciona un día</h3><p id="calendarEditorCurrent">Estado automático</p></div></div>
           <div class="calendar-day-status-actions">
