@@ -3005,9 +3005,24 @@ async function saveExerciseRatings(){
     if(error)console.warn("No se pudo sincronizar la valoración en la cuenta; queda guardada en este dispositivo.",error);
   }catch(error){console.warn("La valoración queda guardada localmente.",error);}
 }
+function normalizeMuscleId(value){
+  return String(value||"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().trim()
+    .replace(/[\s-]+/g,"_")
+    .replace(/[^a-z0-9_]/g,"")
+    .replace(/_+/g,"_")
+    .replace(/^_|_$/g,"");
+}
 function exerciseMatchesGroup(ex,group){
-  const muscles=[...(ex.primary_muscles||[]),...(ex.secondary_muscles||[])].map(x=>String(x).toLowerCase().replaceAll(" ","_"));
-  return muscles.some(m=>group.aliases.some(alias=>m===alias||m.includes(alias)||alias.includes(m)));
+  // La biblioteca y Muscle Performance se clasifican SOLO por músculos principales.
+  // Los secundarios describen asistencia biomecánica y no asignan el ejercicio a ese grupo.
+  // La comparación es exacta para evitar falsos positivos por coincidencias parciales.
+  if(!ex||!group||!Array.isArray(group.aliases))return false;
+  const primary=Array.isArray(ex.primary_muscles)?ex.primary_muscles:[];
+  if(!primary.length)return false;
+  const groupMuscles=new Set(group.aliases.map(normalizeMuscleId).filter(Boolean));
+  return primary.some(muscle=>groupMuscles.has(normalizeMuscleId(muscle)));
 }
 function exerciseLibraryCategory(ex){
   // Clasificación basada primero en el equipo declarado por RepDB y después en el nombre.
